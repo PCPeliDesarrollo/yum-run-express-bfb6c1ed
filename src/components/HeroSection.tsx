@@ -1,44 +1,38 @@
-import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
   return (
-    <section className="gradient-hero py-16 md:py-24">
+    <section className="bg-secondary py-12 md:py-20">
       <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-foreground mb-6 animate-fade-in">
-            Tu comida favorita,{" "}
-            <span className="text-primary">en minutos</span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground mb-10 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            Descubre los mejores restaurantes cerca de ti y recibe tu pedido en la puerta de tu casa
-          </p>
-          
-          <div className="relative max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: "0.2s" }}>
-            <div className="flex items-center bg-card rounded-2xl shadow-card p-2 border border-border">
-              <div className="flex-1 flex items-center px-4">
-                <Search className="w-5 h-5 text-muted-foreground mr-3" />
-                <input
-                  type="text"
-                  placeholder="Buscar restaurantes o platillos..."
-                  className="w-full py-3 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
-                />
-              </div>
-              <Button variant="hero" className="rounded-xl">
-                Buscar
+        <div className="flex flex-col md:flex-row items-center gap-8">
+          <div className="flex-1 text-center md:text-left">
+            <h1 className="text-4xl md:text-6xl font-black text-secondary-foreground mb-4 leading-tight">
+              PIDE TU
+              <br />
+              <span className="text-primary">COMIDA FAVORITA</span>
+            </h1>
+            <p className="text-lg text-secondary-foreground/80 mb-8 max-w-md">
+              Entrega rápida de los mejores restaurantes directo a tu puerta.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+              <Button size="lg" className="font-bold text-base rounded-full px-8">
+                Ordenar ahora
+              </Button>
+              <Button size="lg" variant="outline" className="font-bold text-base rounded-full px-8 border-2 border-secondary-foreground text-secondary-foreground hover:bg-secondary-foreground hover:text-secondary">
+                Ver menú
               </Button>
             </div>
           </div>
           
-          <div className="flex flex-wrap justify-center gap-3 mt-8 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            {["Pizza", "Hamburguesas", "Sushi", "Tacos", "Pollo"].map((tag) => (
-              <span
-                key={tag}
-                className="px-4 py-2 bg-card rounded-full text-sm font-medium text-muted-foreground border border-border hover:border-primary hover:text-primary transition-colors cursor-pointer"
-              >
-                {tag}
-              </span>
-            ))}
+          <div className="flex-1 flex justify-center">
+            <div className="relative w-72 h-72 md:w-96 md:h-96">
+              <div className="absolute inset-0 bg-primary rounded-full opacity-20" />
+              <img
+                src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop"
+                alt="Hamburguesa deliciosa"
+                className="absolute inset-4 w-[calc(100%-2rem)] h-[calc(100%-2rem)] object-cover rounded-full shadow-2xl"
+              />
+            </div>
           </div>
         </div>
       </div>
