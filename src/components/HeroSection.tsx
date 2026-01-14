@@ -2,39 +2,56 @@ import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
   return (
-    <section className="bg-secondary py-12 md:py-20">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row items-center gap-8">
+    <section className="relative bg-gradient-to-br from-primary to-primary/80 overflow-hidden">
+      <div className="container mx-auto px-4 py-16 md:py-24">
+        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-4xl md:text-6xl font-black text-secondary-foreground mb-4 leading-tight">
-              PIDE TU
+            <h1 className="text-4xl md:text-6xl font-bold text-primary-foreground mb-4 leading-tight">
+              Hamburguesas
               <br />
-              <span className="text-primary">COMIDA FAVORITA</span>
+              <span className="text-secondary">de verdad</span>
             </h1>
-            <p className="text-lg text-secondary-foreground/80 mb-8 max-w-md">
-              Entrega rápida de los mejores restaurantes directo a tu puerta.
+            <p className="text-lg text-primary-foreground/80 mb-8 max-w-md mx-auto md:mx-0">
+              Ingredientes frescos, carne 100% de res y el sabor que te mereces. ¡Pide ahora!
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-              <Button size="lg" className="font-bold text-base rounded-full px-8">
-                Ordenar ahora
-              </Button>
-              <Button size="lg" variant="outline" className="font-bold text-base rounded-full px-8 border-2 border-secondary-foreground text-secondary-foreground hover:bg-secondary-foreground hover:text-secondary">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <Button 
+                size="lg" 
+                className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold rounded-full px-8"
+              >
                 Ver menú
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="border-2 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary font-bold rounded-full px-8"
+              >
+                Ofertas del día
               </Button>
             </div>
           </div>
           
-          <div className="flex-1 flex justify-center">
-            <div className="relative w-72 h-72 md:w-96 md:h-96">
-              <div className="absolute inset-0 bg-primary rounded-full opacity-20" />
-              <img
-                src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&fit=crop"
-                alt="Hamburguesa deliciosa"
-                className="absolute inset-4 w-[calc(100%-2rem)] h-[calc(100%-2rem)] object-cover rounded-full shadow-2xl"
+          <div className="flex-1 relative">
+            <div className="relative w-64 h-64 md:w-80 md:h-80 mx-auto">
+              <div className="absolute inset-0 bg-secondary/30 rounded-full animate-pulse" />
+              <img 
+                src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=500&fit=crop"
+                alt="Hamburguesa Tryb"
+                className="relative z-10 w-full h-full object-cover rounded-full border-4 border-secondary shadow-2xl"
               />
             </div>
           </div>
         </div>
+      </div>
+      
+      {/* Wave decoration */}
+      <div className="absolute bottom-0 left-0 right-0">
+        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path 
+            d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" 
+            className="fill-background"
+          />
+        </svg>
       </div>
     </section>
   );

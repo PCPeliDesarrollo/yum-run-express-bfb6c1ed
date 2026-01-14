@@ -1,7 +1,6 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import CategorySection from "@/components/CategorySection";
-import RestaurantSection from "@/components/RestaurantSection";
+import MenuSection from "@/components/MenuSection";
 import PromoSection from "@/components/PromoSection";
 import Footer from "@/components/Footer";
 
@@ -10,8 +9,9 @@ const Index = () => {
     <main className="min-h-screen bg-background">
       <Navbar />
       <HeroSection />
-      <CategorySection />
-      <RestaurantSection />
+      <section id="menu">
+        <MenuSection />
+      </section>
       <PromoSection />
       <Footer />
     </main>
