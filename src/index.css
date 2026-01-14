@@ -2,40 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Flame:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 20 10% 12%;
+    --foreground: 0 0% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 20 10% 12%;
+    --card-foreground: 0 0% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 20 10% 12%;
+    --popover-foreground: 0 0% 15%;
 
-    --primary: 15 90% 45%;
+    --primary: 4 75% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 35 100% 50%;
-    --secondary-foreground: 20 10% 12%;
+    --secondary: 85 60% 50%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 30 10% 96%;
-    --muted-foreground: 20 5% 45%;
+    --muted: 80 20% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 0 75% 50%;
+    --accent: 85 60% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 10% 90%;
-    --input: 30 10% 90%;
-    --ring: 15 90% 45%;
+    --border: 80 10% 88%;
+    --input: 80 10% 88%;
+    --ring: 4 75% 50%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -48,33 +48,33 @@
   }
 
   .dark {
-    --background: 20 10% 8%;
-    --foreground: 30 10% 95%;
+    --background: 0 0% 8%;
+    --foreground: 0 0% 95%;
 
-    --card: 20 10% 12%;
-    --card-foreground: 30 10% 95%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 20 10% 12%;
-    --popover-foreground: 30 10% 95%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 15 90% 50%;
+    --primary: 4 75% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 35 100% 55%;
-    --secondary-foreground: 20 10% 12%;
+    --secondary: 85 60% 55%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 20 10% 18%;
-    --muted-foreground: 30 10% 60%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 0 75% 55%;
+    --accent: 85 60% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 20 10% 20%;
-    --input: 20 10% 20%;
-    --ring: 15 90% 50%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 4 75% 55%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -95,5 +95,9 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fredoka', sans-serif;
   }
 }
