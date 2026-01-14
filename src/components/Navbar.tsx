@@ -1,8 +1,12 @@
-import { ShoppingCart, Menu } from "lucide-react";
+import { ShoppingCart, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   return (
     <nav className="sticky top-0 z-50 bg-primary">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -30,6 +34,26 @@ const Navbar = () => {
         </div>
         
         <div className="flex items-center gap-3">
+          {user ? (
+            <Button 
+              variant="secondary" 
+              size="sm"
+              className="hidden sm:flex font-bold rounded-full"
+              onClick={() => navigate('/perfil')}
+            >
+              <User className="w-4 h-4 mr-2" />
+              Mi perfil
+            </Button>
+          ) : (
+            <Button 
+              variant="secondary" 
+              size="sm"
+              className="hidden sm:flex font-bold rounded-full"
+              onClick={() => navigate('/auth')}
+            >
+              Iniciar sesión
+            </Button>
+          )}
           <Button 
             variant="secondary" 
             size="icon" 
@@ -40,9 +64,24 @@ const Navbar = () => {
               0
             </span>
           </Button>
-          <Button variant="ghost" size="icon" className="md:hidden text-primary-foreground">
-            <Menu className="w-6 h-6" />
-          </Button>
+          {user ? (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="sm:hidden text-primary-foreground"
+              onClick={() => navigate('/perfil')}
+            >
+              <User className="w-6 h-6" />
+            </Button>
+          ) : (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="md:hidden text-primary-foreground"
+            >
+              <Menu className="w-6 h-6" />
+            </Button>
+          )}
         </div>
       </div>
     </nav>
