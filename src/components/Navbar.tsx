@@ -3,11 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useCart } from "@/contexts/CartContext";
 import logo from "@/assets/logo.png";
 
 const Navbar = () => {
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const { totalItems, setIsOpen } = useCart();
   const navigate = useNavigate();
 
   return (
@@ -15,7 +17,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="La Burguesita" className="h-12 w-auto" />
+            <img src={logo} alt="Tryb Burger" className="h-12 w-auto" />
           </Link>
           
           <div className="hidden md:flex items-center gap-6">
@@ -67,11 +69,14 @@ const Navbar = () => {
             variant="secondary" 
             size="icon" 
             className="rounded-full relative"
+            onClick={() => setIsOpen(true)}
           >
             <ShoppingCart className="w-5 h-5" />
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full text-xs text-primary-foreground flex items-center justify-center font-bold border-2 border-white">
-              0
-            </span>
+            {totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full text-xs text-primary-foreground flex items-center justify-center font-bold border-2 border-white">
+                {totalItems > 99 ? "99+" : totalItems}
+              </span>
+            )}
           </Button>
           {user ? (
             <Button 
