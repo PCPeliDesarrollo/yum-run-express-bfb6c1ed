@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import logo from "@/assets/logo.png";
 
 const Navbar = () => {
   const { user } = useAuth();
@@ -11,15 +12,10 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 bg-primary">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-primary-foreground" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-              tryb
-            </span>
-            <span className="text-lg font-medium text-primary-foreground/80" style={{ fontFamily: 'Fredoka, sans-serif' }}>
-              burger
-            </span>
+          <Link to="/" className="flex items-center">
+            <img src={logo} alt="La Burguesita" className="h-12 w-auto" />
           </Link>
           
           <div className="hidden md:flex items-center gap-6">
