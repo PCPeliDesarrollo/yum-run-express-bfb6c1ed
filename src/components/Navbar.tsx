@@ -1,10 +1,12 @@
-import { ShoppingCart, Menu, User } from "lucide-react";
+import { ShoppingCart, Menu, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 const Navbar = () => {
   const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
 
   return (
@@ -34,6 +36,17 @@ const Navbar = () => {
         </div>
         
         <div className="flex items-center gap-3">
+          {isAdmin && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="hidden sm:flex font-bold text-primary-foreground hover:bg-primary-foreground/10"
+              onClick={() => navigate('/admin')}
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Admin
+            </Button>
+          )}
           {user ? (
             <Button 
               variant="secondary" 
