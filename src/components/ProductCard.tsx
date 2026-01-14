@@ -1,12 +1,21 @@
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Product } from "@/data/products";
+import { useCart } from "@/contexts/CartContext";
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
+  const { addItem } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem(product);
+  };
+
   return (
     <Link 
       to={`/producto/${product.id}`}
@@ -18,11 +27,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        <div className="absolute bottom-3 right-3">
-          <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-            <Plus className="w-5 h-5 text-secondary-foreground" />
-          </div>
-        </div>
+        <button
+          onClick={handleAddToCart}
+          className="absolute bottom-3 right-3 w-10 h-10 bg-secondary rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform active:scale-95"
+        >
+          <Plus className="w-5 h-5 text-secondary-foreground" />
+        </button>
       </div>
       
       <div className="p-4">
