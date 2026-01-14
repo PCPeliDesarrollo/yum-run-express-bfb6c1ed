@@ -33,20 +33,20 @@ const MenuSection = () => {
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 text-center">
             Nuestra Carta
           </h2>
-          <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-2">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap font-medium text-sm transition-all",
+                  "flex items-center justify-center gap-2 px-3 py-3 rounded-xl font-medium text-sm transition-all",
                   activeCategory === category
                     ? "bg-primary text-primary-foreground shadow-lg"
                     : "bg-card border border-border text-foreground hover:bg-muted"
                 )}
               >
                 <span>{categoryEmojis[category] || "🍴"}</span>
-                <span>{category}</span>
+                <span className="truncate">{category}</span>
               </button>
             ))}
           </div>
