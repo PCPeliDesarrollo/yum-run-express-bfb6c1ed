@@ -1,9 +1,8 @@
-import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-restaurant.jpg";
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-[500px] md:min-h-[600px] overflow-hidden">
+    <section className="relative min-h-[280px] md:min-h-[350px] overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <img 
@@ -14,31 +13,16 @@ const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
       </div>
       
-      <div className="relative container mx-auto px-4 py-16 md:py-24 flex items-center min-h-[500px] md:min-h-[600px]">
+      <div className="relative container mx-auto px-4 py-10 md:py-14 flex items-center min-h-[280px] md:min-h-[350px]">
         <div className="max-w-xl">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">
+          <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 leading-tight">
             Hamburguesas
             <br />
             <span className="text-secondary">de verdad</span>
           </h1>
-          <p className="text-lg text-white/90 mb-8 max-w-md">
+          <p className="text-base md:text-lg text-white/90 max-w-md">
             Ingredientes frescos, carne 100% de res y el sabor que te mereces. ¡Pide ahora!
           </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button 
-              size="lg" 
-              className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold rounded-full px-8"
-            >
-              Ver menú
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="border-2 border-white text-white hover:bg-white hover:text-primary font-bold rounded-full px-8"
-            >
-              Ofertas del día
-            </Button>
-          </div>
         </div>
       </div>
       
