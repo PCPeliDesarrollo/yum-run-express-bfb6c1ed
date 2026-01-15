@@ -7,11 +7,12 @@ export interface CartItem {
   quantity: number;
   selectedOptions: ProductOption[];
   totalPrice: number;
+  notes?: string;
 }
 
 interface CartContextType {
   items: CartItem[];
-  addItem: (product: Product, quantity?: number, options?: ProductOption[]) => void;
+  addItem: (product: Product, quantity?: number, options?: ProductOption[], notes?: string) => void;
   removeItem: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
@@ -35,13 +36,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  const addItem = (product: Product, quantity = 1, options: ProductOption[] = []) => {
+  const addItem = (product: Product, quantity = 1, options: ProductOption[] = [], notes?: string) => {
     const optionsPrice = options.reduce((sum, opt) => sum + opt.price, 0);
     const itemPrice = (product.price + optionsPrice) * quantity;
     
-    // Generate unique ID based on product and options
+    // Generate unique ID based on product, options and notes
     const optionsKey = options.map(o => o.id).sort().join("-");
-    const itemId = `${product.id}-${optionsKey || "default"}`;
+    const notesKey = notes ? `-${notes.substring(0, 20)}` : "";
+    const itemId = `${product.id}-${optionsKey || "default"}${notesKey}`;
 
     setItems((currentItems) => {
       const existingItem = currentItems.find((item) => item.id === itemId);
@@ -66,6 +68,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           quantity,
           selectedOptions: options,
           totalPrice: itemPrice,
+          notes,
         },
       ];
     });

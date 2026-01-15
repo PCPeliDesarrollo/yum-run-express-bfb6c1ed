@@ -1,16 +1,20 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Minus, Check } from "lucide-react";
+import { ArrowLeft, Plus, Minus, Check, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { getProductById, ProductOption } from "@/data/products";
+import { useCart } from "@/contexts/CartContext";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { addItem } = useCart();
   const product = getProductById(id || "");
   
   const [quantity, setQuantity] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [specialNotes, setSpecialNotes] = useState("");
 
   if (!product) {
     return (
@@ -139,6 +143,24 @@ const ProductDetail = () => {
               </div>
             </div>
           )}
+
+          {/* Special Notes */}
+          <div>
+            <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-muted-foreground" />
+              Peticiones especiales
+            </h3>
+            <Textarea
+              placeholder="¿Alguna alergia o petición especial? Escríbela aquí..."
+              value={specialNotes}
+              onChange={(e) => setSpecialNotes(e.target.value)}
+              className="min-h-[100px] resize-none rounded-xl border-2 border-border focus:border-primary"
+              maxLength={500}
+            />
+            <p className="text-xs text-muted-foreground mt-1 text-right">
+              {specialNotes.length}/500 caracteres
+            </p>
+          </div>
         </div>
 
         {/* Quantity Selector */}
@@ -169,6 +191,11 @@ const ProductDetail = () => {
           <Button 
             className="w-full h-14 text-lg font-bold rounded-full bg-primary hover:bg-primary/90"
             size="lg"
+            onClick={() => {
+              const options = product.options.filter(opt => selectedOptions.includes(opt.id));
+              addItem(product, quantity, options, specialNotes.trim() || undefined);
+              navigate(-1);
+            }}
           >
             Añadir al carrito · €{calculateTotal()}
           </Button>
