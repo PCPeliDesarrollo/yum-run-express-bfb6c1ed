@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/contexts/CartContext";
 import CartDrawer from "@/components/CartDrawer";
+import FloatingCartButton from "@/components/FloatingCartButton";
 import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
 import Category from "./pages/Category";
@@ -26,6 +27,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <CartDrawer />
+            <FloatingCartButton />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/categoria/:slug" element={<Category />} />
