@@ -396,11 +396,15 @@ const Checkout = () => {
       </div>
 
       {/* Fixed Bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4">
+      <div
+        className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 16px)" }}
+      >
         <div className="container mx-auto max-w-2xl">
           <Button
-            className="w-full h-14 text-lg font-bold rounded-full bg-primary hover:bg-primary/90"
-            size="lg"
+            variant="destructive"
+            size="xl"
+            className="w-full rounded-full"
             onClick={handleSubmit}
             disabled={isSubmitting}
           >
