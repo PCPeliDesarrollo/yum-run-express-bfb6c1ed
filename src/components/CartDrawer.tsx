@@ -1,4 +1,4 @@
-import { Minus, Plus, Trash2, X, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Trash2, X, ShoppingBag, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
@@ -42,6 +42,12 @@ const CartDrawer = () => {
                     {item.selectedOptions.length > 0 && (
                       <p className="text-xs text-muted-foreground mt-0.5">
                         {item.selectedOptions.map((o) => o.name).join(", ")}
+                      </p>
+                    )}
+                    {item.notes && (
+                      <p className="text-xs text-muted-foreground mt-0.5 flex items-start gap-1">
+                        <MessageSquare className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                        <span className="italic line-clamp-2">{item.notes}</span>
                       </p>
                     )}
                     <p className="text-primary font-bold mt-1">
