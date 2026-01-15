@@ -1,10 +1,12 @@
 import { Minus, Plus, Trash2, X, ShoppingBag, MessageSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
 import { Separator } from "@/components/ui/separator";
 
 const CartDrawer = () => {
+  const navigate = useNavigate();
   const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalPrice, clearCart } = useCart();
 
   return (
@@ -102,7 +104,14 @@ const CartDrawer = () => {
                 <span className="text-primary">€{totalPrice.toFixed(2)}</span>
               </div>
 
-              <Button className="w-full h-12 text-base font-bold rounded-full" size="lg">
+              <Button 
+                className="w-full h-12 text-base font-bold rounded-full" 
+                size="lg"
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate("/checkout");
+                }}
+              >
                 Realizar pedido
               </Button>
             </div>
