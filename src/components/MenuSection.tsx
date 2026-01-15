@@ -1,7 +1,5 @@
-import { useState } from "react";
-import ProductCard from "./ProductCard";
-import { products, categories } from "@/data/products";
-import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
+import { categories } from "@/data/products";
 
 const categoryEmojis: Record<string, string> = {
   "Hamburguesas": "🍔",
@@ -20,59 +18,46 @@ const categoryEmojis: Record<string, string> = {
   "Exquisitos": "⭐",
 };
 
+// Convert category name to URL slug
+const getCategorySlug = (category: string) => {
+  return category
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/á/g, 'a')
+    .replace(/é/g, 'e')
+    .replace(/í/g, 'i')
+    .replace(/ó/g, 'o')
+    .replace(/ú/g, 'u')
+    .replace(/ñ/g, 'n');
+};
+
 const MenuSection = () => {
-  const [activeCategory, setActiveCategory] = useState<string>(categories[0]);
-
-  const filteredProducts = products.filter(p => p.category === activeCategory);
-
   return (
     <section className="py-8 bg-muted/50">
       <div className="container mx-auto px-4">
-        {/* Category Navigation */}
-        <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 text-center">
-            Nuestra Carta
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={cn(
-                  "flex items-center justify-center gap-2 px-3 py-3 rounded-xl font-medium text-sm transition-all",
-                  activeCategory === category
-                    ? "bg-primary text-primary-foreground shadow-lg"
-                    : "bg-card border border-border text-foreground hover:bg-muted"
-                )}
-              >
-                <span>{categoryEmojis[category] || "🍴"}</span>
-                <span className="truncate">{category}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Products Grid */}
-        <div className="mb-4">
-          <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-            {categoryEmojis[activeCategory]} {activeCategory}
-            <span className="text-sm font-normal text-muted-foreground">
-              ({filteredProducts.length} productos)
-            </span>
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} compact />
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-center">
+          Nuestra Carta
+        </h2>
+        
+        {/* Category Cards Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3">
+          {categories.map((category) => (
+            <Link
+              key={category}
+              to={`/categoria/${getCategorySlug(category)}`}
+              className="group"
+            >
+              <div className="bg-card border border-border rounded-2xl p-4 aspect-square flex flex-col items-center justify-center gap-2 transition-all hover:shadow-lg hover:border-primary hover:scale-[1.02] cursor-pointer">
+                <span className="text-3xl md:text-4xl group-hover:scale-110 transition-transform">
+                  {categoryEmojis[category] || "🍴"}
+                </span>
+                <span className="text-xs md:text-sm font-medium text-foreground text-center leading-tight">
+                  {category}
+                </span>
+              </div>
+            </Link>
           ))}
         </div>
-
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            No hay productos en esta categoría
-          </div>
-        )}
       </div>
     </section>
   );
