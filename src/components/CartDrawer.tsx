@@ -115,7 +115,7 @@ const CartDrawer = () => {
                   navigate("/checkout");
                 }}
               >
-                Ir a pagar
+                Pagar
               </Button>
             </div>
           </>
