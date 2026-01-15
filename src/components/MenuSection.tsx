@@ -1,21 +1,36 @@
 import { Link } from "react-router-dom";
 import { categories } from "@/data/products";
 
-const categoryEmojis: Record<string, string> = {
-  "Hamburguesas": "🍔",
-  "Bocadillos Caseros": "🥖",
-  "Más Bocadillos": "🥪",
-  "Para Compartir": "🍽️",
-  "Pizzas": "🍕",
-  "Perritos": "🌭",
-  "Sandwiches": "🥪",
-  "Durum": "🌯",
-  "Paninis": "🫓",
-  "Menú Niños": "👶",
-  "Complementos": "🍟",
-  "Combinados": "🎁",
-  "Raciones": "🍖",
-  "Exquisitos": "⭐",
+// Import category images
+import hamburguesasImg from "@/assets/categories/hamburguesas.jpg";
+import bocadillosImg from "@/assets/categories/bocadillos.jpg";
+import pizzasImg from "@/assets/categories/pizzas.jpg";
+import perritosImg from "@/assets/categories/perritos.jpg";
+import sandwichesImg from "@/assets/categories/sandwiches.jpg";
+import durumImg from "@/assets/categories/durum.jpg";
+import paninisImg from "@/assets/categories/paninis.jpg";
+import menuNinosImg from "@/assets/categories/menu-ninos.jpg";
+import complementosImg from "@/assets/categories/complementos.jpg";
+import combinadosImg from "@/assets/categories/combinados.jpg";
+import racionesImg from "@/assets/categories/raciones.jpg";
+import exquisitosImg from "@/assets/categories/exquisitos.jpg";
+import paraCompartirImg from "@/assets/categories/para-compartir.jpg";
+
+const categoryImages: Record<string, string> = {
+  "Hamburguesas": hamburguesasImg,
+  "Bocadillos Caseros": bocadillosImg,
+  "Más Bocadillos": bocadillosImg,
+  "Para Compartir": paraCompartirImg,
+  "Pizzas": pizzasImg,
+  "Perritos": perritosImg,
+  "Sandwiches": sandwichesImg,
+  "Durum": durumImg,
+  "Paninis": paninisImg,
+  "Menú Niños": menuNinosImg,
+  "Complementos": complementosImg,
+  "Combinados": combinadosImg,
+  "Raciones": racionesImg,
+  "Exquisitos": exquisitosImg,
 };
 
 // Convert category name to URL slug
@@ -47,13 +62,20 @@ const MenuSection = () => {
               to={`/categoria/${getCategorySlug(category)}`}
               className="group"
             >
-              <div className="bg-card border border-border rounded-2xl p-4 aspect-square flex flex-col items-center justify-center gap-2 transition-all hover:shadow-lg hover:border-primary hover:scale-[1.02] cursor-pointer">
-                <span className="text-3xl md:text-4xl group-hover:scale-110 transition-transform">
-                  {categoryEmojis[category] || "🍴"}
-                </span>
-                <span className="text-xs md:text-sm font-medium text-foreground text-center leading-tight">
-                  {category}
-                </span>
+              <div className="bg-card border border-border rounded-2xl overflow-hidden aspect-square flex flex-col transition-all hover:shadow-lg hover:border-primary hover:scale-[1.02] cursor-pointer">
+                <div className="relative flex-1 overflow-hidden">
+                  <img
+                    src={categoryImages[category] || "/placeholder.svg"}
+                    alt={category}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-2">
+                    <span className="text-xs md:text-sm font-semibold text-white text-center block leading-tight drop-shadow-lg">
+                      {category}
+                    </span>
+                  </div>
+                </div>
               </div>
             </Link>
           ))}
