@@ -90,29 +90,32 @@ const CartDrawer = () => {
               ))}
             </div>
 
-            <div className="pt-4 space-y-4 border-t mt-4">
+            <div
+              className="pt-4 space-y-4 border-t mt-auto"
+              style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 16px)" }}
+            >
               <div className="flex items-center justify-between">
                 <Button variant="ghost" size="sm" onClick={clearCart} className="text-muted-foreground">
                   Vaciar carrito
                 </Button>
               </div>
-              
+
               <Separator />
-              
+
               <div className="flex items-center justify-between text-lg font-bold">
                 <span>Total</span>
                 <span className="text-primary">€{totalPrice.toFixed(2)}</span>
               </div>
 
-              <Button 
-                className="w-full h-12 text-base font-bold rounded-full" 
+              <Button
+                className="w-full h-12 text-base font-bold rounded-full"
                 size="lg"
                 onClick={() => {
                   setIsOpen(false);
                   navigate("/checkout");
                 }}
               >
-                Realizar pedido
+                Ir a pagar
               </Button>
             </div>
           </>
