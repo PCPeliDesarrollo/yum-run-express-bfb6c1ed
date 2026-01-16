@@ -13,8 +13,8 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   return (
-    <nav className="sticky top-0 z-50 bg-primary">
-      <div className="container mx-auto px-4 py-2 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 bg-primary safe-top">
+      <div className="container mx-auto px-4 py-2 flex items-center justify-between safe-x">
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center">
             <img src={logo} alt="Tryb Burger" className="h-12 w-auto" />

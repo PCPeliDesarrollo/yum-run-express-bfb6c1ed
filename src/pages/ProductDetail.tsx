@@ -46,8 +46,8 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background border-b border-border">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
+      <div className="sticky top-0 z-50 bg-background border-b border-border safe-top">
+        <div className="container mx-auto px-4 py-4 flex items-center gap-4 safe-x">
           <Button 
             variant="ghost" 
             size="icon" 
@@ -186,8 +186,11 @@ const ProductDetail = () => {
       </div>
 
       {/* Fixed Bottom CTA */}
-      <div className="sticky bottom-0 bg-background border-t border-border p-4">
-        <div className="container mx-auto">
+      <div 
+        className="sticky bottom-0 bg-background border-t border-border p-4"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 16px)" }}
+      >
+        <div className="container mx-auto safe-x">
           <Button 
             className="w-full h-14 text-lg font-bold rounded-full bg-primary hover:bg-primary/90"
             size="lg"
