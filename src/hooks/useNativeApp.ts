@@ -5,21 +5,24 @@ import { StatusBar, Style } from "@capacitor/status-bar";
 export const useNativeApp = () => {
   useEffect(() => {
     const configureStatusBar = async () => {
-      if (Capacitor.isNativePlatform()) {
-        try {
-          // Make status bar overlay the WebView
-          await StatusBar.setOverlaysWebView({ overlay: true });
-          
-          // Set status bar style (light content for dark backgrounds)
-          await StatusBar.setStyle({ style: Style.Light });
-          
-          // Set background color to transparent
-          if (Capacitor.getPlatform() === "android") {
-            await StatusBar.setBackgroundColor({ color: "#00000000" });
-          }
-        } catch (error) {
-          console.warn("StatusBar configuration failed:", error);
+      if (!Capacitor.isNativePlatform()) return;
+
+      try {
+        const isAndroid = Capacitor.getPlatform() === "android";
+
+        // Android WebView often reports safe-area insets as 0, so overlays cause UI under the clock.
+        // Use non-overlay on Android to guarantee content starts below the status bar.
+        await StatusBar.setOverlaysWebView({ overlay: !isAndroid });
+
+        // Light content for our dark/primary header
+        await StatusBar.setStyle({ style: Style.Light });
+
+        // Match the app header color on Android when not overlaying
+        if (isAndroid) {
+          await StatusBar.setBackgroundColor({ color: "#DF3120" });
         }
+      } catch (error) {
+        console.warn("StatusBar configuration failed:", error);
       }
     };
 
