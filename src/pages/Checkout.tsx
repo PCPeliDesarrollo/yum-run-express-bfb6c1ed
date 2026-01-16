@@ -169,8 +169,8 @@ const Checkout = () => {
   return (
     <div className="min-h-screen bg-background pb-32">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background border-b border-border">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
+      <div className="sticky top-0 z-50 bg-background border-b border-border safe-top">
+        <div className="container mx-auto px-4 py-4 flex items-center gap-4 safe-x">
           <Button
             variant="ghost"
             size="icon"

@@ -14,7 +14,7 @@ const FloatingCartButton = () => {
   if (totalItems === 0) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-6 md:bottom-6 md:w-auto">
+    <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-6 md:bottom-6 md:w-auto fixed-bottom-safe">
       <Button
         onClick={() => navigate("/checkout")}
         className="w-full md:w-auto bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold py-6 px-6 rounded-full shadow-2xl flex items-center justify-center gap-3 text-lg"
