@@ -1,3 +1,7 @@
+import burgerPolloImg from "@/assets/products/burger-pollo.jpg";
+import burgerTerneraImg from "@/assets/products/burger-ternera.jpg";
+import burgerAngusImg from "@/assets/products/burger-angus.jpg";
+
 export interface ProductOption {
   id: string;
   name: string;
@@ -40,7 +44,7 @@ const hamburguesas: Product[] = [
     id: "hamburguesa-ternera",
     name: "Hamburguesa de Ternera",
     description: "Carne de cerdo ternera, queso, tomate, lechuga y cebolla",
-    image: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=600&h=400&fit=crop",
+    image: burgerTerneraImg,
     price: 5.00,
     category: "Hamburguesas",
     options: [
@@ -54,7 +58,7 @@ const hamburguesas: Product[] = [
     id: "hamburguesa-pollo-crujiente",
     name: "Hamburguesa de Pollo Crujiente",
     description: "Carne de pollo empanado, queso, tomate, lechuga y cebolla",
-    image: "https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=600&h=400&fit=crop",
+    image: burgerPolloImg,
     price: 5.25,
     category: "Hamburguesas",
     options: [
@@ -68,7 +72,7 @@ const hamburguesas: Product[] = [
     id: "hamburguesa-angus",
     name: "Hamburguesa de Angus",
     description: "200 gr. de carne de ternera Angus, montada sobre pan brioche, queso cheddar, cebolla crujiente, ensalada gourmet y rulo de cabra, acompañado de patatas",
-    image: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=600&h=400&fit=crop",
+    image: burgerAngusImg,
     price: 9.70,
     category: "Hamburguesas",
     isGlutenFree: true,
