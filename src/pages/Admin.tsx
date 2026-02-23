@@ -500,36 +500,63 @@ const OrderCard = ({
             </div>
           )}
 
-          {/* Actions */}
-          <div className="flex gap-2 pt-2 flex-wrap">
-            {nextStatusMap[order.status].next && (
-              <Button 
-                className="flex-1"
-                onClick={() => onUpdateStatus(order.id, nextStatusMap[order.status].next!)}
+          {/* Status Flow Buttons */}
+          <div className="flex flex-col gap-3 pt-2">
+            {/* Status progression - all steps visible */}
+            <div className="grid grid-cols-4 gap-2">
+              {(['confirmed', 'preparing', 'ready', 'delivered'] as OrderStatus[]).map((step) => {
+                const stepConfig: Record<string, { label: string; emoji: string; bg: string; activeBg: string }> = {
+                  confirmed: { label: 'Confirmar', emoji: '✅', bg: 'bg-muted text-muted-foreground', activeBg: 'bg-blue-500 text-white' },
+                  preparing: { label: 'Preparar', emoji: '👨‍🍳', bg: 'bg-muted text-muted-foreground', activeBg: 'bg-orange-500 text-white' },
+                  ready: { label: 'Listo', emoji: '📦', bg: 'bg-muted text-muted-foreground', activeBg: 'bg-green-500 text-white' },
+                  delivered: { label: 'Entregado', emoji: '🚀', bg: 'bg-muted text-muted-foreground', activeBg: 'bg-gray-600 text-white' },
+                };
+                const cfg = stepConfig[step];
+                const statusOrder: OrderStatus[] = ['pending', 'confirmed', 'preparing', 'ready', 'delivered'];
+                const currentIdx = statusOrder.indexOf(order.status);
+                const stepIdx = statusOrder.indexOf(step);
+                const isCompleted = stepIdx <= currentIdx && order.status !== 'cancelled';
+                const isNext = stepIdx === currentIdx + 1 && order.status !== 'cancelled' && order.status !== 'delivered';
+
+                return (
+                  <button
+                    key={step}
+                    onClick={() => isNext ? onUpdateStatus(order.id, step) : undefined}
+                    disabled={!isNext}
+                    className={`flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-center transition-all ${
+                      isCompleted ? cfg.activeBg : isNext ? `${cfg.bg} ring-2 ring-primary cursor-pointer hover:opacity-80` : `${cfg.bg} opacity-50`
+                    }`}
+                  >
+                    <span className="text-xl">{cfg.emoji}</span>
+                    <span className="text-xs font-semibold">{cfg.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Cancel + Print row */}
+            <div className="flex gap-2">
+              {order.status !== 'cancelled' && order.status !== 'delivered' && (
+                <Button 
+                  variant="destructive"
+                  className="flex-1"
+                  onClick={() => onUpdateStatus(order.id, 'cancelled')}
+                >
+                  ❌ Cancelar
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  printOrder(order);
+                }}
+                title="Imprimir pedido"
               >
-                {nextStatusMap[order.status].label}
+                <Printer className="w-5 h-5" />
               </Button>
-            )}
-            {order.status !== 'cancelled' && order.status !== 'delivered' && (
-              <Button 
-                variant="destructive"
-                size="sm"
-                onClick={() => onUpdateStatus(order.id, 'cancelled')}
-              >
-                Cancelar
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                printOrder(order);
-              }}
-              title="Imprimir pedido"
-            >
-              <Printer className="w-4 h-4" />
-            </Button>
+            </div>
           </div>
         </div>
       )}
