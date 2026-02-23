@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Store, UtensilsCrossed, Clock, Truck } from "lucide-react";
+import { ArrowLeft, MapPin, Store, UtensilsCrossed, Truck, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -85,6 +85,15 @@ const Checkout = () => {
   };
 
   const handleSubmit = async () => {
+    if (!kitchenOpen) {
+      toast({
+        title: "Cocina cerrada",
+        description: "En este momento no estamos aceptando pedidos. Inténtalo más tarde.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!validateForm()) {
       toast({
         title: "Error en el formulario",
@@ -189,6 +198,16 @@ const Checkout = () => {
       </div>
 
       <div className="container mx-auto px-4 py-6 max-w-2xl">
+        {/* Kitchen Closed Banner */}
+        {!kitchenLoading && !kitchenOpen && (
+          <div className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/30 flex items-center gap-3">
+            <XCircle className="w-6 h-6 text-destructive shrink-0" />
+            <div>
+              <p className="font-semibold text-destructive">Cocina cerrada</p>
+              <p className="text-sm text-muted-foreground">No estamos aceptando pedidos en este momento.</p>
+            </div>
+          </div>
+        )}
         {/* Order Type Selection */}
         <section className="mb-8">
           <h2 className="text-xl font-bold mb-4">¿Cómo quieres tu pedido?</h2>
