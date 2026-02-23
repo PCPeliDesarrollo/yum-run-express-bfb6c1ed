@@ -346,8 +346,8 @@ const printOrder = (order: Order) => {
 
   const itemsHtml = order.items.map((item: any) => 
     `<tr>
-      <td style="padding:4px 0;border-bottom:1px dashed #ddd;">${item.quantity}x ${item.name || item.productName}</td>
-      <td style="padding:4px 0;border-bottom:1px dashed #ddd;text-align:right;">€${((item.price || item.unitPrice || item.totalPrice / item.quantity) * item.quantity).toFixed(2)}</td>
+      <td style="padding:4px 0;border-bottom:1px dashed #ddd;">${item.quantity}x ${item.productName || item.name}</td>
+      <td style="padding:4px 0;border-bottom:1px dashed #ddd;text-align:right;">€${((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}</td>
     </tr>
     ${item.options?.length ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:11px;color:#666;">+ ${item.options.map((o: any) => o.name).join(', ')}</td></tr>` : ''}
     ${item.notes ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:11px;color:#666;">📝 ${item.notes}</td></tr>` : ''}`
@@ -400,13 +400,13 @@ const OrderCard = ({
   const StatusIcon = status.icon;
   const [expanded, setExpanded] = useState(false);
 
-  const nextStatus: Record<OrderStatus, OrderStatus | null> = {
-    pending: 'confirmed',
-    confirmed: 'preparing',
-    preparing: 'ready',
-    ready: 'delivered',
-    delivered: null,
-    cancelled: null,
+  const nextStatusMap: Record<OrderStatus, { next: OrderStatus | null; label: string; icon: string }> = {
+    pending: { next: 'confirmed', label: '✅ Confirmar', icon: '' },
+    confirmed: { next: 'preparing', label: '👨‍🍳 Preparar', icon: '' },
+    preparing: { next: 'ready', label: '📦 Listo', icon: '' },
+    ready: { next: 'delivered', label: '🚀 Entregado', icon: '' },
+    delivered: { next: null, label: '', icon: '' },
+    cancelled: { next: null, label: '', icon: '' },
   };
 
   const formatTime = (dateString: string) => {
@@ -462,8 +462,8 @@ const OrderCard = ({
               <ul className="space-y-1">
                 {order.items.map((item: any, idx: number) => (
                   <li key={idx} className="text-sm flex justify-between">
-                    <span>{item.quantity}x {item.name}</span>
-                    <span className="text-muted-foreground">€{(item.price * item.quantity).toFixed(2)}</span>
+                    <span>{item.quantity}x {item.productName || item.name}</span>
+                    <span className="text-muted-foreground">€{((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}</span>
                   </li>
                 ))}
               </ul>
@@ -501,18 +501,19 @@ const OrderCard = ({
           )}
 
           {/* Actions */}
-          <div className="flex gap-2 pt-2">
-            {nextStatus[order.status] && (
+          <div className="flex gap-2 pt-2 flex-wrap">
+            {nextStatusMap[order.status].next && (
               <Button 
                 className="flex-1"
-                onClick={() => onUpdateStatus(order.id, nextStatus[order.status]!)}
+                onClick={() => onUpdateStatus(order.id, nextStatusMap[order.status].next!)}
               >
-                Marcar como {statusConfig[nextStatus[order.status]!].label}
+                {nextStatusMap[order.status].label}
               </Button>
             )}
             {order.status !== 'cancelled' && order.status !== 'delivered' && (
               <Button 
-                variant="outline"
+                variant="destructive"
+                size="sm"
                 onClick={() => onUpdateStatus(order.id, 'cancelled')}
               >
                 Cancelar
