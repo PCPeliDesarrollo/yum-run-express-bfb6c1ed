@@ -1,4 +1,4 @@
-import { ShoppingCart, Menu, User, Settings } from "lucide-react";
+import { ShoppingCart, Menu, User, Settings, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -46,15 +46,26 @@ const Navbar = () => {
             </Button>
           )}
           {user ? (
-            <Button 
-              variant="secondary" 
-              size="sm"
-              className="hidden sm:flex font-bold rounded-full"
-              onClick={() => navigate('/perfil')}
-            >
-              <User className="w-4 h-4 mr-2" />
-              Mi perfil
-            </Button>
+            <>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="hidden sm:flex font-bold text-primary-foreground hover:bg-primary-foreground/10"
+                onClick={() => navigate('/mis-pedidos')}
+              >
+                <Package className="w-4 h-4 mr-2" />
+                Mis pedidos
+              </Button>
+              <Button 
+                variant="secondary" 
+                size="sm"
+                className="hidden sm:flex font-bold rounded-full"
+                onClick={() => navigate('/perfil')}
+              >
+                <User className="w-4 h-4 mr-2" />
+                Mi perfil
+              </Button>
+            </>
           ) : (
             <Button 
               variant="secondary" 
