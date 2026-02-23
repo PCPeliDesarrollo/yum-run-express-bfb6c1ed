@@ -11,6 +11,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useKitchenStatus } from "@/hooks/useKitchenStatus";
 import { z } from "zod";
 
 type OrderType = "delivery" | "pickup" | "dine_in";
@@ -32,6 +33,7 @@ const Checkout = () => {
   const { items, totalPrice, clearCart, setIsOpen } = useCart();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { isOpen: kitchenOpen, loading: kitchenLoading } = useKitchenStatus();
 
   const [orderType, setOrderType] = useState<OrderType>("delivery");
   const [isSubmitting, setIsSubmitting] = useState(false);
