@@ -11,8 +11,11 @@ import {
   RefreshCw,
   Users,
   ShoppingBag,
-  TrendingUp
+  TrendingUp,
+  Power
 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { useKitchenStatus } from '@/hooks/useKitchenStatus';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
@@ -66,6 +69,7 @@ const Admin = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'all'>('all');
+  const { isOpen: kitchenOpen, toggleKitchen } = useKitchenStatus();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -191,14 +195,44 @@ const Admin = () => {
               <p className="text-sm text-background/70">Tryb Burger</p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={fetchOrders}
-            className="text-background hover:bg-background/10"
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={fetchOrders}
+              className="text-background hover:bg-background/10"
+            >
+              <RefreshCw className="w-5 h-5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Kitchen Toggle */}
+        <div className="container mx-auto px-4 pb-3">
+          <button
+            onClick={async () => {
+              try {
+                await toggleKitchen(!kitchenOpen);
+                toast({
+                  title: kitchenOpen ? '🔴 Cocina cerrada' : '🟢 Cocina abierta',
+                  description: kitchenOpen ? 'Ya no se reciben pedidos' : 'Ahora se aceptan pedidos',
+                });
+              } catch {
+                toast({ title: 'Error', description: 'No se pudo cambiar el estado', variant: 'destructive' });
+              }
+            }}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-colors ${
+              kitchenOpen ? 'bg-green-600/20 border border-green-500/40' : 'bg-red-600/20 border border-red-500/40'
+            }`}
           >
-            <RefreshCw className="w-5 h-5" />
-          </Button>
+            <div className="flex items-center gap-3">
+              <Power className={`w-5 h-5 ${kitchenOpen ? 'text-green-400' : 'text-red-400'}`} />
+              <span className={`font-semibold text-sm ${kitchenOpen ? 'text-green-300' : 'text-red-300'}`}>
+                {kitchenOpen ? 'Cocina ABIERTA — Recibiendo pedidos' : 'Cocina CERRADA — No se reciben pedidos'}
+              </span>
+            </div>
+            <Switch checked={kitchenOpen} />
+          </button>
         </div>
       </div>
 
