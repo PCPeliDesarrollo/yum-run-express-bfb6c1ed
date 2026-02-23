@@ -9,10 +9,10 @@ import {
   Package,
   ArrowLeft,
   RefreshCw,
-  Users,
   ShoppingBag,
   TrendingUp,
-  Power
+  Power,
+  Printer
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useKitchenStatus } from '@/hooks/useKitchenStatus';
@@ -336,6 +336,59 @@ const FilterButton = ({
   </button>
 );
 
+const printOrder = (order: Order) => {
+  const printWindow = window.open('', '_blank', 'width=400,height=600');
+  if (!printWindow) return;
+
+  const date = new Date(order.created_at);
+  const formattedDate = date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+  const formattedTime = date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+  const itemsHtml = order.items.map((item: any) => 
+    `<tr>
+      <td style="padding:4px 0;border-bottom:1px dashed #ddd;">${item.quantity}x ${item.name || item.productName}</td>
+      <td style="padding:4px 0;border-bottom:1px dashed #ddd;text-align:right;">€${((item.price || item.unitPrice || item.totalPrice / item.quantity) * item.quantity).toFixed(2)}</td>
+    </tr>
+    ${item.options?.length ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:11px;color:#666;">+ ${item.options.map((o: any) => o.name).join(', ')}</td></tr>` : ''}
+    ${item.notes ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:11px;color:#666;">📝 ${item.notes}</td></tr>` : ''}`
+  ).join('');
+
+  printWindow.document.write(`<!DOCTYPE html><html><head><title>Pedido #${order.order_number}</title>
+    <style>
+      body { font-family: 'Courier New', monospace; max-width: 300px; margin: 0 auto; padding: 16px; font-size: 13px; }
+      h1 { text-align: center; font-size: 18px; margin: 0 0 4px; }
+      .subtitle { text-align: center; color: #666; margin-bottom: 12px; }
+      .divider { border-top: 2px dashed #000; margin: 10px 0; }
+      table { width: 100%; border-collapse: collapse; }
+      .total-row { font-weight: bold; font-size: 16px; }
+      @media print { body { margin: 0; } }
+    </style></head><body>
+    <h1>TRYB BURGER</h1>
+    <p class="subtitle">Pedido #${order.order_number}</p>
+    <div class="divider"></div>
+    <p><strong>Fecha:</strong> ${formattedDate} ${formattedTime}</p>
+    <p><strong>Tipo:</strong> ${orderTypeLabels[order.order_type]}</p>
+    ${order.customer_name ? `<p><strong>Cliente:</strong> ${order.customer_name}</p>` : ''}
+    ${order.customer_phone ? `<p><strong>Teléfono:</strong> ${order.customer_phone}</p>` : ''}
+    ${order.order_type === 'delivery' && order.delivery_address ? `<p><strong>Dirección:</strong> ${order.delivery_address}, ${order.delivery_city}</p>` : ''}
+    <div class="divider"></div>
+    <table>${itemsHtml}</table>
+    <div class="divider"></div>
+    <table>
+      <tr><td>Subtotal</td><td style="text-align:right;">€${order.subtotal.toFixed(2)}</td></tr>
+      ${order.delivery_fee > 0 ? `<tr><td>Envío</td><td style="text-align:right;">€${order.delivery_fee.toFixed(2)}</td></tr>` : ''}
+      <tr class="total-row"><td>TOTAL</td><td style="text-align:right;">€${order.total.toFixed(2)}</td></tr>
+    </table>
+    ${order.notes ? `<div class="divider"></div><p><strong>Notas:</strong> ${order.notes}</p>` : ''}
+    <div class="divider"></div>
+    <p style="text-align:center;color:#666;font-size:11px;">¡Gracias por tu pedido!</p>
+  </body></html>`);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+};
+
 const OrderCard = ({ 
   order, 
   onUpdateStatus 
@@ -465,6 +518,17 @@ const OrderCard = ({
                 Cancelar
               </Button>
             )}
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={(e) => {
+                e.stopPropagation();
+                printOrder(order);
+              }}
+              title="Imprimir pedido"
+            >
+              <Printer className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       )}
