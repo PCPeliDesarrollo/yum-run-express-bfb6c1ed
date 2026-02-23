@@ -355,7 +355,7 @@ const printOrder = (order: Order) => {
 
   printWindow.document.write(`<!DOCTYPE html><html><head><title>Pedido #${order.order_number}</title>
     <style>
-      body { font-family: 'Courier New', monospace; max-width: 300px; margin: 0 auto; padding: 16px; font-size: 13px; }
+      body { font-family: 'Courier New', monospace; max-width: 420px; margin: 0 auto; padding: 16px; font-size: 13px; }
       h1 { text-align: center; font-size: 18px; margin: 0 0 4px; }
       .subtitle { text-align: center; color: #666; margin-bottom: 12px; }
       .divider { border-top: 2px dashed #000; margin: 10px 0; }
