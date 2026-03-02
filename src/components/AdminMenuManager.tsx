@@ -371,7 +371,7 @@ const AdminMenuManager = () => {
             {/* Footer */}
             <div className="p-4 border-t border-border flex gap-2">
               <Button variant="outline" className="flex-1" onClick={() => setShowForm(false)}>Cancelar</Button>
-              <Button className="flex-1 gap-2" onClick={handleSave}>
+              <Button variant="secondary" className="flex-1 gap-2 font-semibold" onClick={handleSave}>
                 <Save className="w-4 h-4" /> {editingId ? 'Guardar cambios' : 'Crear producto'}
               </Button>
             </div>
