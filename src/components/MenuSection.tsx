@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { categories } from "@/data/products";
+import { useProducts } from "@/hooks/useProducts";
 
 // Import category images
 import hamburguesasImg from "@/assets/categories/hamburguesas.jpg";
@@ -33,7 +33,6 @@ const categoryImages: Record<string, string> = {
   "Exquisitos": exquisitosImg,
 };
 
-// Convert category name to URL slug
 const getCategorySlug = (category: string) => {
   return category
     .toLowerCase()
@@ -47,6 +46,18 @@ const getCategorySlug = (category: string) => {
 };
 
 const MenuSection = () => {
+  const { categories, loading } = useProducts();
+
+  if (loading) {
+    return (
+      <section className="py-8 bg-muted/50">
+        <div className="container mx-auto px-4 text-center text-muted-foreground">
+          Cargando carta...
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-8 bg-muted/50">
       <div className="container mx-auto px-4">
@@ -54,7 +65,6 @@ const MenuSection = () => {
           Nuestra Carta
         </h2>
         
-        {/* Category Cards Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3">
           {categories.map((category) => (
             <Link

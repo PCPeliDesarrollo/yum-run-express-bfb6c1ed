@@ -14,6 +14,7 @@ import {
   Power,
   Printer
 } from 'lucide-react';
+import AdminMenuManager from '@/components/AdminMenuManager';
 import { Switch } from '@/components/ui/switch';
 import { useKitchenStatus } from '@/hooks/useKitchenStatus';
 import { Button } from '@/components/ui/button';
@@ -69,6 +70,7 @@ const Admin = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'all'>('all');
+  const [activeTab, setActiveTab] = useState<'orders' | 'menu'>('orders');
   const { isOpen: kitchenOpen, toggleKitchen } = useKitchenStatus();
 
   useEffect(() => {
@@ -234,59 +236,86 @@ const Admin = () => {
             <Switch checked={kitchenOpen} />
           </button>
         </div>
+        {/* Tab Navigation */}
+        <div className="container mx-auto px-4 pb-3">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveTab('orders')}
+              className={`flex-1 py-3 rounded-xl font-semibold text-sm transition-colors ${
+                activeTab === 'orders' ? 'bg-primary text-primary-foreground' : 'bg-background/10 text-background/70 hover:bg-background/20'
+              }`}
+            >
+              📦 Pedidos
+            </button>
+            <button
+              onClick={() => setActiveTab('menu')}
+              className={`flex-1 py-3 rounded-xl font-semibold text-sm transition-colors ${
+                activeTab === 'menu' ? 'bg-primary text-primary-foreground' : 'bg-background/10 text-background/70 hover:bg-background/20'
+              }`}
+            >
+              🍽️ Carta
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <StatCard icon={ShoppingBag} label="Total pedidos" value={stats.total} />
-          <StatCard icon={Clock} label="Pendientes" value={stats.pending} color="text-yellow-600" />
-          <StatCard icon={ChefHat} label="En preparación" value={stats.preparing} color="text-orange-600" />
-          <StatCard icon={TrendingUp} label="Hoy" value={stats.today} color="text-green-600" />
-        </div>
-
-        {/* Filters */}
-        <div className="flex gap-2 overflow-x-auto pb-4 mb-4">
-          <FilterButton 
-            active={selectedStatus === 'all'} 
-            onClick={() => setSelectedStatus('all')}
-          >
-            Todos
-          </FilterButton>
-          {(Object.keys(statusConfig) as OrderStatus[]).map(status => (
-            <FilterButton
-              key={status}
-              active={selectedStatus === status}
-              onClick={() => setSelectedStatus(status)}
-            >
-              {statusConfig[status].label}
-            </FilterButton>
-          ))}
-        </div>
-
-        {/* Orders List */}
-        {isLoading ? (
-          <div className="text-center py-12 text-muted-foreground">
-            Cargando pedidos...
-          </div>
-        ) : filteredOrders.length === 0 ? (
-          <div className="text-center py-12">
-            <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
-            <p className="text-muted-foreground">No hay pedidos</p>
-            <p className="text-sm text-muted-foreground/70">
-              Los pedidos aparecerán aquí cuando los clientes ordenen
-            </p>
-          </div>
+        {activeTab === 'menu' ? (
+          <AdminMenuManager />
         ) : (
-          <div className="space-y-4">
-            {filteredOrders.map(order => (
-              <OrderCard 
-                key={order.id} 
-                order={order} 
-                onUpdateStatus={updateOrderStatus}
-              />
-            ))}
-          </div>
+          <>
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <StatCard icon={ShoppingBag} label="Total pedidos" value={stats.total} />
+              <StatCard icon={Clock} label="Pendientes" value={stats.pending} color="text-yellow-600" />
+              <StatCard icon={ChefHat} label="En preparación" value={stats.preparing} color="text-orange-600" />
+              <StatCard icon={TrendingUp} label="Hoy" value={stats.today} color="text-green-600" />
+            </div>
+
+            {/* Filters */}
+            <div className="flex gap-2 overflow-x-auto pb-4 mb-4">
+              <FilterButton 
+                active={selectedStatus === 'all'} 
+                onClick={() => setSelectedStatus('all')}
+              >
+                Todos
+              </FilterButton>
+              {(Object.keys(statusConfig) as OrderStatus[]).map(status => (
+                <FilterButton
+                  key={status}
+                  active={selectedStatus === status}
+                  onClick={() => setSelectedStatus(status)}
+                >
+                  {statusConfig[status].label}
+                </FilterButton>
+              ))}
+            </div>
+
+            {/* Orders List */}
+            {isLoading ? (
+              <div className="text-center py-12 text-muted-foreground">
+                Cargando pedidos...
+              </div>
+            ) : filteredOrders.length === 0 ? (
+              <div className="text-center py-12">
+                <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
+                <p className="text-muted-foreground">No hay pedidos</p>
+                <p className="text-sm text-muted-foreground/70">
+                  Los pedidos aparecerán aquí cuando los clientes ordenen
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredOrders.map(order => (
+                  <OrderCard 
+                    key={order.id} 
+                    order={order} 
+                    onUpdateStatus={updateOrderStatus}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
@@ -399,15 +428,6 @@ const OrderCard = ({
   const status = statusConfig[order.status];
   const StatusIcon = status.icon;
   const [expanded, setExpanded] = useState(false);
-
-  const nextStatusMap: Record<OrderStatus, { next: OrderStatus | null; label: string; icon: string }> = {
-    pending: { next: 'confirmed', label: '✅ Confirmar', icon: '' },
-    confirmed: { next: 'preparing', label: '👨‍🍳 Preparar', icon: '' },
-    preparing: { next: 'ready', label: '📦 Listo', icon: '' },
-    ready: { next: 'delivered', label: '🚀 Entregado', icon: '' },
-    delivered: { next: null, label: '', icon: '' },
-    cancelled: { next: null, label: '', icon: '' },
-  };
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
