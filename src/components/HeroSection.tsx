@@ -8,6 +8,10 @@ const HeroSection = () => {
         <img 
           src={heroImage}
           alt="Interior del restaurante"
+          fetchPriority="high"
+          decoding="async"
+          width={1440}
+          height={350}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />

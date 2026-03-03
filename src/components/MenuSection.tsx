@@ -77,6 +77,10 @@ const MenuSection = () => {
                   <img
                     src={categoryImages[category] || "/placeholder.svg"}
                     alt={category}
+                    loading="lazy"
+                    decoding="async"
+                    width={300}
+                    height={300}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
