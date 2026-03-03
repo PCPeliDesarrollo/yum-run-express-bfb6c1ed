@@ -143,3 +143,10 @@
 .fixed-bottom-safe {
   padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
 }
+
+/* Add space for mobile bottom nav */
+@media (max-width: 639px) {
+  body {
+    padding-bottom: 4rem;
+  }
+}
