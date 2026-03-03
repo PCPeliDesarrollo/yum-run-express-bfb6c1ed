@@ -28,6 +28,10 @@ const ProductCard = ({ product, compact = false }: ProductCardProps) => {
           <img
             src={product.image}
             alt={product.name}
+            loading="lazy"
+            decoding="async"
+            width={400}
+            height={400}
             className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
           />
           <button
@@ -58,6 +62,10 @@ const ProductCard = ({ product, compact = false }: ProductCardProps) => {
         <img
           src={product.image}
           alt={product.name}
+          loading="lazy"
+          decoding="async"
+          width={600}
+          height={144}
           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
         />
         <button
