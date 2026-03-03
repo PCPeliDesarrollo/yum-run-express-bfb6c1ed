@@ -102,9 +102,10 @@ const Navbar = () => {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="md:hidden text-primary-foreground"
+              className="sm:hidden text-primary-foreground"
+              onClick={() => navigate('/auth')}
             >
-              <Menu className="w-6 h-6" />
+              <User className="w-6 h-6" />
             </Button>
           )}
         </div>
