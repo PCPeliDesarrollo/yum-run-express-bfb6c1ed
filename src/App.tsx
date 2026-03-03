@@ -8,6 +8,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { useNativeApp } from "@/hooks/useNativeApp";
 import CartDrawer from "@/components/CartDrawer";
 import FloatingCartButton from "@/components/FloatingCartButton";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
 import Category from "./pages/Category";
@@ -30,6 +31,7 @@ const AppContent = () => {
       <BrowserRouter>
         <CartDrawer />
         <FloatingCartButton />
+        <MobileBottomNav />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/categoria/:slug" element={<Category />} />

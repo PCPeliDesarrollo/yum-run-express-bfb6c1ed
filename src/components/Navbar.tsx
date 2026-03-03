@@ -89,25 +89,6 @@ const Navbar = () => {
               </span>
             )}
           </Button>
-          {user ? (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="sm:hidden text-primary-foreground"
-              onClick={() => navigate('/perfil')}
-            >
-              <User className="w-6 h-6" />
-            </Button>
-          ) : (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="sm:hidden text-primary-foreground"
-              onClick={() => navigate('/auth')}
-            >
-              <User className="w-6 h-6" />
-            </Button>
-          )}
         </div>
       </div>
     </nav>
