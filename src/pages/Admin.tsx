@@ -306,15 +306,7 @@ const Admin = () => {
                 </p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {filteredOrders.map(order => (
-                  <OrderCard 
-                    key={order.id} 
-                    order={order} 
-                    onUpdateStatus={updateOrderStatus}
-                  />
-                ))}
-              </div>
+              <OrdersByDay orders={filteredOrders} onUpdateStatus={updateOrderStatus} />
             )}
           </>
         )}
