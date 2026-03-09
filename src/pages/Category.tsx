@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import KitchenClosedBanner from "@/components/KitchenClosedBanner";
 
 const categoryEmojis: Record<string, string> = {
   "Hamburguesas": "🍔",
