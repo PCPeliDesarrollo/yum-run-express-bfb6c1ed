@@ -433,26 +433,49 @@ const OrdersByDay = ({
     return Object.entries(groups);
   }, [orders]);
 
+  // First group (today) open by default, rest collapsed
+  const [openDays, setOpenDays] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    const todayKey = new Date().toLocaleDateString('es-ES', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    });
+    initial[todayKey] = true;
+    return initial;
+  });
+
+  const toggleDay = (dateLabel: string) => {
+    setOpenDays(prev => ({ ...prev, [dateLabel]: !prev[dateLabel] }));
+  };
+
   return (
-    <div className="space-y-6">
-      {groupedOrders.map(([dateLabel, dayOrders]) => (
-        <div key={dateLabel}>
-          <div className="flex items-center gap-2 mb-3 sticky top-[200px] z-10 bg-muted/80 backdrop-blur-sm py-2 px-3 rounded-lg -mx-1">
-            <CalendarDays className="w-4 h-4 text-primary" />
-            <h3 className="font-semibold text-sm capitalize text-foreground">{dateLabel}</h3>
-            <Badge variant="secondary" className="ml-auto text-xs">{dayOrders.length} pedido{dayOrders.length !== 1 ? 's' : ''}</Badge>
+    <div className="space-y-4">
+      {groupedOrders.map(([dateLabel, dayOrders]) => {
+        const isOpen = openDays[dateLabel] ?? false;
+        return (
+          <div key={dateLabel} className="rounded-xl border border-border overflow-hidden">
+            <button
+              onClick={() => toggleDay(dateLabel)}
+              className="w-full flex items-center gap-2 bg-card hover:bg-muted/50 transition-colors py-3 px-4"
+            >
+              {isOpen ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+              <CalendarDays className="w-4 h-4 text-primary" />
+              <h3 className="font-semibold text-sm capitalize text-foreground">{dateLabel}</h3>
+              <Badge variant="secondary" className="ml-auto text-xs">{dayOrders.length} pedido{dayOrders.length !== 1 ? 's' : ''}</Badge>
+            </button>
+            {isOpen && (
+              <div className="p-4 space-y-4 bg-muted/20">
+                {dayOrders.map(order => (
+                  <OrderCard 
+                    key={order.id} 
+                    order={order} 
+                    onUpdateStatus={onUpdateStatus}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-          <div className="space-y-4">
-            {dayOrders.map(order => (
-              <OrderCard 
-                key={order.id} 
-                order={order} 
-                onUpdateStatus={onUpdateStatus}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
