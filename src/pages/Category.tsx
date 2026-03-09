@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import KitchenClosedBanner from "@/components/KitchenClosedBanner";
 
 const categoryEmojis: Record<string, string> = {
   "Hamburguesas": "🍔",
@@ -65,6 +66,7 @@ const Category = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
+      <KitchenClosedBanner />
       <main className="flex-1">
         <div className="container mx-auto px-4 py-6">
           <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors">
