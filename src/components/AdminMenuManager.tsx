@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
-import { Plus, Pencil, Trash2, Image, Save, X, Eye, EyeOff } from 'lucide-react';
+import { Plus, Pencil, Trash2, Image, Save, X, Eye, EyeOff, Camera } from 'lucide-react';
+import { useCategoryImages } from '@/hooks/useCategoryImages';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
