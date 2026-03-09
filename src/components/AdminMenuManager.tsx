@@ -1,6 +1,38 @@
 import { useState, useRef } from 'react';
 import { Plus, Pencil, Trash2, Image, Save, X, Eye, EyeOff, Camera } from 'lucide-react';
 import { useCategoryImages } from '@/hooks/useCategoryImages';
+
+// Fallback category images
+import hamburguesasImg from "@/assets/categories/hamburguesas.jpg";
+import bocadillosImg from "@/assets/categories/bocadillos.jpg";
+import pizzasImg from "@/assets/categories/pizzas.jpg";
+import perritosImg from "@/assets/categories/perritos.jpg";
+import sandwichesImg from "@/assets/categories/sandwiches.jpg";
+import durumImg from "@/assets/categories/durum.jpg";
+import paninisImg from "@/assets/categories/paninis.jpg";
+import menuNinosImg from "@/assets/categories/menu-ninos.jpg";
+import complementosImg from "@/assets/categories/complementos.jpg";
+import combinadosImg from "@/assets/categories/combinados.jpg";
+import racionesImg from "@/assets/categories/raciones.jpg";
+import exquisitosImg from "@/assets/categories/exquisitos.jpg";
+import paraCompartirImg from "@/assets/categories/para-compartir.jpg";
+
+const fallbackImages: Record<string, string> = {
+  "Hamburguesas": hamburguesasImg,
+  "Bocadillos Caseros": bocadillosImg,
+  "Más Bocadillos": bocadillosImg,
+  "Para Compartir": paraCompartirImg,
+  "Pizzas": pizzasImg,
+  "Perritos": perritosImg,
+  "Sandwiches": sandwichesImg,
+  "Durum": durumImg,
+  "Paninis": paninisImg,
+  "Menú Niños": menuNinosImg,
+  "Complementos": complementosImg,
+  "Combinados": combinadosImg,
+  "Raciones": racionesImg,
+  "Exquisitos": exquisitosImg,
+};
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
