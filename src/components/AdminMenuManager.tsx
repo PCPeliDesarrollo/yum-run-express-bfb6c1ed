@@ -56,13 +56,48 @@ const emptyForm: ProductForm = {
 const AdminMenuManager = () => {
   const { products, loading, refetch } = useAllProducts();
   const { toast } = useToast();
+  const { categoryImages, updateCategoryImage } = useCategoryImages();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<ProductForm>(emptyForm);
   const [uploading, setUploading] = useState(false);
+  const [uploadingCategory, setUploadingCategory] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [showCategoryImages, setShowCategoryImages] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const categoryFileInputRef = useRef<HTMLInputElement>(null);
+  const [pendingCategory, setPendingCategory] = useState<string | null>(null);
+
+  const handleCategoryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !pendingCategory) return;
+
+    setUploadingCategory(pendingCategory);
+    const ext = file.name.split('.').pop();
+    const fileName = `category-${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from('product-images')
+      .upload(fileName, file);
+
+    if (error) {
+      toast({ title: 'Error', description: 'No se pudo subir la imagen', variant: 'destructive' });
+    } else {
+      const { data: urlData } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(fileName);
+      
+      const { error: updateError } = await updateCategoryImage(pendingCategory, urlData.publicUrl);
+      if (updateError) {
+        toast({ title: 'Error', description: 'No se pudo guardar', variant: 'destructive' });
+      } else {
+        toast({ title: '✅ Imagen de categoría actualizada' });
+      }
+    }
+    setUploadingCategory(null);
+    setPendingCategory(null);
+  };
 
   const filteredProducts = selectedCategory === 'all'
     ? products
