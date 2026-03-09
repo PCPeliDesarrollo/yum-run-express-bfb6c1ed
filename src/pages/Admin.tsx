@@ -457,7 +457,7 @@ const OrdersByDay = ({
   );
 };
 
-
+const OrderCard = ({ 
   order, 
   onUpdateStatus 
 }: { 
