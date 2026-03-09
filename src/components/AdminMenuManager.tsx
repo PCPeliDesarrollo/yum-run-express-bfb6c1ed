@@ -253,7 +253,56 @@ const AdminMenuManager = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">🍽️ Gestión de Carta</h2>
+        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setShowCategoryImages(!showCategoryImages)}>
+          <Camera className="w-4 h-4" />
+          Fotos Carta
+        </Button>
       </div>
+
+      {/* Hidden file input for category images */}
+      <input
+        type="file"
+        accept="image/*"
+        ref={categoryFileInputRef}
+        onChange={handleCategoryImageUpload}
+        className="hidden"
+      />
+
+      {/* Category Images Manager */}
+      {showCategoryImages && (
+        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <h3 className="font-semibold text-sm">📸 Imágenes del grid de categorías</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {CATEGORIES.map(cat => (
+              <div key={cat} className="relative group">
+                <div className="aspect-square rounded-lg overflow-hidden border border-border">
+                  <img
+                    src={categoryImages[cat] || "/placeholder.svg"}
+                    alt={cat}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="gap-1 text-xs"
+                    disabled={uploadingCategory === cat}
+                    onClick={() => {
+                      setPendingCategory(cat);
+                      categoryFileInputRef.current?.click();
+                    }}
+                  >
+                    <Camera className="w-3 h-3" />
+                    {uploadingCategory === cat ? 'Subiendo...' : 'Cambiar'}
+                  </Button>
+                </div>
+                <p className="text-xs text-center mt-1 font-medium truncate">{cat}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Floating Add Button */}
       <button
