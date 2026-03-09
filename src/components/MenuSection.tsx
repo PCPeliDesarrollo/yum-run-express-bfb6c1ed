@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
+import { useCategoryImages } from "@/hooks/useCategoryImages";
 
-// Import category images
+// Import category images as fallbacks
 import hamburguesasImg from "@/assets/categories/hamburguesas.jpg";
 import bocadillosImg from "@/assets/categories/bocadillos.jpg";
 import pizzasImg from "@/assets/categories/pizzas.jpg";
@@ -16,7 +17,7 @@ import racionesImg from "@/assets/categories/raciones.jpg";
 import exquisitosImg from "@/assets/categories/exquisitos.jpg";
 import paraCompartirImg from "@/assets/categories/para-compartir.jpg";
 
-const categoryImages: Record<string, string> = {
+const fallbackImages: Record<string, string> = {
   "Hamburguesas": hamburguesasImg,
   "Bocadillos Caseros": bocadillosImg,
   "Más Bocadillos": bocadillosImg,
@@ -47,6 +48,7 @@ const getCategorySlug = (category: string) => {
 
 const MenuSection = () => {
   const { categories, loading } = useProducts();
+  const { categoryImages } = useCategoryImages();
 
   if (loading) {
     return (
@@ -57,6 +59,10 @@ const MenuSection = () => {
       </section>
     );
   }
+
+  const getImage = (category: string) => {
+    return categoryImages[category] || fallbackImages[category] || "/placeholder.svg";
+  };
 
   return (
     <section className="py-8 bg-muted/50">
@@ -75,7 +81,7 @@ const MenuSection = () => {
               <div className="bg-card border border-border rounded-2xl overflow-hidden aspect-square flex flex-col transition-all hover:shadow-lg hover:border-primary hover:scale-[1.02] cursor-pointer">
                 <div className="relative flex-1 overflow-hidden">
                   <img
-                    src={categoryImages[category] || "/placeholder.svg"}
+                    src={getImage(category)}
                     alt={category}
                     loading="lazy"
                     decoding="async"
