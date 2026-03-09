@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
-import { Plus, Pencil, Trash2, Image, Save, X, Eye, EyeOff } from 'lucide-react';
+import { Plus, Pencil, Trash2, Image, Save, X, Eye, EyeOff, Camera } from 'lucide-react';
+import { useCategoryImages } from '@/hooks/useCategoryImages';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -55,13 +56,48 @@ const emptyForm: ProductForm = {
 const AdminMenuManager = () => {
   const { products, loading, refetch } = useAllProducts();
   const { toast } = useToast();
+  const { categoryImages, updateCategoryImage } = useCategoryImages();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<ProductForm>(emptyForm);
   const [uploading, setUploading] = useState(false);
+  const [uploadingCategory, setUploadingCategory] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [showCategoryImages, setShowCategoryImages] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const categoryFileInputRef = useRef<HTMLInputElement>(null);
+  const [pendingCategory, setPendingCategory] = useState<string | null>(null);
+
+  const handleCategoryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !pendingCategory) return;
+
+    setUploadingCategory(pendingCategory);
+    const ext = file.name.split('.').pop();
+    const fileName = `category-${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from('product-images')
+      .upload(fileName, file);
+
+    if (error) {
+      toast({ title: 'Error', description: 'No se pudo subir la imagen', variant: 'destructive' });
+    } else {
+      const { data: urlData } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(fileName);
+      
+      const { error: updateError } = await updateCategoryImage(pendingCategory, urlData.publicUrl);
+      if (updateError) {
+        toast({ title: 'Error', description: 'No se pudo guardar', variant: 'destructive' });
+      } else {
+        toast({ title: '✅ Imagen de categoría actualizada' });
+      }
+    }
+    setUploadingCategory(null);
+    setPendingCategory(null);
+  };
 
   const filteredProducts = selectedCategory === 'all'
     ? products
@@ -217,7 +253,56 @@ const AdminMenuManager = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">🍽️ Gestión de Carta</h2>
+        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setShowCategoryImages(!showCategoryImages)}>
+          <Camera className="w-4 h-4" />
+          Fotos Carta
+        </Button>
       </div>
+
+      {/* Hidden file input for category images */}
+      <input
+        type="file"
+        accept="image/*"
+        ref={categoryFileInputRef}
+        onChange={handleCategoryImageUpload}
+        className="hidden"
+      />
+
+      {/* Category Images Manager */}
+      {showCategoryImages && (
+        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <h3 className="font-semibold text-sm">📸 Imágenes del grid de categorías</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {CATEGORIES.map(cat => (
+              <div key={cat} className="relative group">
+                <div className="aspect-square rounded-lg overflow-hidden border border-border">
+                  <img
+                    src={categoryImages[cat] || "/placeholder.svg"}
+                    alt={cat}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-black/40 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="gap-1 text-xs"
+                    disabled={uploadingCategory === cat}
+                    onClick={() => {
+                      setPendingCategory(cat);
+                      categoryFileInputRef.current?.click();
+                    }}
+                  >
+                    <Camera className="w-3 h-3" />
+                    {uploadingCategory === cat ? 'Subiendo...' : 'Cambiar'}
+                  </Button>
+                </div>
+                <p className="text-xs text-center mt-1 font-medium truncate">{cat}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Floating Add Button */}
       <button
