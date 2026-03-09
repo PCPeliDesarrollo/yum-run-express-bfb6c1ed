@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { CalendarDays } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Clock, 
@@ -305,15 +306,7 @@ const Admin = () => {
                 </p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {filteredOrders.map(order => (
-                  <OrderCard 
-                    key={order.id} 
-                    order={order} 
-                    onUpdateStatus={updateOrderStatus}
-                  />
-                ))}
-              </div>
+              <OrdersByDay orders={filteredOrders} onUpdateStatus={updateOrderStatus} />
             )}
           </>
         )}
@@ -416,6 +409,52 @@ const printOrder = (order: Order) => {
   printWindow.document.close();
   printWindow.focus();
   printWindow.print();
+};
+
+const OrdersByDay = ({ 
+  orders, 
+  onUpdateStatus 
+}: { 
+  orders: Order[]; 
+  onUpdateStatus: (id: string, status: OrderStatus) => void;
+}) => {
+  const groupedOrders = useMemo(() => {
+    const groups: Record<string, Order[]> = {};
+    orders.forEach(order => {
+      const dateKey = new Date(order.created_at).toLocaleDateString('es-ES', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(order);
+    });
+    return Object.entries(groups);
+  }, [orders]);
+
+  return (
+    <div className="space-y-6">
+      {groupedOrders.map(([dateLabel, dayOrders]) => (
+        <div key={dateLabel}>
+          <div className="flex items-center gap-2 mb-3 sticky top-[200px] z-10 bg-muted/80 backdrop-blur-sm py-2 px-3 rounded-lg -mx-1">
+            <CalendarDays className="w-4 h-4 text-primary" />
+            <h3 className="font-semibold text-sm capitalize text-foreground">{dateLabel}</h3>
+            <Badge variant="secondary" className="ml-auto text-xs">{dayOrders.length} pedido{dayOrders.length !== 1 ? 's' : ''}</Badge>
+          </div>
+          <div className="space-y-4">
+            {dayOrders.map(order => (
+              <OrderCard 
+                key={order.id} 
+                order={order} 
+                onUpdateStatus={onUpdateStatus}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 const OrderCard = ({ 
