@@ -213,14 +213,19 @@ const AdminMenuManager = () => {
   if (loading) return <div className="text-center py-8 text-muted-foreground">Cargando productos...</div>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-24">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">🍽️ Gestión de Carta</h2>
-        <Button onClick={openNewForm} className="gap-2">
-          <Plus className="w-4 h-4" /> Nuevo Producto
-        </Button>
       </div>
+
+      {/* Floating Add Button */}
+      <button
+        onClick={openNewForm}
+        className="fixed bottom-20 right-4 z-50 sm:bottom-6 sm:right-6 bg-primary text-primary-foreground rounded-full w-14 h-14 flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
+      >
+        <Plus className="w-7 h-7" />
+      </button>
 
       {/* Category Filter */}
       <div className="flex gap-2 overflow-x-auto pb-2">
