@@ -309,7 +309,7 @@ const AdminMenuManager = () => {
               <div key={cat} className="relative group">
                 <div className="aspect-square rounded-lg overflow-hidden border border-border">
                   <img
-                    src={categoryImages[cat] || "/placeholder.svg"}
+                    src={categoryImages[cat] || fallbackImages[cat] || "/placeholder.svg"}
                     alt={cat}
                     className="w-full h-full object-cover"
                   />
