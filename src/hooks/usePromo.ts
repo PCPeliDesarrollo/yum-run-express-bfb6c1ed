@@ -43,7 +43,7 @@ export const usePromo = () => {
   const updatePromo = async (newPromo: PromoData) => {
     const { error } = await supabase
       .from("app_settings")
-      .update({ value: newPromo as unknown as Record<string, unknown> })
+      .update({ value: JSON.parse(JSON.stringify(newPromo)) })
       .eq("key", "promo");
 
     if (!error) {
