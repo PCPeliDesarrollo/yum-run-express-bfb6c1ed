@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import { useCategoryImages } from "@/hooks/useCategoryImages";
+import OptimizedImage from "@/components/OptimizedImage";
 
 // Import category images as fallbacks
 import hamburguesasImg from "@/assets/categories/hamburguesas.jpg";
@@ -80,14 +81,12 @@ const MenuSection = () => {
             >
               <div className="bg-card border border-border rounded-2xl overflow-hidden aspect-square flex flex-col transition-all hover:shadow-lg hover:border-primary hover:scale-[1.02] cursor-pointer">
                 <div className="relative flex-1 overflow-hidden">
-                  <img
+                  <OptimizedImage
                     src={getImage(category)}
                     alt={category}
-                    loading="lazy"
-                    decoding="async"
                     width={300}
                     height={300}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="w-full h-full group-hover:scale-110 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-2">

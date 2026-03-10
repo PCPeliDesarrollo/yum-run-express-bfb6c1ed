@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
-import { cn } from "@/lib/utils";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface ProductCardProps {
   product: Product;
@@ -25,14 +25,12 @@ const ProductCard = ({ product, compact = false }: ProductCardProps) => {
         className="group block bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 border border-border"
       >
         <div className="relative aspect-square overflow-hidden">
-          <img
+          <OptimizedImage
             src={product.image}
             alt={product.name}
-            loading="lazy"
-            decoding="async"
             width={400}
             height={400}
-            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full group-hover:scale-105 transition-transform duration-300"
           />
           <button
             onClick={handleAddToCart}
@@ -59,14 +57,12 @@ const ProductCard = ({ product, compact = false }: ProductCardProps) => {
       className="group block bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 border border-border"
     >
       <div className="relative h-36 overflow-hidden">
-        <img
+        <OptimizedImage
           src={product.image}
           alt={product.name}
-          loading="lazy"
-          decoding="async"
           width={600}
           height={144}
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full group-hover:scale-105 transition-transform duration-300"
         />
         <button
           onClick={handleAddToCart}
