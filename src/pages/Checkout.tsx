@@ -101,6 +101,9 @@ const Checkout = () => {
           }
         });
       }
+      if (!addressConfirmed) {
+        newErrors.addressConfirmed = "Debes confirmar que la dirección es correcta";
+      }
     }
 
     setErrors(newErrors);
