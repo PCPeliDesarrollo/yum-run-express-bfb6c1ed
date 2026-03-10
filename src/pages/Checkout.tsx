@@ -67,7 +67,7 @@ const Checkout = () => {
         if (data.city) setCity(data.city);
         if (data.postal_code) setPostalCode(data.postal_code);
       }
-      setProfileLoaded(true);
+      
     };
     loadProfile();
   }, [user]);
