@@ -270,6 +270,14 @@ const Admin = () => {
             >
               🍽️ Carta
             </button>
+            <button
+              onClick={() => setActiveTab('promo')}
+              className={`flex-1 py-3 rounded-xl font-semibold text-sm transition-colors ${
+                activeTab === 'promo' ? 'bg-primary text-primary-foreground' : 'bg-background/10 text-background/70 hover:bg-background/20'
+              }`}
+            >
+              📢 Ofertas
+            </button>
           </div>
         </div>
       </div>
