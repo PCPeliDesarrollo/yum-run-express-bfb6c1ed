@@ -1,18 +1,18 @@
 import heroImage from "@/assets/hero-restaurant.jpg";
+import OptimizedImage from "@/components/OptimizedImage";
 
 const HeroSection = () => {
   return (
     <section className="relative min-h-[280px] md:min-h-[350px] overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
-        <img 
+        <OptimizedImage
           src={heroImage}
           alt="Interior del restaurante"
-          fetchPriority="high"
-          decoding="async"
+          priority
           width={1440}
           height={350}
-          className="w-full h-full object-cover"
+          className="w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
       </div>
