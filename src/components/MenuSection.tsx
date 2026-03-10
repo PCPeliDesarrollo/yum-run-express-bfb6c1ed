@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import { useCategoryImages } from "@/hooks/useCategoryImages";
+import OptimizedImage from "@/components/OptimizedImage";
 
 // Import category images as fallbacks
 import hamburguesasImg from "@/assets/categories/hamburguesas.jpg";
