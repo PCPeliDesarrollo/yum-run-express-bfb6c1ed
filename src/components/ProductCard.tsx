@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
-import { cn } from "@/lib/utils";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface ProductCardProps {
   product: Product;
