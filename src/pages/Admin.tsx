@@ -386,6 +386,93 @@ const FilterButton = ({
   </button>
 );
 
+const PromoEditor = ({ 
+  promo, 
+  onSave, 
+  loading, 
+  toast 
+}: { 
+  promo: PromoData; 
+  onSave: (p: PromoData) => Promise<{ error: any }>; 
+  loading: boolean;
+  toast: any;
+}) => {
+  const [form, setForm] = useState<PromoData>(promo);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    setForm(promo);
+  }, [promo]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const { error } = await onSave(form);
+    setSaving(false);
+    toast({
+      title: error ? 'Error' : '✅ Guardado',
+      description: error ? 'No se pudo guardar la oferta' : 'La oferta se ha actualizado',
+      variant: error ? 'destructive' : 'default',
+    });
+  };
+
+  if (loading) return <p className="text-center py-12 text-muted-foreground">Cargando...</p>;
+
+  return (
+    <div className="max-w-lg mx-auto space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold">📢 Gestión de Ofertas</h2>
+      </div>
+
+      <div className="bg-card rounded-2xl p-6 space-y-4 border border-border">
+        {/* Enabled toggle */}
+        <div className="flex items-center justify-between">
+          <Label className="text-base font-semibold">Oferta activa</Label>
+          <Switch checked={form.enabled} onCheckedChange={(v) => setForm({ ...form, enabled: v })} />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Etiqueta (badge)</Label>
+          <Input value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })} placeholder="OFERTA ESPECIAL" />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Título</Label>
+          <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="¡Combo por solo €9.99!" />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Descripción</Label>
+          <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Hamburguesa + Patatas + Bebida..." rows={3} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Texto del botón</Label>
+            <Input value={form.buttonText} onChange={(e) => setForm({ ...form, buttonText: e.target.value })} placeholder="Pedir ahora" />
+          </div>
+          <div className="space-y-2">
+            <Label>Enlace del botón</Label>
+            <Input value={form.buttonLink} onChange={(e) => setForm({ ...form, buttonLink: e.target.value })} placeholder="/menu" />
+          </div>
+        </div>
+
+        <Button onClick={handleSave} disabled={saving} className="w-full py-6 text-lg font-bold rounded-xl">
+          {saving ? 'Guardando...' : '💾 Guardar oferta'}
+        </Button>
+      </div>
+
+      {/* Preview */}
+      {form.enabled && (
+        <div className="bg-gradient-to-r from-secondary to-secondary/80 rounded-2xl p-6 text-center">
+          {form.badge && <span className="inline-block bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full mb-2">{form.badge}</span>}
+          <h3 className="text-xl font-bold text-secondary-foreground mb-2">{form.title}</h3>
+          <p className="text-secondary-foreground/80 text-sm">{form.description}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const printOrder = (order: Order) => {
   const printWindow = window.open('', '_blank', 'width=400,height=600');
   if (!printWindow) return;
