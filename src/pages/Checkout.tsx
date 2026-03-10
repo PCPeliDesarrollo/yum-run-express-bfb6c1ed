@@ -48,6 +48,29 @@ const Checkout = () => {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const [addressConfirmed, setAddressConfirmed] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
+  // Load profile data to pre-fill fields
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, phone, address, city, postal_code")
+        .eq("id", user.id)
+        .single();
+      if (data) {
+        if (data.full_name) setName(data.full_name);
+        if (data.phone) setPhone(data.phone);
+        if (data.address) setAddress(data.address);
+        if (data.city) setCity(data.city);
+        if (data.postal_code) setPostalCode(data.postal_code);
+      }
+      setProfileLoaded(true);
+    };
+    loadProfile();
+  }, [user]);
 
   // Notes
   const [orderNotes, setOrderNotes] = useState("");
