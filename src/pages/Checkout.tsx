@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Store, UtensilsCrossed, Truck, XCircle } from "lucide-react";
+import { ArrowLeft, MapPin, Store, UtensilsCrossed, Truck, XCircle, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -48,6 +48,29 @@ const Checkout = () => {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const [addressConfirmed, setAddressConfirmed] = useState(false);
+  
+
+  // Load profile data to pre-fill fields
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, phone, address, city, postal_code")
+        .eq("id", user.id)
+        .single();
+      if (data) {
+        if (data.full_name) setName(data.full_name);
+        if (data.phone) setPhone(data.phone);
+        if (data.address) setAddress(data.address);
+        if (data.city) setCity(data.city);
+        if (data.postal_code) setPostalCode(data.postal_code);
+      }
+      
+    };
+    loadProfile();
+  }, [user]);
 
   // Notes
   const [orderNotes, setOrderNotes] = useState("");
@@ -77,6 +100,9 @@ const Checkout = () => {
             newErrors[err.path[0] as string] = err.message;
           }
         });
+      }
+      if (!addressConfirmed) {
+        newErrors.addressConfirmed = "Debes confirmar que la dirección es correcta";
       }
     }
 
@@ -227,7 +253,7 @@ const Checkout = () => {
               <RadioGroupItem value="delivery" id="delivery" className="sr-only" />
               <Truck className={`w-8 h-8 ${orderType === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
               <span className="font-medium">A domicilio</span>
-              <span className="text-xs text-muted-foreground">+€2.50</span>
+              <span className="text-xs text-muted-foreground">+€1,80</span>
             </Label>
 
             <Label
@@ -315,6 +341,15 @@ const Checkout = () => {
                 <MapPin className="w-5 h-5 text-primary" />
                 Dirección de entrega
               </h2>
+
+              {/* Warning to verify address */}
+              <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-start gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                <p className="text-sm text-amber-700 dark:text-amber-400">
+                  Verifica que la dirección es correcta. Si hoy estás en otro sitio, modifícala antes de confirmar.
+                </p>
+              </div>
+
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="address">Dirección *</Label>
@@ -322,7 +357,7 @@ const Checkout = () => {
                     id="address"
                     placeholder="Calle, número, piso..."
                     value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    onChange={(e) => { setAddress(e.target.value); setAddressConfirmed(false); }}
                     className={errors.address ? "border-destructive" : ""}
                   />
                   {errors.address && <p className="text-xs text-destructive mt-1">{errors.address}</p>}
@@ -335,7 +370,7 @@ const Checkout = () => {
                       id="city"
                       placeholder="Tu ciudad"
                       value={city}
-                      onChange={(e) => setCity(e.target.value)}
+                      onChange={(e) => { setCity(e.target.value); setAddressConfirmed(false); }}
                       className={errors.city ? "border-destructive" : ""}
                     />
                     {errors.city && <p className="text-xs text-destructive mt-1">{errors.city}</p>}
@@ -347,12 +382,24 @@ const Checkout = () => {
                       id="postalCode"
                       placeholder="12345"
                       value={postalCode}
-                      onChange={(e) => setPostalCode(e.target.value)}
+                      onChange={(e) => { setPostalCode(e.target.value); setAddressConfirmed(false); }}
                       className={errors.postalCode ? "border-destructive" : ""}
                     />
                     {errors.postalCode && <p className="text-xs text-destructive mt-1">{errors.postalCode}</p>}
                   </div>
                 </div>
+
+                {/* Address confirmation checkbox */}
+                <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={addressConfirmed}
+                    onChange={(e) => setAddressConfirmed(e.target.checked)}
+                    className="w-5 h-5 rounded accent-primary"
+                  />
+                  <span className="text-sm font-medium">Confirmo que la dirección de entrega es correcta</span>
+                </label>
+                {errors.addressConfirmed && <p className="text-xs text-destructive mt-1">{errors.addressConfirmed}</p>}
               </div>
             </section>
           </>
