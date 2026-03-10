@@ -119,7 +119,19 @@ const Admin = () => {
         .channel('orders-changes')
         .on(
           'postgres_changes',
-          { event: '*', schema: 'public', table: 'orders' },
+          { event: 'INSERT', schema: 'public', table: 'orders' },
+          (payload) => {
+            fetchOrders();
+            // Auto-print new orders
+            const newOrder = payload.new as Order;
+            if (newOrder) {
+              setTimeout(() => printOrder(newOrder), 1000);
+            }
+          }
+        )
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'orders' },
           () => {
             fetchOrders();
           }

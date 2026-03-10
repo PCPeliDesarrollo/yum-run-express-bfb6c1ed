@@ -52,7 +52,7 @@ const Checkout = () => {
   // Notes
   const [orderNotes, setOrderNotes] = useState("");
 
-  const deliveryFee = orderType === "delivery" ? 2.50 : 0;
+  const deliveryFee = orderType === "delivery" ? 1.80 : 0;
   const finalTotal = totalPrice + deliveryFee;
 
   const validateForm = () => {
