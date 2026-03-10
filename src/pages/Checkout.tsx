@@ -49,7 +49,7 @@ const Checkout = () => {
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [addressConfirmed, setAddressConfirmed] = useState(false);
-  const [profileLoaded, setProfileLoaded] = useState(false);
+  
 
   // Load profile data to pre-fill fields
   useEffect(() => {
