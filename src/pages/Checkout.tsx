@@ -250,7 +250,7 @@ const Checkout = () => {
               <RadioGroupItem value="delivery" id="delivery" className="sr-only" />
               <Truck className={`w-8 h-8 ${orderType === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
               <span className="font-medium">A domicilio</span>
-              <span className="text-xs text-muted-foreground">+€2.50</span>
+              <span className="text-xs text-muted-foreground">+€1,80</span>
             </Label>
 
             <Label
