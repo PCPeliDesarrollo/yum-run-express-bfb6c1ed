@@ -172,62 +172,33 @@ const MisPedidos = () => {
               </Button>
             </div>
           ) : (
-            orders.map((order) => {
-              const items = Array.isArray(order.items) ? order.items : [];
-
-              return (
-                <div
-                  key={order.id}
-                  className="bg-card rounded-2xl p-5 shadow-sm border border-border"
-                >
-                  {/* Order header */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <span className="text-lg font-bold text-foreground">
-                        Pedido #{order.order_number}
-                      </span>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                        <Clock className="w-3 h-3" />
-                        {new Date(order.created_at).toLocaleDateString('es-ES', {
-                          day: 'numeric',
-                          month: 'short',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </div>
-                    </div>
-                    <span className="text-sm font-semibold px-3 py-1 rounded-full bg-muted text-muted-foreground">
-                      {orderTypeLabels[order.order_type] || order.order_type}
-                    </span>
-                  </div>
-
-                  {/* Status tracker */}
-                  <OrderStatusTracker status={order.status} />
-
-                  {/* Items */}
-                  <div className="mt-3 pt-3 border-t border-border space-y-1">
-                    {items.map((item: any, idx: number) => (
-                      <div key={idx} className="flex justify-between text-sm">
-                        <span className="text-foreground">
-                          {item.quantity}x {item.productName || item.name || 'Producto'}
-                        </span>
-                        <span className="font-semibold text-foreground">
-                          {((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}€
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Total */}
-                  <div className="flex justify-between mt-3 pt-3 border-t border-border">
-                    <span className="font-bold text-foreground">Total</span>
-                    <span className="font-bold text-lg text-primary">
-                      {Number(order.total).toFixed(2)}€
-                    </span>
-                  </div>
+            <>
+              {/* Active orders */}
+              {activeOrders.length > 0 && (
+                <div className="space-y-4">
+                  {activeOrders.map((order) => (
+                    <OrderCard key={order.id} order={order} />
+                  ))}
                 </div>
-              );
-            })
+              )}
+
+              {/* Past orders collapsible */}
+              {pastOrders.length > 0 && (
+                <Collapsible open={pastOpen} onOpenChange={setPastOpen}>
+                  <CollapsibleTrigger className="w-full flex items-center justify-between bg-muted/50 rounded-xl px-4 py-3 mt-2">
+                    <span className="font-semibold text-sm text-muted-foreground">
+                      📋 Pedidos anteriores ({pastOrders.length})
+                    </span>
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${pastOpen ? 'rotate-180' : ''}`} />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-4 mt-4">
+                    {pastOrders.map((order) => (
+                      <OrderCard key={order.id} order={order} />
+                    ))}
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
+            </>
           )}
         </div>
       </div>
