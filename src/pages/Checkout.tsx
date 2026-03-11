@@ -14,7 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useKitchenStatus } from "@/hooks/useKitchenStatus";
 import { z } from "zod";
 
-type OrderType = "delivery" | "pickup" | "dine_in";
+// Solo domicilio por ahora
+type OrderType = "delivery";
 
 const customerSchema = z.object({
   name: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres").max(100, "El nombre es demasiado largo"),
