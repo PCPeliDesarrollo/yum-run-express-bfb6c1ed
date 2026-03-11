@@ -658,9 +658,19 @@ const OrderCard = ({
             {order.items.length > 0 ? (
               <ul className="space-y-1">
                 {order.items.map((item: any, idx: number) => (
-                  <li key={idx} className="text-sm flex justify-between">
-                    <span>{item.quantity}x {item.productName || item.name}</span>
-                    <span className="text-muted-foreground">€{((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}</span>
+                  <li key={idx} className="text-sm">
+                    <div className="flex justify-between">
+                      <span>{item.quantity}x {item.productName || item.name}</span>
+                      <span className="text-muted-foreground">€{((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}</span>
+                    </div>
+                    {item.options?.length > 0 && (
+                      <div className="ml-4 text-xs font-semibold text-orange-600">
+                        ▸ {item.options.map((o: any) => o.name).join(', ')}
+                      </div>
+                    )}
+                    {item.notes && (
+                      <div className="ml-4 text-xs text-muted-foreground">📝 {item.notes}</div>
+                    )}
                   </li>
                 ))}
               </ul>
