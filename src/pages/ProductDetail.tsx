@@ -102,6 +102,40 @@ const ProductDetail = () => {
 
         {/* Options Sections */}
         <div className="space-y-6">
+        {/* Choice Options (mandatory radio) */}
+          {choiceOptions.length > 0 && (
+            <div>
+              <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+                🍖 Elige tu ingrediente principal
+                <span className="text-xs font-normal text-destructive">(obligatorio)</span>
+              </h3>
+              <div className="space-y-2">
+                {choiceOptions.map(option => (
+                  <button
+                    key={option.id}
+                    onClick={() => setSelectedChoice(option.id)}
+                    className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
+                      selectedChoice === option.id ? 'border-secondary bg-secondary/10' : 'border-border hover:border-muted-foreground/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                        selectedChoice === option.id ? 'border-secondary bg-secondary' : 'border-muted-foreground/30'
+                      }`}>
+                        {selectedChoice === option.id && <Check className="w-4 h-4 text-white" />}
+                      </div>
+                      <span className="font-medium text-foreground">{option.name}</span>
+                    </div>
+                    {option.price > 0 && <span className="font-bold text-primary">+€{option.price.toFixed(2)}</span>}
+                  </button>
+                ))}
+              </div>
+              {choiceMissing && (
+                <p className="text-sm text-destructive mt-2">⚠️ Debes elegir una opción</p>
+              )}
+            </div>
+          )}
+
           {extraOptions.length > 0 && (
             <div>
               <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
