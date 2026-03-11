@@ -486,7 +486,7 @@ const printOrder = (order: Order) => {
       <td style="padding:4px 0;border-bottom:1px dashed #ddd;">${item.quantity}x ${item.productName || item.name}</td>
       <td style="padding:4px 0;border-bottom:1px dashed #ddd;text-align:right;">€${((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}</td>
     </tr>
-    ${item.options?.length ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:11px;color:#666;">+ ${item.options.map((o: any) => o.name).join(', ')}</td></tr>` : ''}
+    ${item.options?.length ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:12px;font-weight:bold;color:#d35400;">▸ ${item.options.map((o: any) => o.name).join(', ')}</td></tr>` : ''}
     ${item.notes ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:11px;color:#666;">📝 ${item.notes}</td></tr>` : ''}`
   ).join('');
 
@@ -658,9 +658,19 @@ const OrderCard = ({
             {order.items.length > 0 ? (
               <ul className="space-y-1">
                 {order.items.map((item: any, idx: number) => (
-                  <li key={idx} className="text-sm flex justify-between">
-                    <span>{item.quantity}x {item.productName || item.name}</span>
-                    <span className="text-muted-foreground">€{((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}</span>
+                  <li key={idx} className="text-sm">
+                    <div className="flex justify-between">
+                      <span>{item.quantity}x {item.productName || item.name}</span>
+                      <span className="text-muted-foreground">€{((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}</span>
+                    </div>
+                    {item.options?.length > 0 && (
+                      <div className="ml-4 text-xs font-semibold text-orange-600">
+                        ▸ {item.options.map((o: any) => o.name).join(', ')}
+                      </div>
+                    )}
+                    {item.notes && (
+                      <div className="ml-4 text-xs text-muted-foreground">📝 {item.notes}</div>
+                    )}
                   </li>
                 ))}
               </ul>
