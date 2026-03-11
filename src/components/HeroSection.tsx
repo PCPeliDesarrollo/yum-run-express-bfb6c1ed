@@ -12,6 +12,7 @@ const HeroSection = () => {
           priority
           width={1440}
           height={350}
+          sizes="100vw"
           className="w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
