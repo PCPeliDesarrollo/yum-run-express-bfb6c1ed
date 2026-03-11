@@ -486,7 +486,7 @@ const printOrder = (order: Order) => {
       <td style="padding:4px 0;border-bottom:1px dashed #ddd;">${item.quantity}x ${item.productName || item.name}</td>
       <td style="padding:4px 0;border-bottom:1px dashed #ddd;text-align:right;">€${((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}</td>
     </tr>
-    ${item.options?.length ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:11px;color:#666;">+ ${item.options.map((o: any) => o.name).join(', ')}</td></tr>` : ''}
+    ${item.options?.length ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:12px;font-weight:bold;color:#d35400;">▸ ${item.options.map((o: any) => o.name).join(', ')}</td></tr>` : ''}
     ${item.notes ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:11px;color:#666;">📝 ${item.notes}</td></tr>` : ''}`
   ).join('');
 
