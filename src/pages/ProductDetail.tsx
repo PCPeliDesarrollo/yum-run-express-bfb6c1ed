@@ -16,6 +16,7 @@ const ProductDetail = () => {
   
   const [quantity, setQuantity] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [specialNotes, setSpecialNotes] = useState("");
 
   if (loading) {
