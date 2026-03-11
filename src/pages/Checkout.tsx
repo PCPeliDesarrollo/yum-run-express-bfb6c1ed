@@ -237,54 +237,13 @@ const Checkout = () => {
         )}
         {/* Order Type Selection */}
         <section className="mb-8">
-          <h2 className="text-xl font-bold mb-4">¿Cómo quieres tu pedido?</h2>
-          <RadioGroup
-            value={orderType}
-            onValueChange={(value) => setOrderType(value as OrderType)}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-3"
-          >
-            <Label
-              htmlFor="delivery"
-              className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                orderType === "delivery"
-                  ? "border-primary bg-primary/10"
-                  : "border-border hover:border-muted-foreground/30"
-              }`}
-            >
-              <RadioGroupItem value="delivery" id="delivery" className="sr-only" />
-              <Truck className={`w-8 h-8 ${orderType === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
-              <span className="font-medium">A domicilio</span>
-              <span className="text-xs text-muted-foreground">+€1,80</span>
-            </Label>
-
-            <Label
-              htmlFor="pickup"
-              className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                orderType === "pickup"
-                  ? "border-primary bg-primary/10"
-                  : "border-border hover:border-muted-foreground/30"
-              }`}
-            >
-              <RadioGroupItem value="pickup" id="pickup" className="sr-only" />
-              <Store className={`w-8 h-8 ${orderType === "pickup" ? "text-primary" : "text-muted-foreground"}`} />
-              <span className="font-medium">Recoger</span>
-              <span className="text-xs text-muted-foreground">Gratis</span>
-            </Label>
-
-            <Label
-              htmlFor="dine_in"
-              className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                orderType === "dine_in"
-                  ? "border-primary bg-primary/10"
-                  : "border-border hover:border-muted-foreground/30"
-              }`}
-            >
-              <RadioGroupItem value="dine_in" id="dine_in" className="sr-only" />
-              <UtensilsCrossed className={`w-8 h-8 ${orderType === "dine_in" ? "text-primary" : "text-muted-foreground"}`} />
-              <span className="font-medium">En local</span>
-              <span className="text-xs text-muted-foreground">Gratis</span>
-            </Label>
-          </RadioGroup>
+          <div className="flex items-center gap-3 p-4 rounded-xl border-2 border-primary bg-primary/10">
+            <Truck className="w-8 h-8 text-primary" />
+            <div>
+              <span className="font-bold text-foreground">Envío a domicilio</span>
+              <p className="text-xs text-muted-foreground">+€1,80 gastos de envío</p>
+            </div>
+          </div>
         </section>
 
         <Separator className="my-6" />
