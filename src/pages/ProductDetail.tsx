@@ -47,13 +47,19 @@ const ProductDetail = () => {
     const optionsTotal = product.options
       .filter(opt => selectedOptions.includes(opt.id))
       .reduce((sum, opt) => sum + opt.price, 0);
-    return ((product.price + optionsTotal) * quantity).toFixed(2);
+    const choicePrice = selectedChoice
+      ? product.options.find(opt => opt.id === selectedChoice)?.price || 0
+      : 0;
+    return ((product.price + optionsTotal + choicePrice) * quantity).toFixed(2);
   };
 
+  const choiceOptions = product.options.filter(opt => opt.category === "choice");
   const extraOptions = product.options.filter(opt => opt.category === "extra");
   const removeOptions = product.options.filter(opt => opt.category === "remove");
   const sizeOptions = product.options.filter(opt => opt.category === "size");
 
+  const needsChoice = choiceOptions.length > 0;
+  const choiceMissing = needsChoice && !selectedChoice;
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
