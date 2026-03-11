@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Store, UtensilsCrossed, Truck, XCircle, AlertTriangle } from "lucide-react";
+import { ArrowLeft, MapPin, Truck, XCircle, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -14,7 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useKitchenStatus } from "@/hooks/useKitchenStatus";
 import { z } from "zod";
 
-type OrderType = "delivery" | "pickup" | "dine_in";
+// Solo domicilio por ahora
+type OrderType = "delivery";
 
 const customerSchema = z.object({
   name: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres").max(100, "El nombre es demasiado largo"),
@@ -35,7 +35,7 @@ const Checkout = () => {
   const { toast } = useToast();
   const { isOpen: kitchenOpen, loading: kitchenLoading } = useKitchenStatus();
 
-  const [orderType, setOrderType] = useState<OrderType>("delivery");
+  const orderType: OrderType = "delivery";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -236,54 +236,13 @@ const Checkout = () => {
         )}
         {/* Order Type Selection */}
         <section className="mb-8">
-          <h2 className="text-xl font-bold mb-4">¿Cómo quieres tu pedido?</h2>
-          <RadioGroup
-            value={orderType}
-            onValueChange={(value) => setOrderType(value as OrderType)}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-3"
-          >
-            <Label
-              htmlFor="delivery"
-              className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                orderType === "delivery"
-                  ? "border-primary bg-primary/10"
-                  : "border-border hover:border-muted-foreground/30"
-              }`}
-            >
-              <RadioGroupItem value="delivery" id="delivery" className="sr-only" />
-              <Truck className={`w-8 h-8 ${orderType === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
-              <span className="font-medium">A domicilio</span>
-              <span className="text-xs text-muted-foreground">+€1,80</span>
-            </Label>
-
-            <Label
-              htmlFor="pickup"
-              className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                orderType === "pickup"
-                  ? "border-primary bg-primary/10"
-                  : "border-border hover:border-muted-foreground/30"
-              }`}
-            >
-              <RadioGroupItem value="pickup" id="pickup" className="sr-only" />
-              <Store className={`w-8 h-8 ${orderType === "pickup" ? "text-primary" : "text-muted-foreground"}`} />
-              <span className="font-medium">Recoger</span>
-              <span className="text-xs text-muted-foreground">Gratis</span>
-            </Label>
-
-            <Label
-              htmlFor="dine_in"
-              className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                orderType === "dine_in"
-                  ? "border-primary bg-primary/10"
-                  : "border-border hover:border-muted-foreground/30"
-              }`}
-            >
-              <RadioGroupItem value="dine_in" id="dine_in" className="sr-only" />
-              <UtensilsCrossed className={`w-8 h-8 ${orderType === "dine_in" ? "text-primary" : "text-muted-foreground"}`} />
-              <span className="font-medium">En local</span>
-              <span className="text-xs text-muted-foreground">Gratis</span>
-            </Label>
-          </RadioGroup>
+          <div className="flex items-center gap-3 p-4 rounded-xl border-2 border-primary bg-primary/10">
+            <Truck className="w-8 h-8 text-primary" />
+            <div>
+              <span className="font-bold text-foreground">Envío a domicilio</span>
+              <p className="text-xs text-muted-foreground">+€1,80 gastos de envío</p>
+            </div>
+          </div>
         </section>
 
         <Separator className="my-6" />

@@ -9,81 +9,20 @@ import type { Tables } from '@/integrations/supabase/types';
 
 type Order = Tables<'orders'>;
 
-const statusConfig: Record<string, { label: string; emoji: string; color: string }> = {
-  pending: { label: 'Pendiente', emoji: '🕐', color: 'bg-yellow-500' },
-  confirmed: { label: 'Confirmado', emoji: '✅', color: 'bg-blue-500' },
-  preparing: { label: 'Preparando', emoji: '👨‍🍳', color: 'bg-orange-500' },
-  ready: { label: 'Listo', emoji: '📦', color: 'bg-green-500' },
-  delivered: { label: 'Entregado', emoji: '🚀', color: 'bg-gray-500' },
-  cancelled: { label: 'Cancelado', emoji: '❌', color: 'bg-red-500' },
-};
-
-const statusSteps = ['pending', 'confirmed', 'preparing', 'ready', 'delivered'];
-
-const orderTypeLabels: Record<string, string> = {
-  delivery: '🛵 Domicilio',
-  pickup: '🏪 Recoger',
-  dine_in: '🍽️ En local',
-  preorder: '📅 Reserva',
-};
-
-const OrderStatusTracker = ({ status }: { status: string }) => {
-  if (status === 'cancelled') {
-    return (
-      <div className="flex items-center gap-2 py-3 px-4 bg-red-50 dark:bg-red-950/30 rounded-xl">
-        <span className="text-2xl">❌</span>
-        <span className="font-bold text-red-600 dark:text-red-400">Pedido cancelado</span>
-      </div>
-    );
-  }
-
-  const currentIdx = statusSteps.indexOf(status);
-
-  return (
-    <div className="py-3">
-      <div className="flex items-center justify-between relative">
-        {/* Progress line */}
-        <div className="absolute top-5 left-6 right-6 h-1 bg-muted rounded-full" />
-        <div
-          className="absolute top-5 left-6 h-1 bg-primary rounded-full transition-all duration-500"
-          style={{ width: `calc(${(currentIdx / (statusSteps.length - 1)) * 100}% - 48px)` }}
-        />
-
-        {statusSteps.map((step, idx) => {
-          const cfg = statusConfig[step];
-          const isCompleted = idx <= currentIdx;
-          const isCurrent = idx === currentIdx;
-
-          return (
-            <div key={step} className="flex flex-col items-center gap-1 z-10 relative">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-lg transition-all ${
-                  isCompleted
-                    ? `${cfg.color} text-white shadow-md`
-                    : 'bg-muted text-muted-foreground'
-                } ${isCurrent ? 'ring-2 ring-primary ring-offset-2 ring-offset-background scale-110' : ''}`}
-              >
-                {isCompleted ? cfg.emoji : idx + 1}
-              </div>
-              <span
-                className={`text-[10px] font-semibold text-center leading-tight ${
-                  isCompleted ? 'text-foreground' : 'text-muted-foreground'
-                }`}
-              >
-                {cfg.label}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+const statusConfig: Record<string, { label: string; emoji: string }> = {
+  pending: { label: 'Pendiente', emoji: '🕐' },
+  confirmed: { label: 'Confirmado', emoji: '✅' },
+  preparing: { label: 'Preparando', emoji: '👨‍🍳' },
+  ready: { label: 'Listo', emoji: '📦' },
+  delivered: { label: 'Entregado', emoji: '🚀' },
+  cancelled: { label: 'Cancelado', emoji: '❌' },
 };
 
 const activeStatuses = ['pending', 'confirmed', 'preparing', 'ready'];
 
 const OrderCard = ({ order }: { order: Order }) => {
   const items = Array.isArray(order.items) ? order.items : [];
+  const cfg = statusConfig[order.status] || { label: order.status, emoji: '📋' };
 
   return (
     <div className="bg-card rounded-2xl p-5 shadow-sm border border-border">
@@ -102,12 +41,12 @@ const OrderCard = ({ order }: { order: Order }) => {
             })}
           </div>
         </div>
-        <span className="text-sm font-semibold px-3 py-1 rounded-full bg-muted text-muted-foreground">
-          {orderTypeLabels[order.order_type] || order.order_type}
+        <span className={`text-sm font-semibold px-3 py-1 rounded-full ${
+          order.status === 'cancelled' ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground'
+        }`}>
+          {cfg.emoji} {cfg.label}
         </span>
       </div>
-
-      <OrderStatusTracker status={order.status} />
 
       <div className="mt-3 pt-3 border-t border-border space-y-1">
         {items.map((item: any, idx: number) => (
@@ -165,27 +104,6 @@ const MisPedidos = () => {
     };
 
     fetchOrders();
-
-    // Realtime subscription
-    const channel = supabase
-      .channel('my-orders')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'orders',
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          fetchOrders();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [user]);
 
   if (loading || isLoading) {
