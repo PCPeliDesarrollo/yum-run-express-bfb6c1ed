@@ -209,13 +209,14 @@ const ProductDetail = () => {
           <Button 
             className="w-full h-14 text-lg font-bold rounded-full bg-primary hover:bg-primary/90"
             size="lg"
+            disabled={choiceMissing}
             onClick={() => {
-              const options = product.options.filter(opt => selectedOptions.includes(opt.id));
+              const options = product.options.filter(opt => selectedOptions.includes(opt.id) || opt.id === selectedChoice);
               addItem(product, quantity, options, specialNotes.trim() || undefined);
               navigate(-1);
             }}
           >
-            Añadir al carrito · €{calculateTotal()}
+            {choiceMissing ? 'Selecciona una opción obligatoria' : `Añadir al carrito · €${calculateTotal()}`}
           </Button>
         </div>
       </div>
