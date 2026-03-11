@@ -16,6 +16,7 @@ const ProductDetail = () => {
   
   const [quantity, setQuantity] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [specialNotes, setSpecialNotes] = useState("");
 
   if (loading) {
@@ -46,13 +47,19 @@ const ProductDetail = () => {
     const optionsTotal = product.options
       .filter(opt => selectedOptions.includes(opt.id))
       .reduce((sum, opt) => sum + opt.price, 0);
-    return ((product.price + optionsTotal) * quantity).toFixed(2);
+    const choicePrice = selectedChoice
+      ? product.options.find(opt => opt.id === selectedChoice)?.price || 0
+      : 0;
+    return ((product.price + optionsTotal + choicePrice) * quantity).toFixed(2);
   };
 
+  const choiceOptions = product.options.filter(opt => opt.category === "choice");
   const extraOptions = product.options.filter(opt => opt.category === "extra");
   const removeOptions = product.options.filter(opt => opt.category === "remove");
   const sizeOptions = product.options.filter(opt => opt.category === "size");
 
+  const needsChoice = choiceOptions.length > 0;
+  const choiceMissing = needsChoice && !selectedChoice;
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -95,6 +102,40 @@ const ProductDetail = () => {
 
         {/* Options Sections */}
         <div className="space-y-6">
+        {/* Choice Options (mandatory radio) */}
+          {choiceOptions.length > 0 && (
+            <div>
+              <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+                🍖 Elige tu ingrediente principal
+                <span className="text-xs font-normal text-destructive">(obligatorio)</span>
+              </h3>
+              <div className="space-y-2">
+                {choiceOptions.map(option => (
+                  <button
+                    key={option.id}
+                    onClick={() => setSelectedChoice(option.id)}
+                    className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
+                      selectedChoice === option.id ? 'border-secondary bg-secondary/10' : 'border-border hover:border-muted-foreground/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                        selectedChoice === option.id ? 'border-secondary bg-secondary' : 'border-muted-foreground/30'
+                      }`}>
+                        {selectedChoice === option.id && <Check className="w-4 h-4 text-white" />}
+                      </div>
+                      <span className="font-medium text-foreground">{option.name}</span>
+                    </div>
+                    {option.price > 0 && <span className="font-bold text-primary">+€{option.price.toFixed(2)}</span>}
+                  </button>
+                ))}
+              </div>
+              {choiceMissing && (
+                <p className="text-sm text-destructive mt-2">⚠️ Debes elegir una opción</p>
+              )}
+            </div>
+          )}
+
           {extraOptions.length > 0 && (
             <div>
               <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
@@ -168,13 +209,14 @@ const ProductDetail = () => {
           <Button 
             className="w-full h-14 text-lg font-bold rounded-full bg-primary hover:bg-primary/90"
             size="lg"
+            disabled={choiceMissing}
             onClick={() => {
-              const options = product.options.filter(opt => selectedOptions.includes(opt.id));
+              const options = product.options.filter(opt => selectedOptions.includes(opt.id) || opt.id === selectedChoice);
               addItem(product, quantity, options, specialNotes.trim() || undefined);
               navigate(-1);
             }}
           >
-            Añadir al carrito · €{calculateTotal()}
+            {choiceMissing ? 'Selecciona una opción obligatoria' : `Añadir al carrito · €${calculateTotal()}`}
           </Button>
         </div>
       </div>
