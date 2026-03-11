@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
@@ -11,11 +11,18 @@ interface ProductCardProps {
 
 const ProductCard = ({ product, compact = false }: ProductCardProps) => {
   const { addItem } = useCart();
+  const navigate = useNavigate();
+
+  const hasOptions = product.options && product.options.length > 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(product);
+    if (hasOptions) {
+      navigate(`/producto/${product.id}`);
+    } else {
+      addItem(product);
+    }
   };
 
   if (compact) {
