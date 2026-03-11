@@ -80,11 +80,67 @@ const OrderStatusTracker = ({ status }: { status: string }) => {
   );
 };
 
+const activeStatuses = ['pending', 'confirmed', 'preparing', 'ready'];
+
+const OrderCard = ({ order }: { order: Order }) => {
+  const items = Array.isArray(order.items) ? order.items : [];
+
+  return (
+    <div className="bg-card rounded-2xl p-5 shadow-sm border border-border">
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <span className="text-lg font-bold text-foreground">
+            Pedido #{order.order_number}
+          </span>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+            <Clock className="w-3 h-3" />
+            {new Date(order.created_at).toLocaleDateString('es-ES', {
+              day: 'numeric',
+              month: 'short',
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </div>
+        </div>
+        <span className="text-sm font-semibold px-3 py-1 rounded-full bg-muted text-muted-foreground">
+          {orderTypeLabels[order.order_type] || order.order_type}
+        </span>
+      </div>
+
+      <OrderStatusTracker status={order.status} />
+
+      <div className="mt-3 pt-3 border-t border-border space-y-1">
+        {items.map((item: any, idx: number) => (
+          <div key={idx} className="flex justify-between text-sm">
+            <span className="text-foreground">
+              {item.quantity}x {item.productName || item.name || 'Producto'}
+            </span>
+            <span className="font-semibold text-foreground">
+              {((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}€
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-between mt-3 pt-3 border-t border-border">
+        <span className="font-bold text-foreground">Total</span>
+        <span className="font-bold text-lg text-primary">
+          {Number(order.total).toFixed(2)}€
+        </span>
+      </div>
+    </div>
+  );
+};
+
 const MisPedidos = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [pastOpen, setPastOpen] = useState(false);
+
+  const activeOrders = orders.filter(o => activeStatuses.includes(o.status));
+  const pastOrders = orders.filter(o => !activeStatuses.includes(o.status));
 
   useEffect(() => {
     if (!loading && !user) {
