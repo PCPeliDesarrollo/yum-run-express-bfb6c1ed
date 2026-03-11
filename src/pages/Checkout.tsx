@@ -36,7 +36,7 @@ const Checkout = () => {
   const { toast } = useToast();
   const { isOpen: kitchenOpen, loading: kitchenLoading } = useKitchenStatus();
 
-  const [orderType, setOrderType] = useState<OrderType>("delivery");
+  const orderType: OrderType = "delivery";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
