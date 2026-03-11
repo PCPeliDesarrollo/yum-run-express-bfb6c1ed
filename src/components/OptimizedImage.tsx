@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 import { cn } from "@/lib/utils";
 
 interface OptimizedImageProps {
@@ -8,9 +8,10 @@ interface OptimizedImageProps {
   width?: number;
   height?: number;
   priority?: boolean;
+  sizes?: string;
 }
 
-const OptimizedImage = ({ src, alt, className, width, height, priority = false }: OptimizedImageProps) => {
+const OptimizedImage = memo(({ src, alt, className, width, height, priority = false, sizes }: OptimizedImageProps) => {
   const [loaded, setLoaded] = useState(false);
   const [inView, setInView] = useState(priority);
   const imgRef = useRef<HTMLDivElement>(null);
@@ -27,7 +28,7 @@ const OptimizedImage = ({ src, alt, className, width, height, priority = false }
           observer.disconnect();
         }
       },
-      { rootMargin: "200px" }
+      { rootMargin: "300px" }
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -35,7 +36,6 @@ const OptimizedImage = ({ src, alt, className, width, height, priority = false }
 
   return (
     <div ref={imgRef} className={cn("relative overflow-hidden bg-muted", className)}>
-      {/* Skeleton pulse */}
       {!loaded && (
         <div className="absolute inset-0 bg-muted animate-pulse" />
       )}
@@ -45,18 +45,21 @@ const OptimizedImage = ({ src, alt, className, width, height, priority = false }
           alt={alt}
           width={width}
           height={height}
+          sizes={sizes}
           loading={priority ? "eager" : "lazy"}
-          decoding="async"
+          decoding={priority ? "sync" : "async"}
           fetchPriority={priority ? "high" : "auto"}
           onLoad={() => setLoaded(true)}
           className={cn(
-            "w-full h-full object-cover transition-opacity duration-300",
+            "w-full h-full object-cover transition-opacity duration-200",
             loaded ? "opacity-100" : "opacity-0"
           )}
         />
       )}
     </div>
   );
-};
+});
+
+OptimizedImage.displayName = "OptimizedImage";
 
 export default OptimizedImage;

@@ -66,14 +66,14 @@ const MenuSection = () => {
   };
 
   return (
-    <section className="py-8 bg-muted/50">
+    <section className="py-8 bg-muted/50" style={{ contentVisibility: 'auto' }}>
       <div className="container mx-auto px-4">
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-center">
           Nuestra Carta
         </h2>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3">
-          {categories.map((category) => (
+          {categories.map((category, i) => (
             <Link
               key={category}
               to={`/categoria/${getCategorySlug(category)}`}
@@ -84,8 +84,10 @@ const MenuSection = () => {
                   <OptimizedImage
                     src={getImage(category)}
                     alt={category}
-                    width={300}
-                    height={300}
+                    width={200}
+                    height={200}
+                    priority={i < 7}
+                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 14vw"
                     className="w-full h-full group-hover:scale-110 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
