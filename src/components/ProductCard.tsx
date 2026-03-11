@@ -28,8 +28,9 @@ const ProductCard = ({ product, compact = false }: ProductCardProps) => {
           <OptimizedImage
             src={product.image}
             alt={product.name}
-            width={400}
-            height={400}
+            width={200}
+            height={200}
+            sizes="(max-width: 640px) 50vw, 25vw"
             className="w-full h-full group-hover:scale-105 transition-transform duration-300"
           />
           <button
