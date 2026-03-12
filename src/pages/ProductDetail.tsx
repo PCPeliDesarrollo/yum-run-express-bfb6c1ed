@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ProductOption } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { useProducts } from "@/hooks/useProducts";
+import OptimizedImage from "@/components/OptimizedImage";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
