@@ -229,14 +229,16 @@ const Admin = () => {
         </div>
 
         {/* Kitchen Toggle */}
-        <div className="container mx-auto px-4 pb-3">
+        <div className="container mx-auto px-4 pb-3 space-y-2">
           <button
             onClick={async () => {
               try {
                 await toggleKitchen(!kitchenOpen);
                 toast({
                   title: kitchenOpen ? '🔴 Cocina cerrada' : '🟢 Cocina abierta',
-                  description: kitchenOpen ? 'Ya no se reciben pedidos' : 'Ahora se aceptan pedidos',
+                  description: kitchenOpen
+                    ? 'Ya no se reciben pedidos (override manual activo)'
+                    : 'Ahora se aceptan pedidos (override manual activo)',
                 });
               } catch {
                 toast({ title: 'Error', description: 'No se pudo cambiar el estado', variant: 'destructive' });
@@ -254,6 +256,15 @@ const Admin = () => {
             </div>
             <Switch checked={kitchenOpen} />
           </button>
+          {/* Schedule info */}
+          {!scheduleLoading && schedule.slots.length > 0 && (
+            <div className="flex items-center gap-2 px-2">
+              <Clock className="w-3.5 h-3.5 text-background/50" />
+              <span className="text-xs text-background/50">
+                Horario: {schedule.slots.map(s => `${s.open}–${s.close}`).join(' y ')}
+              </span>
+            </div>
+          )}
         </div>
         {/* Tab Navigation */}
         <div className="container mx-auto px-4 pb-3">
