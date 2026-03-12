@@ -709,44 +709,65 @@ const OrderCard = ({
 
           {/* Status Flow Buttons */}
           <div className="flex flex-col gap-3 pt-2">
-            {/* Status progression - all steps visible */}
-            <div className="grid grid-cols-4 gap-2">
-              {(['confirmed', 'preparing', 'ready', 'delivered'] as OrderStatus[]).map((step) => {
-                const stepConfig: Record<string, { label: string; emoji: string; bg: string; activeBg: string }> = {
-                  confirmed: { label: 'Confirmar', emoji: '✅', bg: 'bg-muted text-muted-foreground', activeBg: 'bg-blue-500 text-white' },
-                  preparing: { label: 'Preparar', emoji: '👨‍🍳', bg: 'bg-muted text-muted-foreground', activeBg: 'bg-orange-500 text-white' },
-                  ready: { label: 'Listo', emoji: '📦', bg: 'bg-muted text-muted-foreground', activeBg: 'bg-green-500 text-white' },
-                  delivered: { label: 'Entregado', emoji: '🚀', bg: 'bg-muted text-muted-foreground', activeBg: 'bg-gray-600 text-white' },
-                };
-                const cfg = stepConfig[step];
-                const statusOrder: OrderStatus[] = ['pending', 'confirmed', 'preparing', 'ready', 'delivered'];
-                const currentIdx = statusOrder.indexOf(order.status);
-                const stepIdx = statusOrder.indexOf(step);
-                const isCompleted = stepIdx <= currentIdx && order.status !== 'cancelled';
-                const isNext = stepIdx === currentIdx + 1 && order.status !== 'cancelled' && order.status !== 'delivered';
-
-                return (
+            {/* Simplified 2-step flow */}
+            {order.status !== 'cancelled' && order.status !== 'delivered' && (
+              <div className="grid grid-cols-2 gap-3">
+                {/* En Cocina button */}
+                {(order.status === 'pending' || order.status === 'confirmed') ? (
                   <button
-                    key={step}
-                    onClick={() => isNext ? onUpdateStatus(order.id, step) : undefined}
-                    disabled={!isNext}
-                    className={`flex flex-col items-center gap-1 py-3 px-2 rounded-xl text-center transition-all ${
-                      isCompleted ? cfg.activeBg : isNext ? `${cfg.bg} ring-2 ring-primary cursor-pointer hover:opacity-80` : `${cfg.bg} opacity-50`
-                    }`}
+                    onClick={() => onUpdateStatus(order.id, 'preparing')}
+                    className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-center transition-all bg-orange-500 text-white font-bold shadow-lg hover:bg-orange-600 active:scale-95"
                   >
-                    <span className="text-xl">{cfg.emoji}</span>
-                    <span className="text-xs font-semibold">{cfg.label}</span>
+                    <span className="text-2xl">👨‍🍳</span>
+                    <span className="text-sm font-bold">En Cocina</span>
                   </button>
-                );
-              })}
-            </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-center bg-orange-500/20 border-2 border-orange-500">
+                    <span className="text-2xl">👨‍🍳</span>
+                    <span className="text-sm font-bold text-orange-600">En Cocina ✓</span>
+                  </div>
+                )}
+
+                {/* Reparto button */}
+                {order.status === 'preparing' || order.status === 'ready' ? (
+                  <button
+                    onClick={() => onUpdateStatus(order.id, 'delivered')}
+                    className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-center transition-all bg-green-600 text-white font-bold shadow-lg hover:bg-green-700 active:scale-95"
+                  >
+                    <span className="text-2xl">🚀</span>
+                    <span className="text-sm font-bold">Reparto</span>
+                  </button>
+                ) : (
+                  <div className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-center bg-muted border-2 border-border">
+                    <span className="text-2xl">🚀</span>
+                    <span className="text-sm font-bold text-muted-foreground">Reparto</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Delivered state */}
+            {order.status === 'delivered' && (
+              <div className="flex items-center justify-center gap-2 py-3 rounded-xl bg-green-600/20 border-2 border-green-500">
+                <span className="text-xl">✅</span>
+                <span className="text-sm font-bold text-green-600">Pedido Entregado</span>
+              </div>
+            )}
+
+            {/* Cancelled state */}
+            {order.status === 'cancelled' && (
+              <div className="flex items-center justify-center gap-2 py-3 rounded-xl bg-red-600/20 border-2 border-red-500">
+                <span className="text-xl">❌</span>
+                <span className="text-sm font-bold text-red-600">Pedido Cancelado</span>
+              </div>
+            )}
 
             {/* Cancel + Print row */}
             <div className="flex gap-2">
               {order.status !== 'cancelled' && order.status !== 'delivered' && (
                 <Button 
                   variant="destructive"
-                  className="flex-1"
+                  className="flex-1 py-3 text-base font-bold"
                   onClick={() => onUpdateStatus(order.id, 'cancelled')}
                 >
                   ❌ Cancelar
@@ -755,6 +776,7 @@ const OrderCard = ({
               <Button
                 variant="outline"
                 size="lg"
+                className="border-2 border-border text-foreground"
                 onClick={(e) => {
                   e.stopPropagation();
                   printOrder(order);
