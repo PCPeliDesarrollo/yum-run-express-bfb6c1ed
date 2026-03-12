@@ -76,8 +76,8 @@ const Admin = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'all'>('all');
-  const [activeTab, setActiveTab] = useState<'orders' | 'menu' | 'promo'>('orders');
-  const { isOpen: kitchenOpen, toggleKitchen } = useKitchenStatus();
+  const [activeTab, setActiveTab] = useState<'orders' | 'menu' | 'promo' | 'horario'>('orders');
+  const { isOpen: kitchenOpen, toggleKitchen, schedule, scheduleLoading, updateSchedule } = useKitchenStatus();
   const { promo, updatePromo, loading: promoLoading } = usePromo();
 
   useEffect(() => {
@@ -229,14 +229,16 @@ const Admin = () => {
         </div>
 
         {/* Kitchen Toggle */}
-        <div className="container mx-auto px-4 pb-3">
+        <div className="container mx-auto px-4 pb-3 space-y-2">
           <button
             onClick={async () => {
               try {
                 await toggleKitchen(!kitchenOpen);
                 toast({
                   title: kitchenOpen ? '🔴 Cocina cerrada' : '🟢 Cocina abierta',
-                  description: kitchenOpen ? 'Ya no se reciben pedidos' : 'Ahora se aceptan pedidos',
+                  description: kitchenOpen
+                    ? 'Ya no se reciben pedidos (override manual activo)'
+                    : 'Ahora se aceptan pedidos (override manual activo)',
                 });
               } catch {
                 toast({ title: 'Error', description: 'No se pudo cambiar el estado', variant: 'destructive' });
@@ -254,6 +256,15 @@ const Admin = () => {
             </div>
             <Switch checked={kitchenOpen} />
           </button>
+          {/* Schedule info */}
+          {!scheduleLoading && schedule.slots.length > 0 && (
+            <div className="flex items-center gap-2 px-2">
+              <Clock className="w-3.5 h-3.5 text-background/50" />
+              <span className="text-xs text-background/50">
+                Horario: {schedule.slots.map(s => `${s.open}–${s.close}`).join(' y ')}
+              </span>
+            </div>
+          )}
         </div>
         {/* Tab Navigation */}
         <div className="container mx-auto px-4 pb-3">
@@ -282,12 +293,22 @@ const Admin = () => {
             >
               📢 Ofertas
             </button>
+            <button
+              onClick={() => setActiveTab('horario')}
+              className={`flex-1 py-3 rounded-xl font-semibold text-sm transition-colors ${
+                activeTab === 'horario' ? 'bg-primary text-primary-foreground' : 'bg-background/10 text-background/70 hover:bg-background/20'
+              }`}
+            >
+              🕐 Horario
+            </button>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        {activeTab === 'promo' ? (
+        {activeTab === 'horario' ? (
+          <ScheduleEditor schedule={schedule} onSave={updateSchedule} loading={scheduleLoading} toast={toast} />
+        ) : activeTab === 'promo' ? (
           <PromoEditor promo={promo} onSave={updatePromo} loading={promoLoading} toast={toast} />
         ) : activeTab === 'menu' ? (
           <AdminMenuManager />
@@ -469,6 +490,106 @@ const PromoEditor = ({
           <p className="text-secondary-foreground/80 text-sm">{form.description}</p>
         </div>
       )}
+    </div>
+  );
+};
+
+const ScheduleEditor = ({
+  schedule,
+  onSave,
+  loading,
+  toast,
+}: {
+  schedule: import('@/hooks/useKitchenStatus').KitchenSchedule;
+  onSave: (s: import('@/hooks/useKitchenStatus').KitchenSchedule) => Promise<void>;
+  loading: boolean;
+  toast: any;
+}) => {
+  const [slots, setSlots] = useState(schedule.slots.length > 0 ? schedule.slots : [{ open: '12:00', close: '15:30' }, { open: '20:00', close: '23:30' }]);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (schedule.slots.length > 0) {
+      setSlots(schedule.slots);
+    }
+  }, [schedule]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onSave({ slots });
+      toast({ title: '✅ Horario guardado', description: 'El horario se ha actualizado correctamente' });
+    } catch {
+      toast({ title: 'Error', description: 'No se pudo guardar el horario', variant: 'destructive' });
+    }
+    setSaving(false);
+  };
+
+  const updateSlot = (index: number, field: 'open' | 'close', value: string) => {
+    const newSlots = [...slots];
+    newSlots[index] = { ...newSlots[index], [field]: value };
+    setSlots(newSlots);
+  };
+
+  const addSlot = () => {
+    setSlots([...slots, { open: '12:00', close: '15:00' }]);
+  };
+
+  const removeSlot = (index: number) => {
+    setSlots(slots.filter((_, i) => i !== index));
+  };
+
+  if (loading) return <p className="text-center py-12 text-muted-foreground">Cargando...</p>;
+
+  return (
+    <div className="max-w-lg mx-auto space-y-6">
+      <h2 className="text-xl font-bold">🕐 Horario de Cocina</h2>
+      <p className="text-sm text-muted-foreground">
+        La cocina se abrirá y cerrará automáticamente según este horario. El botón manual sigue funcionando para cerrar antes si hace falta.
+      </p>
+
+      <div className="bg-card rounded-2xl p-6 space-y-4 border border-border">
+        {slots.map((slot, index) => (
+          <div key={index} className="flex items-center gap-3">
+            <div className="flex-1 space-y-1">
+              <Label className="text-xs text-muted-foreground">Apertura</Label>
+              <Input
+                type="time"
+                value={slot.open}
+                onChange={(e) => updateSlot(index, 'open', e.target.value)}
+              />
+            </div>
+            <span className="text-muted-foreground mt-5">—</span>
+            <div className="flex-1 space-y-1">
+              <Label className="text-xs text-muted-foreground">Cierre</Label>
+              <Input
+                type="time"
+                value={slot.close}
+                onChange={(e) => updateSlot(index, 'close', e.target.value)}
+              />
+            </div>
+            {slots.length > 1 && (
+              <button
+                onClick={() => removeSlot(index)}
+                className="mt-5 text-red-500 hover:text-red-700 font-bold text-lg"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        ))}
+
+        <button
+          onClick={addSlot}
+          className="w-full py-2 border-2 border-dashed border-border rounded-xl text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+        >
+          + Añadir turno
+        </button>
+
+        <Button onClick={handleSave} disabled={saving} className="w-full py-6 text-lg font-bold rounded-xl">
+          {saving ? 'Guardando...' : '💾 Guardar horario'}
+        </Button>
+      </div>
     </div>
   );
 };
