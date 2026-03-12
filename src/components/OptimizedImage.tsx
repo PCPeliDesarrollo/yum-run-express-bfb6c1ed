@@ -32,7 +32,7 @@ const OptimizedImage = memo(({ src, alt, className, width, height, priority = fa
           observer.disconnect();
         }
       },
-      { rootMargin: "600px" }
+      { rootMargin: "400px" }
     );
 
     observer.observe(el);
@@ -53,6 +53,8 @@ const OptimizedImage = memo(({ src, alt, className, width, height, priority = fa
           sizes={sizes}
           loading={priority ? "eager" : "lazy"}
           decoding="async"
+          // @ts-ignore - fetchpriority is valid HTML but not yet in React types
+          fetchpriority={priority ? "high" : "low"}
           onLoad={() => setLoaded(true)}
           onError={() => setLoaded(true)}
           className={cn(
