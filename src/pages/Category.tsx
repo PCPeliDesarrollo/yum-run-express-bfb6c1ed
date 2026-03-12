@@ -87,9 +87,20 @@ const Category = () => {
             </p>
           </div>
 
+          {isPizzaSlug && !pizzaAvailable && (
+            <div className="bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 rounded-xl px-4 py-3 flex items-center gap-3 mb-6">
+              <span className="text-2xl">🌙</span>
+              <p className="text-sm font-medium">
+                Las pizzas solo están disponibles en el horario de noche (20:00 - 23:30). ¡Te esperamos!
+              </p>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <div key={product.id} className={isPizzaSlug && !pizzaAvailable ? "opacity-50 pointer-events-none" : ""}>
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
 
