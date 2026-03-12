@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Plus, Pencil, Trash2, Image, Save, X, Eye, EyeOff, Camera } from 'lucide-react';
+import { compressImage } from '@/lib/imageCompressor';
 import { useCategoryImages } from '@/hooks/useCategoryImages';
 
 // Fallback category images
