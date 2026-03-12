@@ -87,8 +87,6 @@ export const useProducts = () => {
   const getProductsByCategory = (category: string) => products.filter(p => p.category === category);
 
   return { products, categories, loading, error, getProductById, getProductsByCategory, refetch: fetchProducts, pizzaAvailable };
-
-  return { products: filteredProducts, categories, loading, error, getProductById, getProductsByCategory, refetch: fetchProducts, pizzaAvailable };
 };
 
 export const useAllProducts = () => {
