@@ -48,25 +48,6 @@ const Category = () => {
 
   // Check if user navigated to pizzas during lunch
   const isPizzaSlug = slug === 'pizzas';
-  if (!loading && isPizzaSlug && !pizzaAvailable) {
-    return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <Navbar />
-        <KitchenClosedBanner />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="text-center px-4">
-            <span className="text-6xl mb-4 block">🍕</span>
-            <h1 className="text-2xl font-bold mb-2">Pizzas solo por la noche</h1>
-            <p className="text-muted-foreground mb-6">Las pizzas están disponibles en el turno de noche (20:00 - 23:30)</p>
-            <Link to="/">
-              <Button>Volver a la carta</Button>
-            </Link>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   if (!categoryName) {
     return (
@@ -106,9 +87,20 @@ const Category = () => {
             </p>
           </div>
 
+          {isPizzaSlug && !pizzaAvailable && (
+            <div className="bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 rounded-xl px-4 py-3 flex items-center gap-3 mb-6">
+              <span className="text-2xl">🌙</span>
+              <p className="text-sm font-medium">
+                Las pizzas solo están disponibles en el horario de noche (20:00 - 23:30). ¡Te esperamos!
+              </p>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <div key={product.id} className={isPizzaSlug && !pizzaAvailable ? "opacity-50 pointer-events-none" : ""}>
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
 

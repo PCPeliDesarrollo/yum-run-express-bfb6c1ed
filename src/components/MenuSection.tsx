@@ -48,7 +48,7 @@ const getCategorySlug = (category: string) => {
 };
 
 const MenuSection = () => {
-  const { categories, loading } = useProducts();
+  const { categories, loading, pizzaAvailable } = useProducts();
   const { categoryImages } = useCategoryImages();
 
   if (loading) {
@@ -90,7 +90,12 @@ const MenuSection = () => {
                     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 14vw"
                     className="w-full h-full group-hover:scale-110 transition-transform duration-300"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                   {category === 'Pizzas' && !pizzaAvailable && (
+                     <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-tight">
+                       🌙 Noches
+                     </div>
+                   )}
                   <div className="absolute bottom-0 left-0 right-0 p-2">
                     <span className="text-xs md:text-sm font-semibold text-white text-center block leading-tight drop-shadow-lg">
                       {category}
