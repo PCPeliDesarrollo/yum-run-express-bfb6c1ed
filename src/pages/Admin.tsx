@@ -77,7 +77,7 @@ const Admin = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'all'>('all');
   const [activeTab, setActiveTab] = useState<'orders' | 'menu' | 'promo'>('orders');
-  const { isOpen: kitchenOpen, toggleKitchen } = useKitchenStatus();
+  const { isOpen: kitchenOpen, toggleKitchen, schedule, scheduleLoading, updateSchedule } = useKitchenStatus();
   const { promo, updatePromo, loading: promoLoading } = usePromo();
 
   useEffect(() => {
