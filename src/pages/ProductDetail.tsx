@@ -175,20 +175,6 @@ const ProductDetail = () => {
             </div>
           )}
 
-          <div>
-            <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-muted-foreground" />
-              Peticiones especiales
-            </h3>
-            <Textarea
-              placeholder="¿Alguna alergia o petición especial? Escríbela aquí..."
-              value={specialNotes}
-              onChange={(e) => setSpecialNotes(e.target.value)}
-              className="min-h-[100px] resize-none rounded-xl border-2 border-border focus:border-primary"
-              maxLength={500}
-            />
-            <p className="text-xs text-muted-foreground mt-1 text-right">{specialNotes.length}/500 caracteres</p>
-          </div>
         </div>
 
         {/* Quantity Selector */}
