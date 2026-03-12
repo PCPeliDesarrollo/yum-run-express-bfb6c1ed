@@ -107,12 +107,12 @@ const AdminMenuManager = () => {
     if (!file || !pendingCategory) return;
 
     setUploadingCategory(pendingCategory);
-    const ext = file.name.split('.').pop();
-    const fileName = `category-${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+    const compressed = await compressImage(file, 600, 600, 0.65);
+    const fileName = `category-${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
 
     const { error } = await supabase.storage
       .from('product-images')
-      .upload(fileName, file);
+      .upload(fileName, compressed, { contentType: 'image/jpeg', cacheControl: '31536000' });
 
     if (error) {
       toast({ title: 'Error', description: 'No se pudo subir la imagen', variant: 'destructive' });
