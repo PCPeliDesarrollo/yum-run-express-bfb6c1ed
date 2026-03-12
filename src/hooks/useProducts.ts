@@ -80,15 +80,13 @@ export const useProducts = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Filter out pizzas during lunch shift
-  const filteredProducts = pizzaAvailable
-    ? products
-    : products.filter(p => p.category !== 'Pizzas');
+  // Keep all products visible but expose pizza availability flag
+  const categories = [...new Set(products.map(p => p.category))];
 
-  const categories = [...new Set(filteredProducts.map(p => p.category))];
+  const getProductById = (id: string) => products.find(p => p.id === id);
+  const getProductsByCategory = (category: string) => products.filter(p => p.category === category);
 
-  const getProductById = (id: string) => filteredProducts.find(p => p.id === id);
-  const getProductsByCategory = (category: string) => filteredProducts.filter(p => p.category === category);
+  return { products, categories, loading, error, getProductById, getProductsByCategory, refetch: fetchProducts, pizzaAvailable };
 
   return { products: filteredProducts, categories, loading, error, getProductById, getProductsByCategory, refetch: fetchProducts, pizzaAvailable };
 };
