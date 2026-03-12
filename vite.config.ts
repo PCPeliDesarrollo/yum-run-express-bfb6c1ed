@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     ViteImageOptimizer({
       test: /\.(jpe?g|png|gif|tiff|webp|avif)$/i,
-      exclude: [/\.svg$/i, "placeholder.svg"],
+      exclude: /\.svg$/i,
       includePublic: false,
       jpg: { quality: 70 },
       jpeg: { quality: 70 },
