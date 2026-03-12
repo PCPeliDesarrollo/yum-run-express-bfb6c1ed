@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "development" && componentTagger(),
     ViteImageOptimizer({
+      test: /\.(jpe?g|png|gif|tiff|webp|avif)$/i,
       jpg: { quality: 70 },
       jpeg: { quality: 70 },
       png: { quality: 75 },
