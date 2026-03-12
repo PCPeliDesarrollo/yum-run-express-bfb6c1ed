@@ -26,7 +26,7 @@ const categoryEmojis: Record<string, string> = {
 
 const Category = () => {
   const { slug } = useParams();
-  const { categories, getProductsByCategory, loading } = useProducts();
+  const { categories, getProductsByCategory, loading, pizzaAvailable } = useProducts();
   
   const categoryName = categories.find(
     cat => cat.toLowerCase().replace(/\s+/g, '-').replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/ú/g, 'u').replace(/ñ/g, 'n') === slug

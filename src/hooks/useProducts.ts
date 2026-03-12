@@ -37,10 +37,22 @@ const mapDbToProduct = (db: DbProduct): Product => ({
   options: Array.isArray(db.options) ? db.options : [],
 });
 
+const isPizzaAvailable = (): boolean => {
+  const now = new Date();
+  // Convert to Spain timezone
+  const spainTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Madrid' }));
+  const h = spainTime.getHours();
+  const m = spainTime.getMinutes();
+  const totalMinutes = h * 60 + m;
+  // Pizzas only available during evening shift: 20:00-23:30
+  return totalMinutes >= 1200 && totalMinutes < 1410; // 20*60=1200, 23*60+30=1410
+};
+
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pizzaAvailable, setPizzaAvailable] = useState(isPizzaAvailable());
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -61,14 +73,24 @@ export const useProducts = () => {
 
   useEffect(() => {
     fetchProducts();
+    // Re-check pizza availability every minute
+    const interval = setInterval(() => {
+      setPizzaAvailable(isPizzaAvailable());
+    }, 60000);
+    return () => clearInterval(interval);
   }, []);
 
-  const categories = [...new Set(products.map(p => p.category))];
+  // Filter out pizzas during lunch shift
+  const filteredProducts = pizzaAvailable
+    ? products
+    : products.filter(p => p.category !== 'Pizzas');
 
-  const getProductById = (id: string) => products.find(p => p.id === id);
-  const getProductsByCategory = (category: string) => products.filter(p => p.category === category);
+  const categories = [...new Set(filteredProducts.map(p => p.category))];
 
-  return { products, categories, loading, error, getProductById, getProductsByCategory, refetch: fetchProducts };
+  const getProductById = (id: string) => filteredProducts.find(p => p.id === id);
+  const getProductsByCategory = (category: string) => filteredProducts.filter(p => p.category === category);
+
+  return { products: filteredProducts, categories, loading, error, getProductById, getProductsByCategory, refetch: fetchProducts, pizzaAvailable };
 };
 
 export const useAllProducts = () => {
