@@ -181,10 +181,12 @@ const Admin = () => {
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'orders' },
           (payload) => {
-            fetchOrders();
-            // Auto-print new orders
             const newOrder = payload.new as Order;
+            fetchOrders();
+            // Notify admin
             if (newOrder) {
+              showOrderNotification(newOrder);
+              // Auto-print
               setTimeout(() => printOrder(newOrder), 1000);
             }
           }
