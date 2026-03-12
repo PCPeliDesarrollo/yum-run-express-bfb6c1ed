@@ -293,6 +293,14 @@ const Admin = () => {
             >
               📢 Ofertas
             </button>
+            <button
+              onClick={() => setActiveTab('horario')}
+              className={`flex-1 py-3 rounded-xl font-semibold text-sm transition-colors ${
+                activeTab === 'horario' ? 'bg-primary text-primary-foreground' : 'bg-background/10 text-background/70 hover:bg-background/20'
+              }`}
+            >
+              🕐 Horario
+            </button>
           </div>
         </div>
       </div>
