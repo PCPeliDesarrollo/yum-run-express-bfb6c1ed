@@ -306,7 +306,9 @@ const Admin = () => {
       </div>
 
       <div className="container mx-auto px-4 py-6">
-        {activeTab === 'promo' ? (
+        {activeTab === 'horario' ? (
+          <ScheduleEditor schedule={schedule} onSave={updateSchedule} loading={scheduleLoading} toast={toast} />
+        ) : activeTab === 'promo' ? (
           <PromoEditor promo={promo} onSave={updatePromo} loading={promoLoading} toast={toast} />
         ) : activeTab === 'menu' ? (
           <AdminMenuManager />
