@@ -48,7 +48,7 @@ const getCategorySlug = (category: string) => {
 };
 
 const MenuSection = () => {
-  const { categories, loading } = useProducts();
+  const { categories, loading, pizzaAvailable } = useProducts();
   const { categoryImages } = useCategoryImages();
 
   if (loading) {
