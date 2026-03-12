@@ -494,7 +494,107 @@ const PromoEditor = ({
   );
 };
 
-const printOrder = (order: Order) => {
+const ScheduleEditor = ({
+  schedule,
+  onSave,
+  loading,
+  toast,
+}: {
+  schedule: import('@/hooks/useKitchenStatus').KitchenSchedule;
+  onSave: (s: import('@/hooks/useKitchenStatus').KitchenSchedule) => Promise<void>;
+  loading: boolean;
+  toast: any;
+}) => {
+  const [slots, setSlots] = useState(schedule.slots.length > 0 ? schedule.slots : [{ open: '12:00', close: '15:30' }, { open: '20:00', close: '23:30' }]);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (schedule.slots.length > 0) {
+      setSlots(schedule.slots);
+    }
+  }, [schedule]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onSave({ slots });
+      toast({ title: '✅ Horario guardado', description: 'El horario se ha actualizado correctamente' });
+    } catch {
+      toast({ title: 'Error', description: 'No se pudo guardar el horario', variant: 'destructive' });
+    }
+    setSaving(false);
+  };
+
+  const updateSlot = (index: number, field: 'open' | 'close', value: string) => {
+    const newSlots = [...slots];
+    newSlots[index] = { ...newSlots[index], [field]: value };
+    setSlots(newSlots);
+  };
+
+  const addSlot = () => {
+    setSlots([...slots, { open: '12:00', close: '15:00' }]);
+  };
+
+  const removeSlot = (index: number) => {
+    setSlots(slots.filter((_, i) => i !== index));
+  };
+
+  if (loading) return <p className="text-center py-12 text-muted-foreground">Cargando...</p>;
+
+  return (
+    <div className="max-w-lg mx-auto space-y-6">
+      <h2 className="text-xl font-bold">🕐 Horario de Cocina</h2>
+      <p className="text-sm text-muted-foreground">
+        La cocina se abrirá y cerrará automáticamente según este horario. El botón manual sigue funcionando para cerrar antes si hace falta.
+      </p>
+
+      <div className="bg-card rounded-2xl p-6 space-y-4 border border-border">
+        {slots.map((slot, index) => (
+          <div key={index} className="flex items-center gap-3">
+            <div className="flex-1 space-y-1">
+              <Label className="text-xs text-muted-foreground">Apertura</Label>
+              <Input
+                type="time"
+                value={slot.open}
+                onChange={(e) => updateSlot(index, 'open', e.target.value)}
+              />
+            </div>
+            <span className="text-muted-foreground mt-5">—</span>
+            <div className="flex-1 space-y-1">
+              <Label className="text-xs text-muted-foreground">Cierre</Label>
+              <Input
+                type="time"
+                value={slot.close}
+                onChange={(e) => updateSlot(index, 'close', e.target.value)}
+              />
+            </div>
+            {slots.length > 1 && (
+              <button
+                onClick={() => removeSlot(index)}
+                className="mt-5 text-red-500 hover:text-red-700 font-bold text-lg"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        ))}
+
+        <button
+          onClick={addSlot}
+          className="w-full py-2 border-2 border-dashed border-border rounded-xl text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+        >
+          + Añadir turno
+        </button>
+
+        <Button onClick={handleSave} disabled={saving} className="w-full py-6 text-lg font-bold rounded-xl">
+          {saving ? 'Guardando...' : '💾 Guardar horario'}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+
   const printWindow = window.open('', '_blank', 'width=400,height=600');
   if (!printWindow) return;
 
