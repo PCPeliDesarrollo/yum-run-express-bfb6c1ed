@@ -27,7 +27,7 @@ const mapDbToProduct = (db: DbProduct): Product => ({
   id: db.id,
   name: db.name,
   description: db.description,
-  image: db.image_url || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&h=400&fit=crop',
+  image: db.image_url || '/placeholder.svg',
   price: Number(db.price),
   priceMedia: db.price_media ? Number(db.price_media) : undefined,
   category: db.category,

@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, Minus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductOption } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { useProducts } from "@/hooks/useProducts";
+import OptimizedImage from "@/components/OptimizedImage";
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -78,10 +79,14 @@ const ProductDetail = () => {
 
       {/* Product Image */}
       <div className="relative h-64 md:h-80">
-        <img 
-          src={product.image} 
+        <OptimizedImage
+          src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover"
+          width={1024}
+          height={320}
+          priority
+          sizes="100vw"
+          className="w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
       </div>
