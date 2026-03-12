@@ -364,19 +364,8 @@ const Checkout = () => {
           </>
         )}
 
-        <Separator className="my-6" />
 
-        {/* Order Notes */}
-        <section className="mb-8">
-          <h2 className="text-xl font-bold mb-4">Notas del pedido</h2>
-          <Textarea
-            placeholder="¿Alguna indicación especial para el repartidor o la cocina?"
-            value={orderNotes}
-            onChange={(e) => setOrderNotes(e.target.value)}
-            className="min-h-[80px] resize-none"
-            maxLength={500}
-          />
-        </section>
+
 
         <Separator className="my-6" />
 
