@@ -26,7 +26,7 @@ const categoryEmojis: Record<string, string> = {
 
 const Category = () => {
   const { slug } = useParams();
-  const { categories, getProductsByCategory, loading } = useProducts();
+  const { categories, getProductsByCategory, loading, pizzaAvailable } = useProducts();
   
   const categoryName = categories.find(
     cat => cat.toLowerCase().replace(/\s+/g, '-').replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/ú/g, 'u').replace(/ñ/g, 'n') === slug
@@ -40,6 +40,28 @@ const Category = () => {
         <Navbar />
         <main className="flex-1 flex items-center justify-center">
           <p className="text-muted-foreground">Cargando...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Check if user navigated to pizzas during lunch
+  const isPizzaSlug = slug === 'pizzas';
+  if (!loading && isPizzaSlug && !pizzaAvailable) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Navbar />
+        <KitchenClosedBanner />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center px-4">
+            <span className="text-6xl mb-4 block">🍕</span>
+            <h1 className="text-2xl font-bold mb-2">Pizzas solo por la noche</h1>
+            <p className="text-muted-foreground mb-6">Las pizzas están disponibles en el turno de noche (20:00 - 23:30)</p>
+            <Link to="/">
+              <Button>Volver a la carta</Button>
+            </Link>
+          </div>
         </main>
         <Footer />
       </div>
