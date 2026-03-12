@@ -38,14 +38,17 @@ const Footer = () => {
           <p className="text-background/50 text-sm">© 2026 Tryb Burger. Todos los derechos reservados.</p>
           <p className="text-background/50 text-sm">© PcPeli Desarrollo</p>
           <div className="flex items-center gap-4">
-            <a href="#" className="text-background/70 hover:text-secondary transition-colors">
+            <a
+              href="https://www.instagram.com/trybburger/?hl=es"
+              className="text-background/70 hover:text-secondary transition-colors"
+            >
               <Instagram className="w-5 h-5" />
             </a>
-            <a href="#" className="text-background/70 hover:text-secondary transition-colors">
+            <a
+              href="https://www.facebook.com/TrybBurgerAlburquerque/?locale=es_LA"
+              className="text-background/70 hover:text-secondary transition-colors"
+            >
               <Facebook className="w-5 h-5" />
-            </a>
-            <a href="#" className="text-background/70 hover:text-secondary transition-colors">
-              <Twitter className="w-5 h-5" />
             </a>
           </div>
         </div>
