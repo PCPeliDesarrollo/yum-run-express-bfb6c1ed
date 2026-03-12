@@ -91,7 +91,7 @@ const CartDrawer = () => {
             </div>
 
             <div
-              className="pt-4 space-y-4 border-t mt-auto"
+              className="pt-4 space-y-3 border-t mt-auto flex-shrink-0"
               style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 16px)" }}
             >
               <div className="flex items-center justify-between">
@@ -108,14 +108,14 @@ const CartDrawer = () => {
               </div>
 
               <Button
-                className="w-full h-12 text-base font-bold rounded-full"
+                className="w-full h-14 text-lg font-bold rounded-full bg-primary hover:bg-primary/90"
                 size="lg"
                 onClick={() => {
                   setIsOpen(false);
                   navigate("/checkout");
                 }}
               >
-                Pagar
+                Pagar · €{totalPrice.toFixed(2)}
               </Button>
             </div>
           </>
