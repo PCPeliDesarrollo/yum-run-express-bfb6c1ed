@@ -594,7 +594,7 @@ const ScheduleEditor = ({
   );
 };
 
-
+const printOrder = (order: Order) => {
   const printWindow = window.open('', '_blank', 'width=400,height=600');
   if (!printWindow) return;
 
