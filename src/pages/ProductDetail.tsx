@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Minus, Check, MessageSquare } from "lucide-react";
+import { ArrowLeft, Plus, Minus, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { ProductOption } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { useProducts } from "@/hooks/useProducts";
@@ -17,7 +16,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
-  const [specialNotes, setSpecialNotes] = useState("");
+  
 
   if (loading) {
     return (
@@ -175,20 +174,6 @@ const ProductDetail = () => {
             </div>
           )}
 
-          <div>
-            <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-muted-foreground" />
-              Peticiones especiales
-            </h3>
-            <Textarea
-              placeholder="¿Alguna alergia o petición especial? Escríbela aquí..."
-              value={specialNotes}
-              onChange={(e) => setSpecialNotes(e.target.value)}
-              className="min-h-[100px] resize-none rounded-xl border-2 border-border focus:border-primary"
-              maxLength={500}
-            />
-            <p className="text-xs text-muted-foreground mt-1 text-right">{specialNotes.length}/500 caracteres</p>
-          </div>
         </div>
 
         {/* Quantity Selector */}
@@ -212,7 +197,7 @@ const ProductDetail = () => {
             disabled={choiceMissing}
             onClick={() => {
               const options = product.options.filter(opt => selectedOptions.includes(opt.id) || opt.id === selectedChoice);
-              addItem(product, quantity, options, specialNotes.trim() || undefined);
+              addItem(product, quantity, options);
               navigate(-1);
             }}
           >
