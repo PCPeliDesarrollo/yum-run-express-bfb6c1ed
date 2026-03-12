@@ -79,6 +79,60 @@ const Admin = () => {
   const [activeTab, setActiveTab] = useState<'orders' | 'menu' | 'promo' | 'horario'>('orders');
   const { isOpen: kitchenOpen, toggleKitchen, schedule, scheduleLoading, updateSchedule } = useKitchenStatus();
   const { promo, updatePromo, loading: promoLoading } = usePromo();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Request notification permission on mount
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  const playNotificationSound = useCallback(() => {
+    try {
+      // Create a beep sound using Web Audio API
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      const playBeep = (freq: number, startTime: number, duration: number) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.3, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+      };
+
+      // 3 beeps
+      playBeep(880, ctx.currentTime, 0.15);
+      playBeep(880, ctx.currentTime + 0.2, 0.15);
+      playBeep(1100, ctx.currentTime + 0.4, 0.3);
+    } catch (e) {
+      console.warn('Could not play notification sound', e);
+    }
+  }, []);
+
+  const showOrderNotification = useCallback((order: Order) => {
+    playNotificationSound();
+
+    // Browser notification
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('🔔 ¡Nuevo pedido!', {
+        body: `Pedido #${order.order_number} — €${Number(order.total).toFixed(2)}`,
+        icon: '/logo_tryb.jpg',
+        tag: `order-${order.id}`,
+      });
+    }
+
+    // In-app toast
+    toast({
+      title: '🔔 ¡Nuevo pedido!',
+      description: `Pedido #${order.order_number} — €${Number(order.total).toFixed(2)}`,
+    });
+  }, [playNotificationSound, toast]);
 
   useEffect(() => {
     if (!authLoading && !user) {
