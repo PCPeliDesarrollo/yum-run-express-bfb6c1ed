@@ -198,7 +198,7 @@ const ProductDetail = () => {
             disabled={choiceMissing}
             onClick={() => {
               const options = product.options.filter(opt => selectedOptions.includes(opt.id) || opt.id === selectedChoice);
-              addItem(product, quantity, options, specialNotes.trim() || undefined);
+              addItem(product, quantity, options);
               navigate(-1);
             }}
           >
