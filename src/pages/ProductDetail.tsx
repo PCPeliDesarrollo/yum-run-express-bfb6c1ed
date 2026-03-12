@@ -79,10 +79,14 @@ const ProductDetail = () => {
 
       {/* Product Image */}
       <div className="relative h-64 md:h-80">
-        <img 
-          src={product.image} 
+        <OptimizedImage
+          src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover"
+          width={1024}
+          height={320}
+          priority
+          sizes="100vw"
+          className="w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
       </div>
