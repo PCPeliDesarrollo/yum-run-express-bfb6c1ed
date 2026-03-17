@@ -84,10 +84,10 @@ const MenuSection = () => {
                   <OptimizedImage
                     src={getImage(category)}
                     alt={category}
-                    width={200}
-                    height={200}
-                    priority={i < 7}
-                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 14vw"
+                    width={160}
+                    height={160}
+                    priority={i < 2}
+                    sizes="(max-width: 640px) 42vw, (max-width: 768px) 30vw, (max-width: 1024px) 22vw, 11vw"
                     className="w-full h-full group-hover:scale-110 transition-transform duration-300"
                   />
                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />

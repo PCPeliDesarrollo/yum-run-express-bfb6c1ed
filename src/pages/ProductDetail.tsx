@@ -82,7 +82,7 @@ const ProductDetail = () => {
         <OptimizedImage
           src={product.image}
           alt={product.name}
-          width={1024}
+          width={768}
           height={320}
           priority
           sizes="100vw"
