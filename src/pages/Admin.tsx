@@ -553,6 +553,61 @@ const PromoEditor = ({
           <p className="text-xs text-muted-foreground">Si seleccionas un producto, el botón lo añadirá directamente al carrito.</p>
         </div>
 
+        {/* Extras fuera de carta */}
+        {form.productId && (
+          <div className="space-y-2">
+            <Label>Extras (fuera de carta)</Label>
+            <p className="text-xs text-muted-foreground">Añade cosas que no están en la carta para incluir en esta oferta</p>
+            <div className="flex gap-2">
+              <Input
+                id="extra-input"
+                placeholder="Ej: Patatas, Bebida, Pan de ajo..."
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const input = e.currentTarget;
+                    const val = input.value.trim();
+                    if (val && !(form.extras || []).includes(val)) {
+                      setForm({ ...form, extras: [...(form.extras || []), val] });
+                      input.value = '';
+                    }
+                  }
+                }}
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const input = document.getElementById('extra-input') as HTMLInputElement;
+                  const val = input?.value.trim();
+                  if (val && !(form.extras || []).includes(val)) {
+                    setForm({ ...form, extras: [...(form.extras || []), val] });
+                    input.value = '';
+                  }
+                }}
+              >
+                Añadir
+              </Button>
+            </div>
+            {(form.extras || []).length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-1">
+                {(form.extras || []).map((extra) => (
+                  <span key={extra} className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded-full">
+                    {extra}
+                    <button
+                      onClick={() => setForm({ ...form, extras: (form.extras || []).filter(e => e !== extra) })}
+                      className="hover:text-destructive ml-1 font-bold"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Texto del botón</Label>

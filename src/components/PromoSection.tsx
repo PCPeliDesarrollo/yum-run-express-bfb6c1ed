@@ -1,34 +1,18 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { usePromo } from "@/hooks/usePromo";
 import { useCart } from "@/contexts/CartContext";
 import { useProducts } from "@/hooks/useProducts";
 import { toast } from "@/hooks/use-toast";
-import { ShoppingCart, Plus, X } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 
 const PromoSection = () => {
   const { promo, loading } = usePromo();
   const { addItem, setIsOpen } = useCart();
   const { getProductById } = useProducts();
-  const [extras, setExtras] = useState<string[]>([]);
-  const [newExtra, setNewExtra] = useState("");
 
   if (loading || !promo.enabled) return null;
 
   const product = promo.productId ? getProductById(promo.productId) : null;
-
-  const handleAddExtra = () => {
-    const trimmed = newExtra.trim();
-    if (trimmed && !extras.includes(trimmed)) {
-      setExtras([...extras, trimmed]);
-      setNewExtra("");
-    }
-  };
-
-  const handleRemoveExtra = (extra: string) => {
-    setExtras(extras.filter(e => e !== extra));
-  };
 
   const handleOrder = () => {
     if (!product) {
@@ -36,11 +20,10 @@ const PromoSection = () => {
       return;
     }
 
-    const notes = extras.length > 0 ? `Extras: ${extras.join(", ")}` : undefined;
+    const notes = promo.extras?.length ? `Extras: ${promo.extras.join(", ")}` : undefined;
     addItem(product, 1, [], notes);
     setIsOpen(true);
     toast({ title: "✅ Añadido al carrito", description: product.name });
-    setExtras([]);
   };
 
   return (
@@ -66,7 +49,6 @@ const PromoSection = () => {
             {/* Product details card */}
             {product && (
               <div className="bg-background/95 backdrop-blur rounded-2xl p-4 md:p-6 flex flex-col md:flex-row gap-4 md:gap-6 items-center md:items-start max-w-2xl mx-auto md:mx-0 shadow-lg">
-                {/* Product image */}
                 <div className="w-32 h-32 md:w-40 md:h-40 rounded-xl overflow-hidden flex-shrink-0">
                   <img
                     src={product.image}
@@ -76,52 +58,28 @@ const PromoSection = () => {
                   />
                 </div>
 
-                {/* Product info */}
                 <div className="flex-1 text-center md:text-left w-full">
                   <h3 className="text-xl font-bold text-foreground mb-1">{product.name}</h3>
                   <p className="text-muted-foreground text-sm mb-3 line-clamp-2">{product.description}</p>
-                  <div className="text-2xl font-bold text-primary mb-4">
-                    {product.price.toFixed(2)} €
-                  </div>
-
-                  {/* Extras input */}
-                  <div className="mb-4">
-                    <p className="text-sm font-medium text-foreground mb-2">
-                      ¿Quieres añadir algo más?
-                    </p>
-                    <div className="flex gap-2">
-                      <Input
-                        value={newExtra}
-                        onChange={(e) => setNewExtra(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleAddExtra()}
-                        placeholder="Ej: Extra de queso, pan de ajo..."
-                        className="text-sm bg-muted border-border"
-                      />
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        onClick={handleAddExtra}
-                        disabled={!newExtra.trim()}
-                        className="flex-shrink-0"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    {extras.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {extras.map((extra) => (
+                  
+                  {promo.extras && promo.extras.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-sm font-semibold text-foreground mb-1">Incluye además:</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {promo.extras.map((extra) => (
                           <span
                             key={extra}
-                            className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded-full"
+                            className="inline-block bg-primary/10 text-primary text-xs font-medium px-2.5 py-1 rounded-full"
                           >
-                            {extra}
-                            <button onClick={() => handleRemoveExtra(extra)} className="hover:text-destructive">
-                              <X className="h-3 w-3" />
-                            </button>
+                            + {extra}
                           </span>
                         ))}
                       </div>
-                    )}
+                    </div>
+                  )}
+
+                  <div className="text-2xl font-bold text-primary mb-4">
+                    {product.price.toFixed(2)} €
                   </div>
 
                   <Button
@@ -135,7 +93,6 @@ const PromoSection = () => {
               </div>
             )}
 
-            {/* Fallback if no product linked */}
             {!product && promo.buttonText && (
               <Button
                 size="lg"
