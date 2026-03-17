@@ -35,9 +35,9 @@ const ProductCard = ({ product, compact = false }: ProductCardProps) => {
           <OptimizedImage
             src={product.image}
             alt={product.name}
-            width={200}
-            height={200}
-            sizes="(max-width: 640px) 50vw, 25vw"
+            width={160}
+            height={160}
+            sizes="(max-width: 640px) 44vw, 22vw"
             className="w-full h-full group-hover:scale-105 transition-transform duration-300"
           />
           <button
@@ -68,9 +68,9 @@ const ProductCard = ({ product, compact = false }: ProductCardProps) => {
         <OptimizedImage
           src={product.image}
           alt={product.name}
-          width={400}
+          width={320}
           height={144}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 24vw"
           className="w-full h-full group-hover:scale-105 transition-transform duration-300"
         />
         <button
