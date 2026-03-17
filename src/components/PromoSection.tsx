@@ -58,7 +58,7 @@ const PromoSection = () => {
                   />
                 </div>
 
-                <div className="flex-1 text-center md:text-left w-full">
+                <div className="flex-1 text-center w-full">
                   <h3 className="text-xl font-bold text-foreground mb-1">{product.name}</h3>
                   <p className="text-muted-foreground text-sm mb-3 line-clamp-2">{product.description}</p>
                   
