@@ -51,11 +51,13 @@ const PromoSection = () => {
             {product && (
               <div className="bg-background/95 backdrop-blur rounded-2xl p-4 md:p-6 flex flex-col items-center max-w-md mx-auto shadow-lg">
                 <div className="w-32 h-32 md:w-40 md:h-40 rounded-xl overflow-hidden flex-shrink-0">
-                  <img
+                  <OptimizedImage
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
+                    width={320}
+                    height={320}
+                    sizes="(max-width: 768px) 128px, 160px"
+                    className="w-full h-full"
                   />
                 </div>
 
