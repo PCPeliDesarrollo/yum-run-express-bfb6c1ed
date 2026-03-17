@@ -1,9 +1,10 @@
-import { Minus, Plus, Trash2, X, ShoppingBag, MessageSquare } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
 import { Separator } from "@/components/ui/separator";
+import OptimizedImage from "@/components/OptimizedImage";
 
 const CartDrawer = () => {
   const navigate = useNavigate();
@@ -34,10 +35,13 @@ const CartDrawer = () => {
             <div className="flex-1 overflow-y-auto space-y-4 pr-2">
               {items.map((item) => (
                 <div key={item.id} className="flex gap-3 bg-muted/30 rounded-xl p-3">
-                  <img
+                  <OptimizedImage
                     src={item.product.image}
                     alt={item.product.name}
-                    className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                    width={80}
+                    height={80}
+                    sizes="80px"
+                    className="w-20 h-20 rounded-lg flex-shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-sm line-clamp-1">{item.product.name}</h4>
