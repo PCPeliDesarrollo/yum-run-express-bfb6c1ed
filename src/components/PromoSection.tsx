@@ -65,7 +65,7 @@ const PromoSection = () => {
                   {promo.extras && promo.extras.length > 0 && (
                     <div className="mb-3">
                       <p className="text-sm font-semibold text-foreground mb-1">Incluye además:</p>
-                      <div className="flex flex-wrap gap-1.5">
+                      <div className="flex flex-wrap gap-1.5 justify-center">
                         {promo.extras.map((extra) => (
                           <span
                             key={extra}
