@@ -54,8 +54,8 @@ const PromoSection = () => {
                   <OptimizedImage
                     src={product.image}
                     alt={product.name}
-                    width={320}
-                    height={320}
+                    width={240}
+                    height={240}
                     sizes="(max-width: 768px) 128px, 160px"
                     className="w-full h-full"
                   />
