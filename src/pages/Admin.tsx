@@ -476,10 +476,24 @@ const PromoEditor = ({
 }) => {
   const [form, setForm] = useState<PromoData>(promo);
   const [saving, setSaving] = useState(false);
+  const [allProducts, setAllProducts] = useState<{ id: string; name: string; category: string; price: number }[]>([]);
 
   useEffect(() => {
     setForm(promo);
   }, [promo]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data } = await supabase
+        .from('products')
+        .select('id, name, category, price')
+        .eq('available', true)
+        .order('category')
+        .order('name');
+      if (data) setAllProducts(data);
+    };
+    fetchProducts();
+  }, []);
 
   const handleSave = async () => {
     setSaving(true);
@@ -522,15 +536,34 @@ const PromoEditor = ({
           <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Hamburguesa + Patatas + Bebida..." rows={3} />
         </div>
 
+        <div className="space-y-2">
+          <Label>Producto vinculado</Label>
+          <select
+            value={form.productId || ''}
+            onChange={(e) => setForm({ ...form, productId: e.target.value || undefined })}
+            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
+          >
+            <option value="">Sin producto (solo enlace)</option>
+            {allProducts.map(p => (
+              <option key={p.id} value={p.id}>
+                {p.category} — {p.name} ({p.price.toFixed(2)}€)
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-muted-foreground">Si seleccionas un producto, el botón lo añadirá directamente al carrito.</p>
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Texto del botón</Label>
             <Input value={form.buttonText} onChange={(e) => setForm({ ...form, buttonText: e.target.value })} placeholder="Pedir ahora" />
           </div>
-          <div className="space-y-2">
-            <Label>Enlace del botón</Label>
-            <Input value={form.buttonLink} onChange={(e) => setForm({ ...form, buttonLink: e.target.value })} placeholder="/menu" />
-          </div>
+          {!form.productId && (
+            <div className="space-y-2">
+              <Label>Enlace del botón</Label>
+              <Input value={form.buttonLink} onChange={(e) => setForm({ ...form, buttonLink: e.target.value })} placeholder="/menu" />
+            </div>
+          )}
         </div>
 
         <Button onClick={handleSave} disabled={saving} className="w-full py-6 text-lg font-bold rounded-xl">
@@ -544,6 +577,7 @@ const PromoEditor = ({
           {form.badge && <span className="inline-block bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full mb-2">{form.badge}</span>}
           <h3 className="text-xl font-bold text-secondary-foreground mb-2">{form.title}</h3>
           <p className="text-secondary-foreground/80 text-sm">{form.description}</p>
+          {form.productId && <p className="text-xs text-secondary-foreground/60 mt-2">🔗 Vinculado a producto</p>}
         </div>
       )}
     </div>

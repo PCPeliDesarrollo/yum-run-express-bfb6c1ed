@@ -8,6 +8,7 @@ export interface PromoData {
   description: string;
   buttonText: string;
   buttonLink: string;
+  productId?: string;
 }
 
 const DEFAULT_PROMO: PromoData = {

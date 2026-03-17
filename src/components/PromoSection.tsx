@@ -1,12 +1,32 @@
 import { Button } from "@/components/ui/button";
 import { usePromo } from "@/hooks/usePromo";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { useProducts } from "@/hooks/useProducts";
+import { toast } from "@/hooks/use-toast";
 
 const PromoSection = () => {
   const { promo, loading } = usePromo();
   const navigate = useNavigate();
+  const { addItem, setIsOpen } = useCart();
+  const { getProductById } = useProducts();
 
   if (loading || !promo.enabled) return null;
+
+  const handleClick = () => {
+    if (promo.productId) {
+      const product = getProductById(promo.productId);
+      if (product) {
+        addItem(product, 1);
+        setIsOpen(true);
+        toast({ title: "✅ Añadido al carrito", description: product.name });
+      } else {
+        toast({ title: "Producto no disponible", variant: "destructive" });
+      }
+    } else {
+      navigate(promo.buttonLink || "/menu");
+    }
+  };
 
   return (
     <section id="ofertas" className="py-12 bg-background">
@@ -31,7 +51,7 @@ const PromoSection = () => {
               <Button 
                 size="lg"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full px-8"
-                onClick={() => navigate(promo.buttonLink || "/menu")}
+                onClick={handleClick}
               >
                 {promo.buttonText}
               </Button>
