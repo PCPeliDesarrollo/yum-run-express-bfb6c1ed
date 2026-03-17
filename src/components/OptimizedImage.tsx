@@ -20,7 +20,7 @@ const OptimizedImage = memo(({ src, alt, className, width, height, priority = fa
 
   const imageSrc = useMemo(() => {
     if (useOriginalSrc) return src;
-    return getOptimizedImageUrl(src, { width, height, quality: 68, format: "webp" });
+    return getOptimizedImageUrl(src, { width, height, quality: 52, format: "webp" });
   }, [src, width, height, useOriginalSrc]);
 
   useEffect(() => {
