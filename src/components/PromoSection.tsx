@@ -33,7 +33,7 @@ const PromoSection = () => {
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
 
-          <div className="relative z-10">
+          <div className="relative z-10 text-center">
             {promo.badge && (
               <span className="inline-block bg-primary text-primary-foreground text-sm font-bold px-4 py-1 rounded-full mb-4">
                 {promo.badge}
@@ -42,13 +42,13 @@ const PromoSection = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-secondary-foreground mb-2">
               {promo.title}
             </h2>
-            <p className="text-secondary-foreground/80 mb-6 max-w-lg mx-auto md:mx-0">
+            <p className="text-secondary-foreground/80 mb-6 max-w-lg mx-auto">
               {promo.description}
             </p>
 
             {/* Product details card */}
             {product && (
-              <div className="bg-background/95 backdrop-blur rounded-2xl p-4 md:p-6 flex flex-col md:flex-row gap-4 md:gap-6 items-center md:items-start max-w-2xl mx-auto md:mx-0 shadow-lg">
+              <div className="bg-background/95 backdrop-blur rounded-2xl p-4 md:p-6 flex flex-col items-center max-w-md mx-auto shadow-lg">
                 <div className="w-32 h-32 md:w-40 md:h-40 rounded-xl overflow-hidden flex-shrink-0">
                   <img
                     src={product.image}
