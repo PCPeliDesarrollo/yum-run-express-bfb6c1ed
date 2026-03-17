@@ -14,7 +14,7 @@ const STORAGE_RENDER_SEGMENT = "/storage/v1/render/image/public/";
  */
 export const getOptimizedImageUrl = (
   src: string,
-  { width, height, quality = 70, format = "webp" }: OptimizeImageUrlOptions = {}
+  { width, height, quality = 55, format = "webp" }: OptimizeImageUrlOptions = {}
 ): string => {
   if (!src || !src.includes(STORAGE_OBJECT_SEGMENT)) return src;
 

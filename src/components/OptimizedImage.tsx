@@ -43,7 +43,7 @@ const OptimizedImage = memo(({ src, alt, className, width, height, priority = fa
           observer.disconnect();
         }
       },
-      { rootMargin: "400px" }
+      { rootMargin: "120px" }
     );
 
     observer.observe(el);
