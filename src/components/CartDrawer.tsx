@@ -1,9 +1,10 @@
-import { Minus, Plus, Trash2, X, ShoppingBag, MessageSquare } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCart } from "@/contexts/CartContext";
 import { Separator } from "@/components/ui/separator";
+import OptimizedImage from "@/components/OptimizedImage";
 
 const CartDrawer = () => {
   const navigate = useNavigate();

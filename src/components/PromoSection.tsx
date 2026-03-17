@@ -4,6 +4,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useProducts } from "@/hooks/useProducts";
 import { toast } from "@/hooks/use-toast";
 import { ShoppingCart } from "lucide-react";
+import OptimizedImage from "@/components/OptimizedImage";
 
 const PromoSection = () => {
   const { promo, loading } = usePromo();
