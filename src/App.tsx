@@ -9,6 +9,7 @@ import { useNativeApp } from "@/hooks/useNativeApp";
 import CartDrawer from "@/components/CartDrawer";
 import FloatingCartButton from "@/components/FloatingCartButton";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
 import Category from "./pages/Category";
