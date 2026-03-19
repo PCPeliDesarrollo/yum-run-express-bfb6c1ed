@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Product } from '@/data/products';
 
@@ -23,6 +24,9 @@ interface DbProduct {
   options: any;
 }
 
+const PRODUCTS_STALE_TIME = 1000 * 60 * 5;
+const PRODUCTS_GC_TIME = 1000 * 60 * 30;
+
 const mapDbToProduct = (db: DbProduct): Product => ({
   id: db.id,
   name: db.name,
@@ -39,79 +43,89 @@ const mapDbToProduct = (db: DbProduct): Product => ({
 
 const isPizzaAvailable = (): boolean => {
   const now = new Date();
-  // Convert to Spain timezone
   const spainTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Madrid' }));
   const h = spainTime.getHours();
   const m = spainTime.getMinutes();
   const totalMinutes = h * 60 + m;
-  // Pizzas only available during evening shift: 20:00-23:30
-  return totalMinutes >= 1200 && totalMinutes < 1410; // 20*60=1200, 23*60+30=1410
+  return totalMinutes >= 1200 && totalMinutes < 1410;
+};
+
+const fetchAvailableProducts = async (): Promise<Product[]> => {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('available', true)
+    .order('sort_order', { ascending: true });
+
+  if (error) throw error;
+  return (data || []).map(mapDbToProduct);
+};
+
+const fetchAllProducts = async (): Promise<DbProduct[]> => {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('category', { ascending: true })
+    .order('sort_order', { ascending: true });
+
+  if (error) throw error;
+  return (data || []) as DbProduct[];
 };
 
 export const useProducts = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [pizzaAvailable, setPizzaAvailable] = useState(isPizzaAvailable());
 
-  const fetchProducts = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('available', true)
-      .order('sort_order', { ascending: true });
-
-    if (error) {
-      setError(error.message);
-      console.error('Error fetching products:', error);
-    } else {
-      setProducts((data || []).map(mapDbToProduct));
-    }
-    setLoading(false);
-  };
+  const {
+    data: products = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['products', 'available'],
+    queryFn: fetchAvailableProducts,
+    staleTime: PRODUCTS_STALE_TIME,
+    gcTime: PRODUCTS_GC_TIME,
+    refetchOnWindowFocus: false,
+  });
 
   useEffect(() => {
-    fetchProducts();
-    // Re-check pizza availability every minute
     const interval = setInterval(() => {
       setPizzaAvailable(isPizzaAvailable());
     }, 60000);
+
     return () => clearInterval(interval);
   }, []);
 
-  // Keep all products visible but expose pizza availability flag
-  const categories = [...new Set(products.map(p => p.category))];
+  const categories = useMemo(() => [...new Set(products.map((p) => p.category))], [products]);
 
-  const getProductById = (id: string) => products.find(p => p.id === id);
-  const getProductsByCategory = (category: string) => products.filter(p => p.category === category);
+  const getProductById = (id: string) => products.find((p) => p.id === id);
+  const getProductsByCategory = (category: string) => products.filter((p) => p.category === category);
+  const errorMessage = error instanceof Error ? error.message : error ? 'Error al cargar productos' : null;
 
-  return { products, categories, loading, error, getProductById, getProductsByCategory, refetch: fetchProducts, pizzaAvailable };
+  return {
+    products,
+    categories,
+    loading: isLoading,
+    error: errorMessage,
+    getProductById,
+    getProductsByCategory,
+    refetch: () => refetch(),
+    pizzaAvailable,
+  };
 };
 
 export const useAllProducts = () => {
-  const [products, setProducts] = useState<DbProduct[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: products = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ['products', 'all'],
+    queryFn: fetchAllProducts,
+    staleTime: 1000 * 60,
+    gcTime: PRODUCTS_GC_TIME,
+    refetchOnWindowFocus: false,
+  });
 
-  const fetchProducts = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('category', { ascending: true })
-      .order('sort_order', { ascending: true });
-
-    if (error) {
-      console.error('Error fetching products:', error);
-    } else {
-      setProducts((data || []) as DbProduct[]);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  return { products, loading, refetch: fetchProducts };
+  return { products, loading: isLoading, refetch: () => refetch() };
 };

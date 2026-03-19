@@ -20,7 +20,7 @@ const OptimizedImage = memo(({ src, alt, className, width, height, priority = fa
 
   const imageSrc = useMemo(() => {
     if (useOriginalSrc) return src;
-    return getOptimizedImageUrl(src, { width, height, quality: 52, format: "webp" });
+    return getOptimizedImageUrl(src, { width, height, quality: 40, format: "webp" });
   }, [src, width, height, useOriginalSrc]);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const OptimizedImage = memo(({ src, alt, className, width, height, priority = fa
           observer.disconnect();
         }
       },
-      { rootMargin: "120px" }
+      { rootMargin: "40px" }
     );
 
     observer.observe(el);

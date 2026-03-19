@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import { useCategoryImages } from "@/hooks/useCategoryImages";
 import OptimizedImage from "@/components/OptimizedImage";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Import category images as fallbacks
 import hamburguesasImg from "@/assets/categories/hamburguesas.jpg";
@@ -49,13 +50,21 @@ const getCategorySlug = (category: string) => {
 
 const MenuSection = () => {
   const { categories, loading, pizzaAvailable } = useProducts();
-  const { categoryImages } = useCategoryImages();
+  const { categoryImages, loading: categoryImagesLoading } = useCategoryImages();
 
-  if (loading) {
+  if (loading || categoryImagesLoading) {
     return (
       <section className="py-8 bg-muted/50">
-        <div className="container mx-auto px-4 text-center text-muted-foreground">
-          Cargando carta...
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-center">
+            Nuestra Carta
+          </h2>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3">
+            {Array.from({ length: 14 }).map((_, i) => (
+              <Skeleton key={i} className="aspect-square rounded-2xl" />
+            ))}
+          </div>
         </div>
       </section>
     );
@@ -71,7 +80,7 @@ const MenuSection = () => {
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-center">
           Nuestra Carta
         </h2>
-        
+
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3">
           {categories.map((category, i) => (
             <Link
@@ -84,18 +93,18 @@ const MenuSection = () => {
                   <OptimizedImage
                     src={getImage(category)}
                     alt={category}
-                    width={160}
-                    height={160}
+                    width={128}
+                    height={128}
                     priority={i < 2}
                     sizes="(max-width: 640px) 42vw, (max-width: 768px) 30vw, (max-width: 1024px) 22vw, 11vw"
                     className="w-full h-full group-hover:scale-110 transition-transform duration-300"
                   />
-                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                   {category === 'Pizzas' && !pizzaAvailable && (
-                     <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-tight">
-                       🌙 Noches
-                     </div>
-                   )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  {category === 'Pizzas' && !pizzaAvailable && (
+                    <div className="absolute top-1 right-1 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-tight">
+                      🌙 Noches
+                    </div>
+                  )}
                   <div className="absolute bottom-0 left-0 right-0 p-2">
                     <span className="text-xs md:text-sm font-semibold text-white text-center block leading-tight drop-shadow-lg">
                       {category}

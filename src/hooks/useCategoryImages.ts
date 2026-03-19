@@ -1,9 +1,38 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+const CATEGORY_IMAGES_CACHE_KEY = 'category_images_cache_v1';
+
+const readCachedCategoryImages = (): Record<string, string> => {
+  if (typeof window === 'undefined') return {};
+
+  try {
+    const raw = localStorage.getItem(CATEGORY_IMAGES_CACHE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      return parsed as Record<string, string>;
+    }
+  } catch {
+    // ignore cache parsing errors
+  }
+
+  return {};
+};
+
+const writeCachedCategoryImages = (images: Record<string, string>) => {
+  if (typeof window === 'undefined') return;
+
+  try {
+    localStorage.setItem(CATEGORY_IMAGES_CACHE_KEY, JSON.stringify(images));
+  } catch {
+    // ignore cache write errors
+  }
+};
+
 export const useCategoryImages = () => {
-  const [categoryImages, setCategoryImages] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(true);
+  const [categoryImages, setCategoryImages] = useState<Record<string, string>>(() => readCachedCategoryImages());
+  const [loading, setLoading] = useState(() => Object.keys(readCachedCategoryImages()).length === 0);
 
   const fetchImages = useCallback(async () => {
     const { data } = await supabase
@@ -13,8 +42,11 @@ export const useCategoryImages = () => {
       .maybeSingle();
 
     if (data?.value && typeof data.value === 'object' && !Array.isArray(data.value)) {
-      setCategoryImages(data.value as Record<string, string>);
+      const images = data.value as Record<string, string>;
+      setCategoryImages(images);
+      writeCachedCategoryImages(images);
     }
+
     setLoading(false);
   }, []);
 
@@ -31,7 +63,9 @@ export const useCategoryImages = () => {
 
     if (!error) {
       setCategoryImages(updated);
+      writeCachedCategoryImages(updated);
     }
+
     return { error };
   };
 
