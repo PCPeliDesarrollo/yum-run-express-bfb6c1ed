@@ -106,14 +106,6 @@ const Auth = () => {
       {/* Header */}
       <div className="bg-primary p-4">
         <div className="container mx-auto flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => navigate('/')}
-            className="text-primary-foreground hover:bg-primary-foreground/10"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
           <h1 className="text-lg font-bold text-primary-foreground">
             {isLogin ? 'Iniciar sesión' : 'Crear cuenta'}
           </h1>

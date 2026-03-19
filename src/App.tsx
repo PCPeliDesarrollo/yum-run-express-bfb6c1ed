@@ -9,6 +9,7 @@ import { useNativeApp } from "@/hooks/useNativeApp";
 import CartDrawer from "@/components/CartDrawer";
 import FloatingCartButton from "@/components/FloatingCartButton";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
 import Category from "./pages/Category";
@@ -40,15 +41,14 @@ const AppContent = () => {
         <FloatingCartButton />
         <MobileBottomNav />
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/categoria/:slug" element={<Category />} />
-          <Route path="/producto/:id" element={<ProductDetail />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/perfil" element={<Profile />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/mis-pedidos" element={<MisPedidos />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+          <Route path="/categoria/:slug" element={<ProtectedRoute><Category /></ProtectedRoute>} />
+          <Route path="/producto/:id" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
+          <Route path="/perfil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          <Route path="/mis-pedidos" element={<ProtectedRoute><MisPedidos /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
