@@ -19,7 +19,14 @@ import Checkout from "./pages/Checkout";
 import MisPedidos from "./pages/MisPedidos";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const AppContent = () => {
   useNativeApp();
