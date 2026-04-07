@@ -1,6 +1,5 @@
-import { useState, useRef, useEffect, useMemo, memo } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 import { cn } from "@/lib/utils";
-import { getOptimizedImageUrl } from "@/lib/optimizeImageUrl";
 
 interface OptimizedImageProps {
   src: string;
@@ -15,22 +14,11 @@ interface OptimizedImageProps {
 const OptimizedImage = memo(({ src, alt, className, width, height, priority = false, sizes }: OptimizedImageProps) => {
   const [loaded, setLoaded] = useState(false);
   const [inView, setInView] = useState(priority);
-  const [useOriginalSrc, setUseOriginalSrc] = useState(false);
   const imgRef = useRef<HTMLDivElement>(null);
-
-  const imageSrc = useMemo(() => {
-    if (useOriginalSrc) return src;
-    const optimizedQuality = priority ? 32 : 28;
-    return getOptimizedImageUrl(src, { width, height, quality: optimizedQuality, format: "webp" });
-  }, [src, width, height, priority, useOriginalSrc]);
-
-  useEffect(() => {
-    setUseOriginalSrc(false);
-  }, [src]);
 
   useEffect(() => {
     setLoaded(false);
-  }, [imageSrc]);
+  }, [src]);
 
   useEffect(() => {
     if (priority) return;
@@ -56,7 +44,7 @@ const OptimizedImage = memo(({ src, alt, className, width, height, priority = fa
       {!loaded && <div className="absolute inset-0 bg-muted animate-pulse" />}
       {inView && (
         <img
-          src={imageSrc}
+          src={src}
           alt={alt}
           width={width}
           height={height}
@@ -66,13 +54,7 @@ const OptimizedImage = memo(({ src, alt, className, width, height, priority = fa
           // @ts-ignore - fetchpriority is valid HTML but not yet in React types
           fetchpriority={priority ? "high" : "low"}
           onLoad={() => setLoaded(true)}
-          onError={() => {
-            if (!useOriginalSrc) {
-              setUseOriginalSrc(true);
-              return;
-            }
-            setLoaded(true);
-          }}
+          onError={() => setLoaded(true)}
           className={cn(
             "w-full h-full object-cover transition-opacity duration-200",
             loaded ? "opacity-100" : "opacity-0"
