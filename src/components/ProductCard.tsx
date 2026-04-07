@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
-import { Product } from "@/data/products";
+import type { Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import OptimizedImage from "@/components/OptimizedImage";
 

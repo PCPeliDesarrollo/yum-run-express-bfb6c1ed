@@ -4,9 +4,9 @@
  */
 export async function compressImage(
   file: File,
-  maxWidth = 800,
-  maxHeight = 800,
-  quality = 0.7
+  maxWidth = 640,
+  maxHeight = 640,
+  quality = 0.55
 ): Promise<File> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -17,7 +17,6 @@ export async function compressImage(
 
       let { width, height } = img;
 
-      // Scale down proportionally
       if (width > maxWidth || height > maxHeight) {
         const ratio = Math.min(maxWidth / width, maxHeight / height);
         width = Math.round(width * ratio);
@@ -34,6 +33,8 @@ export async function compressImage(
         return;
       }
 
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
       ctx.drawImage(img, 0, 0, width, height);
 
       canvas.toBlob(
@@ -42,10 +43,12 @@ export async function compressImage(
             reject(new Error("Could not compress image"));
             return;
           }
+
           const compressed = new File([blob], file.name.replace(/\.\w+$/, ".jpg"), {
             type: "image/jpeg",
             lastModified: Date.now(),
           });
+
           resolve(compressed);
         },
         "image/jpeg",

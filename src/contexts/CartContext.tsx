@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from "react";
-import { Product, ProductOption } from "@/data/products";
+import type { Product, ProductOption } from "@/data/products";
 
 export interface CartItem {
   id: string;
