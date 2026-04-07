@@ -10,7 +10,12 @@ const STORAGE_RENDER_SEGMENT = "/storage/v1/render/image/public/";
 
 const clampDimension = (dimension?: number) => {
   if (!dimension) return undefined;
-  return Math.min(Math.max(Math.round(dimension), 32), 960);
+  return Math.min(Math.max(Math.round(dimension), 32), 720);
+};
+
+const clampQuality = (quality?: number) => {
+  if (!quality) return 32;
+  return Math.min(Math.max(Math.round(quality), 20), 60);
 };
 
 /**
@@ -19,7 +24,7 @@ const clampDimension = (dimension?: number) => {
  */
 export const getOptimizedImageUrl = (
   src: string,
-  { width, height, quality = 45, format = "webp" }: OptimizeImageUrlOptions = {}
+  { width, height, quality = 32, format = "webp" }: OptimizeImageUrlOptions = {}
 ): string => {
   if (!src || !src.includes(STORAGE_OBJECT_SEGMENT)) return src;
 
@@ -32,7 +37,7 @@ export const getOptimizedImageUrl = (
 
   if (optimizedWidth) params.set("width", String(optimizedWidth));
   if (optimizedHeight) params.set("height", String(optimizedHeight));
-  params.set("quality", String(quality));
+  params.set("quality", String(clampQuality(quality)));
   if (format !== "origin") params.set("format", format);
 
   return `${baseWithoutQuery}?${params.toString()}`;
