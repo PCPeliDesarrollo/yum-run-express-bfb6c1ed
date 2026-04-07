@@ -1,44 +1,6 @@
-interface OptimizeImageUrlOptions {
-  width?: number;
-  height?: number;
-  quality?: number;
-  format?: "webp" | "origin";
-}
-
-const STORAGE_OBJECT_SEGMENT = "/storage/v1/object/public/";
-const STORAGE_RENDER_SEGMENT = "/storage/v1/render/image/public/";
-
-const clampDimension = (dimension?: number) => {
-  if (!dimension) return undefined;
-  return Math.min(Math.max(Math.round(dimension), 32), 720);
-};
-
-const clampQuality = (quality?: number) => {
-  if (!quality) return 32;
-  return Math.min(Math.max(Math.round(quality), 20), 60);
-};
-
 /**
- * Converts public storage URLs to transformed image URLs for faster loading.
- * Falls back to original URL for non-storage images.
+ * Image URL utility.
+ * Note: Supabase image transforms (/render/image/) are not available on this project,
+ * so we return the original URL as-is. Optimization happens at upload time via imageCompressor.
  */
-export const getOptimizedImageUrl = (
-  src: string,
-  { width, height, quality = 32, format = "webp" }: OptimizeImageUrlOptions = {}
-): string => {
-  if (!src || !src.includes(STORAGE_OBJECT_SEGMENT)) return src;
-
-  const transformedBaseUrl = src.replace(STORAGE_OBJECT_SEGMENT, STORAGE_RENDER_SEGMENT);
-  const [baseWithoutQuery] = transformedBaseUrl.split("?");
-
-  const params = new URLSearchParams();
-  const optimizedWidth = clampDimension(width);
-  const optimizedHeight = clampDimension(height);
-
-  if (optimizedWidth) params.set("width", String(optimizedWidth));
-  if (optimizedHeight) params.set("height", String(optimizedHeight));
-  params.set("quality", String(clampQuality(quality)));
-  if (format !== "origin") params.set("format", format);
-
-  return `${baseWithoutQuery}?${params.toString()}`;
-};
+export const getOptimizedImageUrl = (src: string): string => src;
