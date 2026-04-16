@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { MapPin, User, Phone } from 'lucide-react';
+import { MapPin, User, LogOut } from 'lucide-react';
 import { z } from 'zod';
 
 const onboardingSchema = z.object({
