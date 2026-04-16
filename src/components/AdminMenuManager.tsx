@@ -98,6 +98,7 @@ const AdminMenuManager = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showCategoryImages, setShowCategoryImages] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const categoryFileInputRef = useRef<HTMLInputElement>(null);
   const [pendingCategory, setPendingCategory] = useState<string | null>(null);
