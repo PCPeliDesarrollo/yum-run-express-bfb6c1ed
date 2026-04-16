@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef } from 'react';
 import { Plus, Pencil, Trash2, Image, Save, X, Eye, EyeOff, Camera, Search } from 'lucide-react';
 import { compressImage } from '@/lib/imageCompressor';
 import { useCategoryImages } from '@/hooks/useCategoryImages';
