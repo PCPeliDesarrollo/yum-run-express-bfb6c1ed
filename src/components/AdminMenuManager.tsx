@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Plus, Pencil, Trash2, Image, Save, X, Eye, EyeOff, Camera } from 'lucide-react';
+import { Plus, Pencil, Trash2, Image, Save, X, Eye, EyeOff, Camera, Search } from 'lucide-react';
 import { compressImage } from '@/lib/imageCompressor';
 import { useCategoryImages } from '@/hooks/useCategoryImages';
 
@@ -98,6 +98,7 @@ const AdminMenuManager = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showCategoryImages, setShowCategoryImages] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const categoryFileInputRef = useRef<HTMLInputElement>(null);
   const [pendingCategory, setPendingCategory] = useState<string | null>(null);
@@ -132,9 +133,10 @@ const AdminMenuManager = () => {
     setPendingCategory(null);
   };
 
-  const filteredProducts = selectedCategory === 'all'
+  const filteredProducts = (selectedCategory === 'all'
     ? products
-    : products.filter(p => p.category === selectedCategory);
+    : products.filter(p => p.category === selectedCategory)
+  ).filter(p => searchQuery === '' || p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const openNewForm = () => {
     setForm(emptyForm);
@@ -370,6 +372,17 @@ const AdminMenuManager = () => {
             </button>
           );
         })}
+      </div>
+
+      {/* Search Bar */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input
+          placeholder="Buscar producto por nombre..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9"
+        />
       </div>
 
       {/* Product Form Modal */}
