@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, MapPin, Truck, XCircle, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
@@ -79,8 +79,7 @@ const Checkout = () => {
     loadProfile();
   }, [user]);
 
-  // Notes
-  const [orderNotes, setOrderNotes] = useState("");
+  const orderNotes = "";
 
   const deliveryFee = orderType === "delivery" ? 1.80 : 0;
   const finalTotal = totalPrice + deliveryFee;
