@@ -179,7 +179,8 @@ const Onboarding = () => {
           <Button
             onClick={handleSubmit}
             disabled={isSaving}
-            className="w-full h-14 text-lg font-bold rounded-full"
+            variant="default"
+            className="w-full h-14 text-lg font-bold rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
           >
             {isSaving ? 'Guardando...' : 'Guardar y empezar a pedir 🍔'}
           </Button>
