@@ -133,9 +133,10 @@ const AdminMenuManager = () => {
     setPendingCategory(null);
   };
 
-  const filteredProducts = selectedCategory === 'all'
+  const filteredProducts = (selectedCategory === 'all'
     ? products
-    : products.filter(p => p.category === selectedCategory);
+    : products.filter(p => p.category === selectedCategory)
+  ).filter(p => searchQuery === '' || p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const openNewForm = () => {
     setForm(emptyForm);
