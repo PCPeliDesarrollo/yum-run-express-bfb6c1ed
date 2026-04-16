@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Capacitor } from "@capacitor/core";
 import { StatusBar, Style } from "@capacitor/status-bar";
+import { App } from "@capacitor/app";
 
 export const useNativeApp = () => {
   useEffect(() => {
@@ -9,15 +10,8 @@ export const useNativeApp = () => {
 
       try {
         const isAndroid = Capacitor.getPlatform() === "android";
-
-        // Android WebView often reports safe-area insets as 0, so overlays cause UI under the clock.
-        // Use non-overlay on Android to guarantee content starts below the status bar.
         await StatusBar.setOverlaysWebView({ overlay: !isAndroid });
-
-        // Light content for our dark/primary header
         await StatusBar.setStyle({ style: Style.Light });
-
-        // Match the app header color on Android when not overlaying
         if (isAndroid) {
           await StatusBar.setBackgroundColor({ color: "#DF3120" });
         }
@@ -27,5 +21,23 @@ export const useNativeApp = () => {
     };
 
     configureStatusBar();
+  }, []);
+
+  // Handle Android hardware back button
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    const backHandler = App.addListener("backButton", ({ canGoBack }) => {
+      if (canGoBack) {
+        window.history.back();
+      } else {
+        // On root page, minimize app instead of closing
+        App.minimizeApp();
+      }
+    });
+
+    return () => {
+      backHandler.then((h) => h.remove());
+    };
   }, []);
 };

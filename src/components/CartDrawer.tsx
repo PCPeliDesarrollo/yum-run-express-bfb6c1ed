@@ -1,4 +1,4 @@
-import { Minus, Plus, Trash2, ShoppingBag, MessageSquare } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, MessageSquare, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -20,6 +20,15 @@ const CartDrawer = () => {
               Tu pedido
             </SheetTitle>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
+            onClick={() => setIsOpen(false)}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Seguir comprando
+          </Button>
         </SheetHeader>
 
         {items.length === 0 ? (
