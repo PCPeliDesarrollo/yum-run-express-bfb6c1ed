@@ -306,65 +306,105 @@ const Checkout = () => {
                 Dirección de entrega
               </h2>
 
-              {/* Warning to verify address */}
-              <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-start gap-2">
-                <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                <p className="text-sm text-amber-700 dark:text-amber-400">
-                  Verifica que la dirección es correcta. Si hoy estás en otro sitio, modifícala antes de confirmar.
-                </p>
-              </div>
+              {/* Saved address card */}
+              {savedAddress && usingSavedAddress ? (
+                <div className="space-y-4">
+                  <div className="p-4 rounded-xl border-2 border-primary bg-primary/5">
+                    <p className="font-semibold text-foreground mb-1">📍 Tu dirección guardada</p>
+                    <p className="text-sm text-muted-foreground">{savedAddress.address}</p>
+                    <p className="text-sm text-muted-foreground">{savedAddress.city}, {savedAddress.postal_code}</p>
+                  </div>
 
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="address">Dirección *</Label>
-                  <Input
-                    id="address"
-                    placeholder="Calle, número, piso..."
-                    value={address}
-                    onChange={(e) => { setAddress(e.target.value); setAddressConfirmed(false); }}
-                    className={errors.address ? "border-destructive" : ""}
-                  />
-                  {errors.address && <p className="text-xs text-destructive mt-1">{errors.address}</p>}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full rounded-full"
+                    onClick={() => {
+                      setUsingSavedAddress(false);
+                      setAddressConfirmed(false);
+                    }}
+                  >
+                    Enviar a otra dirección
+                  </Button>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="city">Ciudad *</Label>
-                    <Input
-                      id="city"
-                      placeholder="Tu ciudad"
-                      value={city}
-                      onChange={(e) => { setCity(e.target.value); setAddressConfirmed(false); }}
-                      className={errors.city ? "border-destructive" : ""}
-                    />
-                    {errors.city && <p className="text-xs text-destructive mt-1">{errors.city}</p>}
+              ) : (
+                <div className="space-y-4">
+                  {/* Warning to verify address */}
+                  <div className="mb-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-start gap-2">
+                    <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                    <p className="text-sm text-amber-700 dark:text-amber-400">
+                      Introduce la dirección donde quieres recibir tu pedido.
+                    </p>
                   </div>
 
                   <div>
-                    <Label htmlFor="postalCode">Código postal *</Label>
+                    <Label htmlFor="address">Dirección *</Label>
                     <Input
-                      id="postalCode"
-                      placeholder="12345"
-                      value={postalCode}
-                      onChange={(e) => { setPostalCode(e.target.value); setAddressConfirmed(false); }}
-                      className={errors.postalCode ? "border-destructive" : ""}
+                      id="address"
+                      placeholder="Calle, número, piso..."
+                      value={address}
+                      onChange={(e) => { setAddress(e.target.value); setAddressConfirmed(false); }}
+                      className={errors.address ? "border-destructive" : ""}
                     />
-                    {errors.postalCode && <p className="text-xs text-destructive mt-1">{errors.postalCode}</p>}
+                    {errors.address && <p className="text-xs text-destructive mt-1">{errors.address}</p>}
                   </div>
-                </div>
 
-                {/* Address confirmation checkbox */}
-                <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={addressConfirmed}
-                    onChange={(e) => setAddressConfirmed(e.target.checked)}
-                    className="w-5 h-5 rounded accent-primary"
-                  />
-                  <span className="text-sm font-medium">Confirmo que la dirección de entrega es correcta</span>
-                </label>
-                {errors.addressConfirmed && <p className="text-xs text-destructive mt-1">{errors.addressConfirmed}</p>}
-              </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="city">Ciudad *</Label>
+                      <Input
+                        id="city"
+                        placeholder="Tu ciudad"
+                        value={city}
+                        onChange={(e) => { setCity(e.target.value); setAddressConfirmed(false); }}
+                        className={errors.city ? "border-destructive" : ""}
+                      />
+                      {errors.city && <p className="text-xs text-destructive mt-1">{errors.city}</p>}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="postalCode">Código postal *</Label>
+                      <Input
+                        id="postalCode"
+                        placeholder="12345"
+                        value={postalCode}
+                        onChange={(e) => { setPostalCode(e.target.value); setAddressConfirmed(false); }}
+                        className={errors.postalCode ? "border-destructive" : ""}
+                      />
+                      {errors.postalCode && <p className="text-xs text-destructive mt-1">{errors.postalCode}</p>}
+                    </div>
+                  </div>
+
+                  {/* Address confirmation checkbox */}
+                  <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={addressConfirmed}
+                      onChange={(e) => setAddressConfirmed(e.target.checked)}
+                      className="w-5 h-5 rounded accent-primary"
+                    />
+                    <span className="text-sm font-medium">Confirmo que la dirección de entrega es correcta</span>
+                  </label>
+                  {errors.addressConfirmed && <p className="text-xs text-destructive mt-1">{errors.addressConfirmed}</p>}
+
+                  {savedAddress && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="w-full text-primary"
+                      onClick={() => {
+                        setAddress(savedAddress.address);
+                        setCity(savedAddress.city);
+                        setPostalCode(savedAddress.postal_code);
+                        setUsingSavedAddress(true);
+                        setAddressConfirmed(true);
+                      }}
+                    >
+                      Usar mi dirección habitual
+                    </Button>
+                  )}
+                </div>
+              )}
             </section>
           </>
         )}
