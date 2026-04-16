@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Package, Clock, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Package, Clock, ChevronDown, Truck } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -9,20 +9,18 @@ import type { Tables } from '@/integrations/supabase/types';
 
 type Order = Tables<'orders'>;
 
-const statusConfig: Record<string, { label: string; emoji: string }> = {
-  pending: { label: 'Pendiente', emoji: '🕐' },
-  confirmed: { label: 'Confirmado', emoji: '✅' },
-  preparing: { label: 'Preparando', emoji: '👨‍🍳' },
-  ready: { label: 'Listo', emoji: '📦' },
-  delivered: { label: 'Entregado', emoji: '🚀' },
-  cancelled: { label: 'Cancelado', emoji: '❌' },
+// Customer-facing status: only "En reparto" or "Entregado"
+const getCustomerStatus = (status: string) => {
+  if (status === 'delivered') return { label: 'Entregado', emoji: '✅', active: false };
+  if (status === 'cancelled') return { label: 'Cancelado', emoji: '❌', active: false };
+  // For all active statuses (pending, confirmed, preparing, ready), 
+  // show "En reparto" to the customer
+  return { label: 'En reparto', emoji: '🛵', active: true };
 };
-
-const activeStatuses = ['pending', 'confirmed', 'preparing', 'ready'];
 
 const OrderCard = ({ order }: { order: Order }) => {
   const items = Array.isArray(order.items) ? order.items : [];
-  const cfg = statusConfig[order.status] || { label: order.status, emoji: '📋' };
+  const status = getCustomerStatus(order.status);
 
   return (
     <div className="bg-card rounded-2xl p-5 shadow-sm border border-border">
@@ -42,9 +40,13 @@ const OrderCard = ({ order }: { order: Order }) => {
           </div>
         </div>
         <span className={`text-sm font-semibold px-3 py-1 rounded-full ${
-          order.status === 'cancelled' ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground'
+          order.status === 'cancelled' 
+            ? 'bg-destructive/10 text-destructive' 
+            : status.active 
+              ? 'bg-primary/10 text-primary' 
+              : 'bg-muted text-muted-foreground'
         }`}>
-          {cfg.emoji} {cfg.label}
+          {status.emoji} {status.label}
         </span>
       </div>
 
@@ -78,8 +80,8 @@ const MisPedidos = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [pastOpen, setPastOpen] = useState(false);
 
-  const activeOrders = orders.filter(o => activeStatuses.includes(o.status));
-  const pastOrders = orders.filter(o => !activeStatuses.includes(o.status));
+  const activeOrders = orders.filter(o => !['delivered', 'cancelled'].includes(o.status));
+  const pastOrders = orders.filter(o => ['delivered', 'cancelled'].includes(o.status));
 
   useEffect(() => {
     if (!loading && !user) {
