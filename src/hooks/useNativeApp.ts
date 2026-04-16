@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Capacitor } from "@capacitor/core";
 import { StatusBar, Style } from "@capacitor/status-bar";
-import { App } from "@capacitor/app";
 
 export const useNativeApp = () => {
   useEffect(() => {
@@ -27,17 +26,26 @@ export const useNativeApp = () => {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
 
-    const backHandler = App.addListener("backButton", ({ canGoBack }) => {
-      if (canGoBack) {
-        window.history.back();
-      } else {
-        // On root page, minimize app instead of closing
-        App.minimizeApp();
-      }
+    let cleanup: (() => void) | undefined;
+
+    import("@capacitor/app").then(({ App }) => {
+      const promise = App.addListener("backButton", ({ canGoBack }) => {
+        if (canGoBack) {
+          window.history.back();
+        } else {
+          App.minimizeApp();
+        }
+      });
+
+      promise.then((handle) => {
+        cleanup = () => handle.remove();
+      });
+    }).catch((err) => {
+      console.warn("@capacitor/app not available:", err);
     });
 
     return () => {
-      backHandler.then((h) => h.remove());
+      cleanup?.();
     };
   }, []);
 };
