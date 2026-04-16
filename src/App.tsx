@@ -14,6 +14,7 @@ import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
 import Category from "./pages/Category";
 import Auth from "./pages/Auth";
+import Onboarding from "./pages/Onboarding";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import Checkout from "./pages/Checkout";
