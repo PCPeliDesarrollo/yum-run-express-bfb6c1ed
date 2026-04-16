@@ -43,6 +43,7 @@ const AppContent = () => {
         <MobileBottomNav />
         <Routes>
           <Route path="/auth" element={<Auth />} />
+          <Route path="/onboarding" element={<ProtectedRoute skipProfileCheck><Onboarding /></ProtectedRoute>} />
           <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
           <Route path="/categoria/:slug" element={<ProtectedRoute><Category /></ProtectedRoute>} />
           <Route path="/producto/:id" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
