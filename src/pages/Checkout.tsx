@@ -50,6 +50,9 @@ const Checkout = () => {
   const [postalCode, setPostalCode] = useState("");
   const [addressConfirmed, setAddressConfirmed] = useState(false);
   
+  // Saved address from profile
+  const [savedAddress, setSavedAddress] = useState<{ address: string; city: string; postal_code: string } | null>(null);
+  const [usingSavedAddress, setUsingSavedAddress] = useState(true);
 
   // Load profile data to pre-fill fields
   useEffect(() => {
@@ -63,11 +66,15 @@ const Checkout = () => {
       if (data) {
         if (data.full_name) setName(data.full_name);
         if (data.phone) setPhone(data.phone);
-        if (data.address) setAddress(data.address);
-        if (data.city) setCity(data.city);
-        if (data.postal_code) setPostalCode(data.postal_code);
+        if (data.address && data.city && data.postal_code) {
+          setSavedAddress({ address: data.address, city: data.city, postal_code: data.postal_code });
+          setAddress(data.address);
+          setCity(data.city);
+          setPostalCode(data.postal_code);
+          setUsingSavedAddress(true);
+          setAddressConfirmed(true);
+        }
       }
-      
     };
     loadProfile();
   }, [user]);
