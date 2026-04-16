@@ -747,12 +747,22 @@ const printOrder = (order: Order) => {
   const formattedDate = date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
   const formattedTime = date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
+  const formatOption = (name: string) => {
+    const lower = name.toLowerCase().trim();
+    // Special: removals ("sin X") or extras ("extra X", "+X") -> UPPERCASE BOLD UNDERLINE
+    const isSpecial = lower.startsWith('sin ') || lower.startsWith('extra ') || lower.startsWith('+') || lower.startsWith('con extra');
+    if (isSpecial) {
+      return `<span style="text-transform:uppercase;font-weight:900;text-decoration:underline;">${name}</span>`;
+    }
+    return name;
+  };
+
   const itemsHtml = order.items.map((item: any) => 
     `<tr>
       <td style="padding:4px 0;border-bottom:1px dashed #ddd;">${item.quantity}x ${item.productName || item.name}</td>
       <td style="padding:4px 0;border-bottom:1px dashed #ddd;text-align:right;">€${((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}</td>
     </tr>
-    ${item.options?.length ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:12px;font-weight:bold;color:#d35400;">▸ ${item.options.map((o: any) => o.name).join(', ')}</td></tr>` : ''}
+    ${item.options?.length ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:12px;color:#d35400;">▸ ${item.options.map((o: any) => formatOption(o.name)).join(', ')}</td></tr>` : ''}
     ${item.notes ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:11px;color:#666;">📝 ${item.notes}</td></tr>` : ''}`
   ).join('');
 
