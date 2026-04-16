@@ -80,11 +80,24 @@ const Onboarding = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut({ scope: 'local' });
+    navigate('/auth');
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="bg-primary p-4">
-        <div className="container mx-auto">
+        <div className="container mx-auto flex items-center justify-between">
           <h1 className="text-lg font-bold text-primary-foreground">Completa tu perfil</h1>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="text-primary-foreground hover:bg-primary-foreground/10"
+          >
+            <LogOut className="w-4 h-4 mr-1" /> Salir
+          </Button>
         </div>
       </div>
 
