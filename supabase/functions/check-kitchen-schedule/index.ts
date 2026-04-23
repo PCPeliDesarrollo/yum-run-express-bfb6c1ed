@@ -39,6 +39,19 @@ Deno.serve(async (req) => {
     const isOverride = overrideRes.data?.value === true;
     const currentKitchenOpen = kitchenRes.data?.value === true;
 
+    // If manual override is active, ALWAYS respect admin's decision.
+    // The override only clears when the admin manually toggles the kitchen again
+    // (handled in the frontend hook by re-setting the override flag).
+    if (isOverride) {
+      return new Response(
+        JSON.stringify({
+          message: "Manual override active — admin decision prevails",
+          kitchen_open: currentKitchenOpen,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     if (!schedule || !schedule.slots) {
       return new Response(JSON.stringify({ message: "No schedule configured" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -61,40 +74,6 @@ Deno.serve(async (req) => {
       return currentMinutes >= openMinutes && currentMinutes < closeMinutes;
     });
 
-    // If manual override is active, check if we're at a schedule transition
-    // (i.e., the scheduled state changed). If so, clear the override and apply schedule.
-    if (isOverride) {
-      // Only clear override when the schedule transitions (shouldBeOpen != currentKitchenOpen means
-      // the schedule wants something different from current state, which is a transition point)
-      if (shouldBeOpen !== currentKitchenOpen) {
-        // Schedule transition detected — clear override and apply schedule
-        await Promise.all([
-          supabase
-            .from("app_settings")
-            .update({ value: false, updated_at: new Date().toISOString() })
-            .eq("key", "kitchen_manual_override"),
-          supabase
-            .from("app_settings")
-            .update({ value: shouldBeOpen, updated_at: new Date().toISOString() })
-            .eq("key", "kitchen_open"),
-        ]);
-
-        return new Response(
-          JSON.stringify({
-            message: "Override cleared at schedule transition",
-            kitchen_open: shouldBeOpen,
-          }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      // Override active and no transition — do nothing
-      return new Response(
-        JSON.stringify({ message: "Manual override active, skipping", kitchen_open: currentKitchenOpen }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     // No override — apply schedule if different from current state
     if (shouldBeOpen !== currentKitchenOpen) {
       await supabase
@@ -104,7 +83,7 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ message: "Schedule checked", kitchen_open: shouldBeOpen }),
+      JSON.stringify({ message: "Schedule applied", kitchen_open: shouldBeOpen }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
