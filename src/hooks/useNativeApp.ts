@@ -3,6 +3,7 @@ import { Capacitor } from "@capacitor/core";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+import { ensureNotificationPermission } from "@/lib/notifications";
 
 export const useNativeApp = () => {
   const navigate = useNavigate();
@@ -25,6 +26,21 @@ export const useNativeApp = () => {
       }
     };
     configureStatusBar();
+  }, []);
+
+  // Request notification permission on app start (critical for Android 13+)
+  useEffect(() => {
+    const requestPerms = async () => {
+      try {
+        const granted = await ensureNotificationPermission();
+        console.log("[Notifications] Permission granted:", granted);
+      } catch (e) {
+        console.warn("[Notifications] Permission request failed:", e);
+      }
+    };
+    // Slight delay so the app UI is ready
+    const t = setTimeout(requestPerms, 800);
+    return () => clearTimeout(t);
   }, []);
 
   // Android hardware back button
