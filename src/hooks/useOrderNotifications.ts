@@ -26,6 +26,38 @@ export const useOrderNotifications = () => {
     }
   }, [user]);
 
+  // Admin: unlock audio on first user interaction (browsers block autoplay until then)
+  useEffect(() => {
+    if (!isAdmin) return;
+    const unlock = () => {
+      try {
+        const Ctx = (window.AudioContext || (window as any).webkitAudioContext);
+        const ctx: AudioContext = new Ctx();
+        // Play a silent buffer to "unlock" audio on iOS/Safari/Chrome
+        const buffer = ctx.createBuffer(1, 1, 22050);
+        const src = ctx.createBufferSource();
+        src.buffer = buffer;
+        src.connect(ctx.destination);
+        src.start(0);
+        if (ctx.state === "suspended") ctx.resume();
+        console.log("[OrderNotif] Audio unlocked for admin");
+      } catch (e) {
+        console.warn("[OrderNotif] Audio unlock failed:", e);
+      }
+      window.removeEventListener("click", unlock);
+      window.removeEventListener("touchstart", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+    window.addEventListener("click", unlock, { once: true });
+    window.addEventListener("touchstart", unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
+    return () => {
+      window.removeEventListener("click", unlock);
+      window.removeEventListener("touchstart", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+  }, [isAdmin]);
+
   // Admin: notify on new INSERT
   useEffect(() => {
     if (!isAdmin) return;
