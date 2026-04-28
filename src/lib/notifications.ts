@@ -69,6 +69,7 @@ export const showNativeNotification = async (
   }
 };
 
+// Simple short beep (used for status updates to customers)
 export const playBeep = () => {
   try {
     const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -90,5 +91,68 @@ export const playBeep = () => {
     beep(880, 0.36, 0.15);
   } catch {
     /* noop */
+  }
+};
+
+// Restaurant-bell "ding-dong" pattern, repeated 3 times. Used for NEW ORDER alerts in admin/kitchen.
+export const playKitchenBell = async () => {
+  try {
+    const Ctx = (window.AudioContext || (window as any).webkitAudioContext);
+    const ctx: AudioContext = new Ctx();
+    // Resume in case context is suspended (autoplay policies)
+    if (ctx.state === "suspended") {
+      try { await ctx.resume(); } catch { /* noop */ }
+    }
+
+    // A "ding-dong": two harmonic tones with a soft decay envelope.
+    const ding = (startOffset: number, freq: number, dur = 1.1, vol = 0.55) => {
+      const t0 = ctx.currentTime + startOffset;
+
+      // Fundamental
+      const osc = ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+
+      // Slight overtone for a "bell" timbre
+      const osc2 = ctx.createOscillator();
+      osc2.type = "sine";
+      osc2.frequency.value = freq * 2.01;
+
+      const gain = ctx.createGain();
+      const gain2 = ctx.createGain();
+
+      // Bell-like envelope: fast attack, long exponential decay
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(vol, t0 + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+      gain2.gain.setValueAtTime(0.0001, t0);
+      gain2.gain.exponentialRampToValueAtTime(vol * 0.35, t0 + 0.01);
+      gain2.gain.exponentialRampToValueAtTime(0.0001, t0 + dur * 0.7);
+
+      osc.connect(gain).connect(ctx.destination);
+      osc2.connect(gain2).connect(ctx.destination);
+
+      osc.start(t0);
+      osc2.start(t0);
+      osc.stop(t0 + dur + 0.05);
+      osc2.stop(t0 + dur + 0.05);
+    };
+
+    // Pattern: ding (high) -> dong (low), repeated 3 times
+    // Frequencies: E5 (659.25Hz) and C5 (523.25Hz) — classic doorbell interval
+    const cycle = 1.4; // seconds between each ding-dong
+    for (let i = 0; i < 3; i++) {
+      const base = i * cycle;
+      ding(base, 659.25, 0.9, 0.55);          // ding
+      ding(base + 0.45, 523.25, 1.1, 0.55);   // dong
+    }
+
+    // Auto-close context when finished to free resources
+    setTimeout(() => {
+      try { ctx.close(); } catch { /* noop */ }
+    }, (3 * 1.4 + 1.5) * 1000);
+  } catch (e) {
+    console.warn("playKitchenBell failed:", e);
   }
 };
