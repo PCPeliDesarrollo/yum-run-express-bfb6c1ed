@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Truck, XCircle, AlertTriangle } from "lucide-react";
+import { ArrowLeft, MapPin, Truck, XCircle, AlertTriangle, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,8 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useKitchenStatus } from "@/hooks/useKitchenStatus";
 import { z } from "zod";
 
-// Solo domicilio por ahora
-type OrderType = "delivery";
+type OrderType = "delivery" | "pickup";
 
 const customerSchema = z.object({
   name: z.string().trim().min(2, "El nombre debe tener al menos 2 caracteres").max(100, "El nombre es demasiado largo"),
@@ -34,7 +33,7 @@ const Checkout = () => {
   const { toast } = useToast();
   const { isOpen: kitchenOpen, loading: kitchenLoading } = useKitchenStatus();
 
-  const orderType: OrderType = "delivery";
+  const [orderType, setOrderType] = useState<OrderType>("delivery");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -241,13 +240,40 @@ const Checkout = () => {
         )}
         {/* Order Type Selection */}
         <section className="mb-8">
-          <div className="flex items-center gap-3 p-4 rounded-xl border-2 border-primary bg-primary/10">
-            <Truck className="w-8 h-8 text-primary" />
-            <div>
-              <span className="font-bold text-foreground">Envío a domicilio</span>
-              <p className="text-xs text-muted-foreground">+€1,80 gastos de envío</p>
-            </div>
+          <h2 className="text-xl font-bold mb-4">¿Cómo lo quieres?</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setOrderType("delivery")}
+              className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                orderType === "delivery"
+                  ? "border-primary bg-primary/10"
+                  : "border-border bg-background hover:border-primary/50"
+              }`}
+            >
+              <Truck className={`w-8 h-8 ${orderType === "delivery" ? "text-primary" : "text-muted-foreground"}`} />
+              <span className="font-bold text-foreground text-sm">Envío a domicilio</span>
+              <p className="text-xs text-muted-foreground">+€1,80 envío</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => setOrderType("pickup")}
+              className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                orderType === "pickup"
+                  ? "border-primary bg-primary/10"
+                  : "border-border bg-background hover:border-primary/50"
+              }`}
+            >
+              <Store className={`w-8 h-8 ${orderType === "pickup" ? "text-primary" : "text-muted-foreground"}`} />
+              <span className="font-bold text-foreground text-sm">Recoger en local</span>
+              <p className="text-xs text-muted-foreground">Sin gastos</p>
+            </button>
           </div>
+          {orderType === "pickup" && (
+            <div className="mt-3 p-3 rounded-lg bg-primary/5 border border-primary/20 text-sm text-muted-foreground">
+              Pasa a recoger tu pedido cuando esté listo. Recibirás un aviso en la app.
+            </div>
+          )}
         </section>
 
         <Separator className="my-6" />
