@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { showNativeNotification, playBeep, ensureNotificationPermission } from "@/lib/notifications";
+import { showNativeNotification, playBeep, playKitchenBell, ensureNotificationPermission } from "@/lib/notifications";
 import { toast } from "sonner";
 
 const statusLabels: Record<string, string> = {
@@ -39,11 +39,15 @@ export const useOrderNotifications = () => {
           console.log("[OrderNotif] New order received:", payload);
           const o: any = payload.new;
           if (!o) return;
-          playBeep();
-          const title = "🔔 ¡Nuevo pedido!";
+          // Restaurant-bell pattern (3 ding-dongs) — clearly audible in the kitchen
+          playKitchenBell();
+          const title = "🔔 ¡NUEVO PEDIDO!";
           const body = `Pedido #${o.order_number} — €${Number(o.total).toFixed(2)}`;
           showNativeNotification(title, body, o.order_number);
-          toast(title, { description: body });
+          toast(title, {
+            description: body,
+            duration: 10000,
+          });
         }
       )
       .subscribe((status) => {
