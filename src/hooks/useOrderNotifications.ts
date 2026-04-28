@@ -29,12 +29,14 @@ export const useOrderNotifications = () => {
   // Admin: notify on new INSERT
   useEffect(() => {
     if (!isAdmin) return;
+    console.log("[OrderNotif] Subscribing as ADMIN to new orders");
     const channel = supabase
       .channel("global-admin-orders")
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "orders" },
         (payload) => {
+          console.log("[OrderNotif] New order received:", payload);
           const o: any = payload.new;
           if (!o) return;
           playBeep();
@@ -44,7 +46,9 @@ export const useOrderNotifications = () => {
           toast(title, { description: body });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log("[OrderNotif] Admin channel status:", status);
+      });
     return () => {
       supabase.removeChannel(channel);
     };
