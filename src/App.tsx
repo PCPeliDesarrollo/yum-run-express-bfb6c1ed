@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/contexts/CartContext";
 import { useNativeApp } from "@/hooks/useNativeApp";
+import { useOrderNotifications } from "@/hooks/useOrderNotifications";
 import CartDrawer from "@/components/CartDrawer";
 import FloatingCartButton from "@/components/FloatingCartButton";
 import MobileBottomNav from "@/components/MobileBottomNav";
