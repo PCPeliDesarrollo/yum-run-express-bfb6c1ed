@@ -763,7 +763,7 @@ const buildTicketHtml = (order: Order): string => {
     ${item.notes ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:12px;color:#000;font-weight:bold;">📝 ${item.notes}</td></tr>` : ''}`
   ).join('');
 
-  printWindow.document.write(`<!DOCTYPE html><html><head><title>Pedido #${order.order_number}</title>
+  return `<!DOCTYPE html><html><head><title>Pedido #${order.order_number}</title>
     <style>
       body { font-family: 'Courier New', monospace; max-width: 420px; margin: 0 auto; padding: 16px; font-size: 14px; color: #000; font-weight: bold; }
       h1 { text-align: center; font-size: 20px; margin: 0 0 4px; font-weight: 900; }
@@ -792,11 +792,47 @@ const buildTicketHtml = (order: Order): string => {
     ${order.notes ? `<div class="divider"></div><p><strong>Notas:</strong> ${order.notes}</p>` : ''}
     <div class="divider"></div>
     <p style="text-align:center;color:#000;font-size:12px;font-weight:bold;">¡Gracias por tu pedido!</p>
-  </body></html>`);
+  </body></html>`;
+};
 
-  printWindow.document.close();
-  printWindow.focus();
-  printWindow.print();
+// Auto-print using a hidden iframe — works without popup blocker / user gesture
+const printOrder = (order: Order) => {
+  const html = buildTicketHtml(order);
+  const iframe = document.createElement('iframe');
+  iframe.style.position = 'fixed';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument || iframe.contentWindow?.document;
+  if (!doc) {
+    document.body.removeChild(iframe);
+    return;
+  }
+  doc.open();
+  doc.write(html);
+  doc.close();
+
+  const triggerPrint = () => {
+    try {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+    } catch (e) {
+      console.warn('[Print] failed:', e);
+    }
+    setTimeout(() => {
+      try { document.body.removeChild(iframe); } catch {}
+    }, 60000);
+  };
+
+  if (iframe.contentWindow?.document.readyState === 'complete') {
+    setTimeout(triggerPrint, 200);
+  } else {
+    iframe.onload = () => setTimeout(triggerPrint, 200);
+  }
 };
 
 const OrdersByDay = ({ 
