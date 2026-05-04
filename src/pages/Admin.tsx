@@ -762,15 +762,15 @@ const printOrder = (order: Order) => {
       <td style="padding:4px 0;border-bottom:1px dashed #ddd;">${item.quantity}x ${item.productName || item.name}</td>
       <td style="padding:4px 0;border-bottom:1px dashed #ddd;text-align:right;">€${((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}</td>
     </tr>
-    ${item.options?.length ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:12px;color:#d35400;">▸ ${item.options.map((o: any) => formatOption(o.name)).join(', ')}</td></tr>` : ''}
-    ${item.notes ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:11px;color:#666;">📝 ${item.notes}</td></tr>` : ''}`
+    ${item.options?.length ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:13px;color:#000;font-weight:bold;">▸ ${item.options.map((o: any) => formatOption(o.name)).join(', ')}</td></tr>` : ''}
+    ${item.notes ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:12px;color:#000;font-weight:bold;">📝 ${item.notes}</td></tr>` : ''}`
   ).join('');
 
   printWindow.document.write(`<!DOCTYPE html><html><head><title>Pedido #${order.order_number}</title>
     <style>
-      body { font-family: 'Courier New', monospace; max-width: 420px; margin: 0 auto; padding: 16px; font-size: 13px; }
-      h1 { text-align: center; font-size: 18px; margin: 0 0 4px; }
-      .subtitle { text-align: center; color: #666; margin-bottom: 12px; }
+      body { font-family: 'Courier New', monospace; max-width: 420px; margin: 0 auto; padding: 16px; font-size: 14px; color: #000; font-weight: bold; }
+      h1 { text-align: center; font-size: 20px; margin: 0 0 4px; font-weight: 900; }
+      .subtitle { text-align: center; color: #000; margin-bottom: 12px; font-weight: bold; font-size: 15px; }
       .divider { border-top: 2px dashed #000; margin: 10px 0; }
       table { width: 100%; border-collapse: collapse; }
       .total-row { font-weight: bold; font-size: 16px; }
@@ -794,7 +794,7 @@ const printOrder = (order: Order) => {
     </table>
     ${order.notes ? `<div class="divider"></div><p><strong>Notas:</strong> ${order.notes}</p>` : ''}
     <div class="divider"></div>
-    <p style="text-align:center;color:#666;font-size:11px;">¡Gracias por tu pedido!</p>
+    <p style="text-align:center;color:#000;font-size:12px;font-weight:bold;">¡Gracias por tu pedido!</p>
   </body></html>`);
 
   printWindow.document.close();
