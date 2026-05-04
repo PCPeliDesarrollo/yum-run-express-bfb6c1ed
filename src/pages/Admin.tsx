@@ -739,10 +739,7 @@ const ScheduleEditor = ({
   );
 };
 
-const printOrder = (order: Order) => {
-  const printWindow = window.open('', '_blank', 'width=400,height=600');
-  if (!printWindow) return;
-
+const buildTicketHtml = (order: Order): string => {
   const date = new Date(order.created_at);
   const formattedDate = date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
   const formattedTime = date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
