@@ -1167,16 +1167,25 @@ const OrderCard = ({
               </div>
             )}
 
-            {/* Cancel + Print row */}
+            {/* Edit + Cancel + Print row */}
             <div className="flex gap-2">
               {order.status !== 'cancelled' && order.status !== 'delivered' && (
-                <Button 
-                  variant="destructive"
-                  className="flex-1 py-3 text-base font-bold"
-                  onClick={() => onUpdateStatus(order.id, 'cancelled')}
-                >
-                  ❌ Cancelar
-                </Button>
+                <>
+                  <Button
+                    variant="outline"
+                    className="flex-1 py-3 text-base font-bold border-2 border-blue-500 text-blue-600 hover:bg-blue-50"
+                    onClick={openEdit}
+                  >
+                    <Pencil className="w-4 h-4 mr-1" /> Editar
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="flex-1 py-3 text-base font-bold"
+                    onClick={() => onUpdateStatus(order.id, 'cancelled')}
+                  >
+                    ❌ Cancelar
+                  </Button>
+                </>
               )}
               <Button
                 variant="outline"
@@ -1191,6 +1200,75 @@ const OrderCard = ({
                 <Printer className="w-5 h-5" />
               </Button>
             </div>
+
+            {/* Edit Dialog */}
+            <Dialog open={editOpen} onOpenChange={setEditOpen}>
+              <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                <DialogHeader>
+                  <DialogTitle>Editar Pedido #{order.order_number}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="font-semibold">Productos</Label>
+                    {editItems.length === 0 ? (
+                      <p className="text-sm text-muted-foreground py-2">Sin productos</p>
+                    ) : (
+                      <ul className="space-y-2 mt-2">
+                        {editItems.map((item, idx) => (
+                          <li key={idx} className="flex items-center gap-2 p-2 rounded-lg border border-border">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold truncate">{item.productName || item.name}</p>
+                              <p className="text-xs text-muted-foreground">€{(item.unitPrice || item.price || 0).toFixed(2)} c/u</p>
+                            </div>
+                            <Button type="button" size="icon" variant="outline" className="h-8 w-8" onClick={() => changeQty(idx, -1)}>
+                              <Minus className="w-3 h-3" />
+                            </Button>
+                            <span className="w-6 text-center font-bold">{item.quantity}</span>
+                            <Button type="button" size="icon" variant="outline" className="h-8 w-8" onClick={() => changeQty(idx, 1)}>
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                            <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-red-600" onClick={() => removeItem(idx)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  <div className="flex justify-between text-sm pt-2 border-t">
+                    <span>Subtotal</span><span>€{newSubtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Envío</span><span>€{Number(order.delivery_fee || 0).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-base">
+                    <span>Total</span><span className="text-primary">€{newTotal.toFixed(2)}</span>
+                  </div>
+
+                  {order.order_type === 'delivery' && (
+                    <div>
+                      <Label>Dirección</Label>
+                      <Input value={editAddress} onChange={(e) => setEditAddress(e.target.value)} />
+                    </div>
+                  )}
+                  <div>
+                    <Label>Teléfono</Label>
+                    <Input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>Notas</Label>
+                    <Textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} rows={2} />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setEditOpen(false)}>Cancelar</Button>
+                  <Button onClick={saveEdit} disabled={saving}>
+                    {saving ? 'Guardando...' : 'Guardar cambios'}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       )}
