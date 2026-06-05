@@ -13,7 +13,11 @@ import {
   ShoppingBag,
   TrendingUp,
   Power,
-  Printer
+  Printer,
+  Pencil,
+  Plus,
+  Minus,
+  Trash2
 } from 'lucide-react';
 import AdminMenuManager from '@/components/AdminMenuManager';
 import { Switch } from '@/components/ui/switch';
@@ -29,6 +33,7 @@ import type { PromoData } from '@/hooks/usePromo';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
 type OrderType = 'delivery' | 'pickup' | 'dine_in' | 'preorder';
@@ -914,6 +919,65 @@ const OrderCard = ({
   const status = statusConfig[order.status];
   const StatusIcon = status.icon;
   const [expanded, setExpanded] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editItems, setEditItems] = useState<any[]>([]);
+  const [editAddress, setEditAddress] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const openEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditItems(JSON.parse(JSON.stringify(order.items || [])));
+    setEditAddress(order.delivery_address || '');
+    setEditPhone(order.customer_phone || '');
+    setEditNotes(order.notes || '');
+    setEditOpen(true);
+  };
+
+  const changeQty = (idx: number, delta: number) => {
+    setEditItems((prev) => {
+      const next = [...prev];
+      const newQty = (next[idx].quantity || 0) + delta;
+      if (newQty <= 0) {
+        next.splice(idx, 1);
+      } else {
+        next[idx] = { ...next[idx], quantity: newQty };
+      }
+      return next;
+    });
+  };
+
+  const removeItem = (idx: number) => {
+    setEditItems((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const newSubtotal = editItems.reduce(
+    (s, it) => s + (it.unitPrice || it.price || 0) * (it.quantity || 0),
+    0
+  );
+  const newTotal = newSubtotal + Number(order.delivery_fee || 0);
+
+  const saveEdit = async () => {
+    setSaving(true);
+    const { error } = await supabase
+      .from('orders')
+      .update({
+        items: editItems,
+        subtotal: newSubtotal,
+        total: newTotal,
+        delivery_address: editAddress || null,
+        customer_phone: editPhone || null,
+        notes: editNotes || null,
+      })
+      .eq('id', order.id);
+    setSaving(false);
+    if (error) {
+      alert('Error al guardar: ' + error.message);
+      return;
+    }
+    setEditOpen(false);
+  };
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -1103,16 +1167,25 @@ const OrderCard = ({
               </div>
             )}
 
-            {/* Cancel + Print row */}
+            {/* Edit + Cancel + Print row */}
             <div className="flex gap-2">
               {order.status !== 'cancelled' && order.status !== 'delivered' && (
-                <Button 
-                  variant="destructive"
-                  className="flex-1 py-3 text-base font-bold"
-                  onClick={() => onUpdateStatus(order.id, 'cancelled')}
-                >
-                  ❌ Cancelar
-                </Button>
+                <>
+                  <Button
+                    variant="outline"
+                    className="flex-1 py-3 text-base font-bold border-2 border-blue-500 text-blue-600 hover:bg-blue-50"
+                    onClick={openEdit}
+                  >
+                    <Pencil className="w-4 h-4 mr-1" /> Editar
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    className="flex-1 py-3 text-base font-bold"
+                    onClick={() => onUpdateStatus(order.id, 'cancelled')}
+                  >
+                    ❌ Cancelar
+                  </Button>
+                </>
               )}
               <Button
                 variant="outline"
@@ -1127,6 +1200,75 @@ const OrderCard = ({
                 <Printer className="w-5 h-5" />
               </Button>
             </div>
+
+            {/* Edit Dialog */}
+            <Dialog open={editOpen} onOpenChange={setEditOpen}>
+              <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                <DialogHeader>
+                  <DialogTitle>Editar Pedido #{order.order_number}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="font-semibold">Productos</Label>
+                    {editItems.length === 0 ? (
+                      <p className="text-sm text-muted-foreground py-2">Sin productos</p>
+                    ) : (
+                      <ul className="space-y-2 mt-2">
+                        {editItems.map((item, idx) => (
+                          <li key={idx} className="flex items-center gap-2 p-2 rounded-lg border border-border">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold truncate">{item.productName || item.name}</p>
+                              <p className="text-xs text-muted-foreground">€{(item.unitPrice || item.price || 0).toFixed(2)} c/u</p>
+                            </div>
+                            <Button type="button" size="icon" variant="outline" className="h-8 w-8" onClick={() => changeQty(idx, -1)}>
+                              <Minus className="w-3 h-3" />
+                            </Button>
+                            <span className="w-6 text-center font-bold">{item.quantity}</span>
+                            <Button type="button" size="icon" variant="outline" className="h-8 w-8" onClick={() => changeQty(idx, 1)}>
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                            <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-red-600" onClick={() => removeItem(idx)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  <div className="flex justify-between text-sm pt-2 border-t">
+                    <span>Subtotal</span><span>€{newSubtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Envío</span><span>€{Number(order.delivery_fee || 0).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-base">
+                    <span>Total</span><span className="text-primary">€{newTotal.toFixed(2)}</span>
+                  </div>
+
+                  {order.order_type === 'delivery' && (
+                    <div>
+                      <Label>Dirección</Label>
+                      <Input value={editAddress} onChange={(e) => setEditAddress(e.target.value)} />
+                    </div>
+                  )}
+                  <div>
+                    <Label>Teléfono</Label>
+                    <Input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label>Notas</Label>
+                    <Textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} rows={2} />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setEditOpen(false)}>Cancelar</Button>
+                  <Button onClick={saveEdit} disabled={saving}>
+                    {saving ? 'Guardando...' : 'Guardar cambios'}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       )}
