@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
 
   const results: string[] = [];
 
-  // 1. Auto-mark as "delivered" orders that have been "ready" for 20+ minutes
+  // Auto-mark as "delivered" orders that have been "ready" for 20+ minutes
   const twentyMinAgo = new Date(Date.now() - 20 * 60 * 1000).toISOString();
   const { data: readyOrders, error: readyError } = await supabase
     .from("orders")
@@ -27,20 +27,8 @@ Deno.serve(async (req) => {
     results.push(`Auto-delivered ${readyOrders?.length || 0} orders`);
   }
 
-  // 2. Delete orders older than 10 days that are delivered or cancelled
-  const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString();
-  const { data: deletedOrders, error: deleteError } = await supabase
-    .from("orders")
-    .delete()
-    .in("status", ["delivered", "cancelled"])
-    .lte("created_at", tenDaysAgo)
-    .select("id");
-
-  if (deleteError) {
-    results.push(`Error deleting old orders: ${deleteError.message}`);
-  } else {
-    results.push(`Deleted ${deletedOrders?.length || 0} old orders`);
-  }
+  // Note: old orders are NOT auto-deleted anymore. Admin deletes them manually
+  // from the "Historial" tab, grouped by month.
 
   return new Response(JSON.stringify({ results }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
