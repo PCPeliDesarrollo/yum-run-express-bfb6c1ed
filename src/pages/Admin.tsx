@@ -381,6 +381,8 @@ const Admin = () => {
           <PromoEditor promo={promo} onSave={updatePromo} loading={promoLoading} toast={toast} />
         ) : activeTab === 'menu' ? (
           <AdminMenuManager />
+        ) : activeTab === 'historial' ? (
+          <OrdersHistory orders={orders} onRefresh={fetchOrders} toast={toast} />
         ) : (
           <>
             {/* Stats */}
