@@ -105,7 +105,9 @@ export const useOrderNotifications = () => {
           const prev = lastStatusRef.current[o.id] ?? old?.status;
           if (prev === o.status) return;
           lastStatusRef.current[o.id] = o.status;
-          const label = statusLabels[o.status] ?? o.status;
+          const label = o.order_type === 'delivery' && o.status === 'ready'
+            ? 'en reparto'
+            : (statusLabels[o.status] ?? o.status);
           const title = `📦 Pedido #${o.order_number}`;
           const body = `Tu pedido está ${label}`;
           playBeep();
