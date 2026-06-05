@@ -1037,8 +1037,33 @@ const OrderCard = ({
                   </div>
                 )}
 
-                {/* Reparto button */}
-                {order.status === 'preparing' || order.status === 'ready' ? (
+                {/* Reparto / Listo para recoger button */}
+                {order.order_type === 'pickup' || order.order_type === 'dine_in' ? (
+                  <>
+                    {order.status === 'preparing' ? (
+                      <button
+                        onClick={() => onUpdateStatus(order.id, 'ready')}
+                        className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-center transition-all bg-blue-600 text-white font-bold shadow-lg hover:bg-blue-700 active:scale-95"
+                      >
+                        <span className="text-2xl">🔔</span>
+                        <span className="text-sm font-bold">Avisar al cliente</span>
+                      </button>
+                    ) : order.status === 'ready' ? (
+                      <button
+                        onClick={() => onUpdateStatus(order.id, 'delivered')}
+                        className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-center transition-all bg-green-600 text-white font-bold shadow-lg hover:bg-green-700 active:scale-95"
+                      >
+                        <span className="text-2xl">✅</span>
+                        <span className="text-sm font-bold">Entregado</span>
+                      </button>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-center bg-muted border-2 border-border">
+                        <span className="text-2xl">🔔</span>
+                        <span className="text-sm font-bold text-muted-foreground">Avisar al cliente</span>
+                      </div>
+                    )}
+                  </>
+                ) : order.status === 'preparing' || order.status === 'ready' ? (
                   <button
                     onClick={() => onUpdateStatus(order.id, 'delivered')}
                     className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-center transition-all bg-green-600 text-white font-bold shadow-lg hover:bg-green-700 active:scale-95"
@@ -1052,6 +1077,7 @@ const OrderCard = ({
                     <span className="text-sm font-bold text-muted-foreground">Reparto</span>
                   </div>
                 )}
+
               </div>
             )}
 
