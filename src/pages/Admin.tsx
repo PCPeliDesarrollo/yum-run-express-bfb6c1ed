@@ -1286,4 +1286,138 @@ const OrderCard = ({
   );
 };
 
+const MONTH_NAMES = [
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
+
+const OrdersHistory = ({
+  orders,
+  onRefresh,
+  toast,
+}: {
+  orders: Order[];
+  onRefresh: () => void;
+  toast: any;
+}) => {
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmKey, setConfirmKey] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+  const groups = useMemo(() => {
+    const map = new Map<string, { key: string; label: string; year: number; month: number; orders: Order[]; total: number }>();
+    for (const o of orders) {
+      const d = new Date(o.created_at);
+      const y = d.getFullYear();
+      const m = d.getMonth();
+      const key = `${y}-${String(m + 1).padStart(2, '0')}`;
+      if (!map.has(key)) {
+        map.set(key, { key, label: `${MONTH_NAMES[m]} ${y}`, year: y, month: m, orders: [], total: 0 });
+      }
+      const g = map.get(key)!;
+      g.orders.push(o);
+      g.total += Number(o.total || 0);
+    }
+    return Array.from(map.values()).sort((a, b) =>
+      a.year !== b.year ? b.year - a.year : b.month - a.month
+    );
+  }, [orders]);
+
+  const deleteMonth = async (g: { key: string; year: number; month: number; label: string }) => {
+    setDeleting(g.key);
+    const start = new Date(g.year, g.month, 1).toISOString();
+    const end = new Date(g.year, g.month + 1, 1).toISOString();
+    const { error } = await supabase
+      .from('orders')
+      .delete()
+      .gte('created_at', start)
+      .lt('created_at', end);
+    setDeleting(null);
+    setConfirmKey(null);
+    if (error) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Eliminado', description: `Pedidos de ${g.label} borrados` });
+      onRefresh();
+    }
+  };
+
+  if (groups.length === 0) {
+    return (
+      <div className="text-center py-12 text-muted-foreground">
+        No hay pedidos en el historial todavía.
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-muted/50 rounded-xl p-4 text-sm text-muted-foreground">
+        Los pedidos se guardan agrupados por mes. Pulsa <strong>Borrar mes</strong> para eliminar todos los pedidos de ese mes de forma permanente.
+      </div>
+      {groups.map((g) => {
+        const isOpen = expanded[g.key];
+        const isConfirming = confirmKey === g.key;
+        return (
+          <div key={g.key} className="bg-card border border-border rounded-xl overflow-hidden">
+            <div className="p-4 flex items-center justify-between gap-3">
+              <button
+                className="flex-1 flex items-center gap-2 text-left"
+                onClick={() => setExpanded((s) => ({ ...s, [g.key]: !s[g.key] }))}
+              >
+                {isOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                <div>
+                  <p className="font-bold capitalize">{g.label}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {g.orders.length} pedido{g.orders.length === 1 ? '' : 's'} · €{g.total.toFixed(2)}
+                  </p>
+                </div>
+              </button>
+              {isConfirming ? (
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    disabled={deleting === g.key}
+                    onClick={() => deleteMonth(g)}
+                  >
+                    {deleting === g.key ? 'Borrando...' : 'Confirmar'}
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => setConfirmKey(null)}>
+                    Cancelar
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => setConfirmKey(g.key)}
+                >
+                  <Trash2 className="w-4 h-4 mr-1" /> Borrar mes
+                </Button>
+              )}
+            </div>
+            {isOpen && (
+              <div className="border-t border-border divide-y divide-border">
+                {g.orders.map((o) => (
+                  <div key={o.id} className="px-4 py-2 text-sm flex justify-between items-center">
+                    <div>
+                      <span className="font-semibold">#{o.order_number}</span>
+                      <span className="text-muted-foreground ml-2">
+                        {new Date(o.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                      <span className="ml-2 text-xs text-muted-foreground">{statusConfig[o.status]?.label}</span>
+                    </div>
+                    <span className="font-bold text-primary">€{Number(o.total).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export default Admin;
