@@ -33,6 +33,7 @@ import type { PromoData } from '@/hooks/usePromo';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
 type OrderType = 'delivery' | 'pickup' | 'dine_in' | 'preorder';
