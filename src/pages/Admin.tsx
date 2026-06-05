@@ -13,7 +13,11 @@ import {
   ShoppingBag,
   TrendingUp,
   Power,
-  Printer
+  Printer,
+  Pencil,
+  Plus,
+  Minus,
+  Trash2
 } from 'lucide-react';
 import AdminMenuManager from '@/components/AdminMenuManager';
 import { Switch } from '@/components/ui/switch';
