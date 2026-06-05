@@ -937,7 +937,7 @@ const OrderCard = ({
             <span className="text-lg font-bold">#{order.order_number}</span>
             <Badge className={`${status.color} text-white`}>
               <StatusIcon className="w-3 h-3 mr-1" />
-              {status.label}
+              {order.order_type === 'delivery' && order.status === 'ready' ? 'En reparto' : status.label}
             </Badge>
             <span className="text-sm text-muted-foreground">
               {orderTypeLabels[order.order_type]}
