@@ -973,10 +973,9 @@ const OrderCard = ({
       .eq('id', order.id);
     setSaving(false);
     if (error) {
-      toast.error('Error al guardar', { description: error.message });
+      alert('Error al guardar: ' + error.message);
       return;
     }
-    toast.success('Pedido actualizado');
     setEditOpen(false);
   };
 
