@@ -1063,14 +1063,20 @@ const OrderCard = ({
                       </div>
                     )}
                   </>
-                ) : order.status === 'preparing' || order.status === 'ready' ? (
+                ) : order.status === 'preparing' ? (
                   <button
-                    onClick={() => onUpdateStatus(order.id, 'delivered')}
+                    onClick={() => onUpdateStatus(order.id, 'ready')}
                     className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-center transition-all bg-green-600 text-white font-bold shadow-lg hover:bg-green-700 active:scale-95"
                   >
                     <span className="text-2xl">🚀</span>
                     <span className="text-sm font-bold">Reparto</span>
                   </button>
+                ) : order.status === 'ready' ? (
+                  <div className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-center bg-green-600/20 border-2 border-green-500">
+                    <span className="text-2xl">🚀</span>
+                    <span className="text-sm font-bold text-green-700">En reparto</span>
+                    <span className="text-[10px] text-muted-foreground">Se cierra en 20 min</span>
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center gap-2 py-4 px-3 rounded-xl text-center bg-muted border-2 border-border">
                     <span className="text-2xl">🚀</span>
