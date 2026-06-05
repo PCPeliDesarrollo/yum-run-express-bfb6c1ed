@@ -919,6 +919,66 @@ const OrderCard = ({
   const status = statusConfig[order.status];
   const StatusIcon = status.icon;
   const [expanded, setExpanded] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editItems, setEditItems] = useState<any[]>([]);
+  const [editAddress, setEditAddress] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const openEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditItems(JSON.parse(JSON.stringify(order.items || [])));
+    setEditAddress(order.delivery_address || '');
+    setEditPhone(order.customer_phone || '');
+    setEditNotes(order.notes || '');
+    setEditOpen(true);
+  };
+
+  const changeQty = (idx: number, delta: number) => {
+    setEditItems((prev) => {
+      const next = [...prev];
+      const newQty = (next[idx].quantity || 0) + delta;
+      if (newQty <= 0) {
+        next.splice(idx, 1);
+      } else {
+        next[idx] = { ...next[idx], quantity: newQty };
+      }
+      return next;
+    });
+  };
+
+  const removeItem = (idx: number) => {
+    setEditItems((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const newSubtotal = editItems.reduce(
+    (s, it) => s + (it.unitPrice || it.price || 0) * (it.quantity || 0),
+    0
+  );
+  const newTotal = newSubtotal + Number(order.delivery_fee || 0);
+
+  const saveEdit = async () => {
+    setSaving(true);
+    const { error } = await supabase
+      .from('orders')
+      .update({
+        items: editItems,
+        subtotal: newSubtotal,
+        total: newTotal,
+        delivery_address: editAddress || null,
+        customer_phone: editPhone || null,
+        notes: editNotes || null,
+      })
+      .eq('id', order.id);
+    setSaving(false);
+    if (error) {
+      toast.error('Error al guardar', { description: error.message });
+      return;
+    }
+    toast.success('Pedido actualizado');
+    setEditOpen(false);
+  };
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
