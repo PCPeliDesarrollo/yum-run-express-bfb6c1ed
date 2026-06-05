@@ -12,13 +12,13 @@ Deno.serve(async (req) => {
 
   const results: string[] = [];
 
-  // 1. Auto-mark as "delivered" orders that have been "ready" for 30+ minutes
-  const thirtyMinAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+  // 1. Auto-mark as "delivered" orders that have been "ready" for 20+ minutes
+  const twentyMinAgo = new Date(Date.now() - 20 * 60 * 1000).toISOString();
   const { data: readyOrders, error: readyError } = await supabase
     .from("orders")
     .update({ status: "delivered" })
     .eq("status", "ready")
-    .lte("updated_at", thirtyMinAgo)
+    .lte("updated_at", twentyMinAgo)
     .select("id");
 
   if (readyError) {
