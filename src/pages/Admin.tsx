@@ -476,24 +476,35 @@ const StatCard = ({
   </div>
 );
 
-const FilterButton = ({ 
-  children, 
-  active, 
-  onClick 
-}: { 
-  children: React.ReactNode; 
-  active: boolean; 
+const FilterButton = ({
+  children,
+  active,
+  onClick,
+  activeClasses = 'bg-primary text-primary-foreground border-primary',
+  inactiveClasses = 'bg-card text-foreground border-border hover:bg-muted',
+  count,
+}: {
+  children: React.ReactNode;
+  active: boolean;
   onClick: () => void;
+  activeClasses?: string;
+  inactiveClasses?: string;
+  count?: number;
 }) => (
   <button
     onClick={onClick}
-    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-      active 
-        ? 'bg-primary text-primary-foreground' 
-        : 'bg-card text-foreground border border-border hover:bg-muted'
+    className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all border-2 inline-flex items-center gap-1.5 shadow-sm ${
+      active ? `${activeClasses} scale-105 shadow-md` : inactiveClasses
     }`}
   >
     {children}
+    {typeof count === 'number' && (
+      <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold ${
+        active ? 'bg-white/25' : 'bg-black/10 dark:bg-white/10'
+      }`}>
+        {count}
+      </span>
+    )}
   </button>
 );
 
