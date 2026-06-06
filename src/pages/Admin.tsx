@@ -393,6 +393,22 @@ const Admin = () => {
               <StatCard icon={TrendingUp} label="Hoy" value={stats.today} color="text-green-600" />
             </div>
 
+            {/* Legend */}
+            <div className="flex flex-wrap items-center gap-3 mb-3 text-xs text-muted-foreground">
+              <span className="font-semibold text-foreground">Leyenda:</span>
+              {(Object.keys(statusConfig) as OrderStatus[]).map(status => {
+                const Icon = statusConfig[status].icon;
+                return (
+                  <span key={status} className="inline-flex items-center gap-1.5">
+                    <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full ${statusConfig[status].color}`}>
+                      <Icon className="w-3 h-3 text-white" />
+                    </span>
+                    <span>{statusConfig[status].label}</span>
+                  </span>
+                );
+              })}
+            </div>
+
             {/* Filters */}
             <div className="flex gap-2 overflow-x-auto pb-4 mb-4">
               <FilterButton
