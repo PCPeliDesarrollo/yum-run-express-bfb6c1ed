@@ -395,21 +395,40 @@ const Admin = () => {
 
             {/* Filters */}
             <div className="flex gap-2 overflow-x-auto pb-4 mb-4">
-              <FilterButton 
-                active={selectedStatus === 'all'} 
+              <FilterButton
+                active={selectedStatus === 'all'}
                 onClick={() => setSelectedStatus('all')}
+                activeClasses="bg-foreground text-background border-foreground"
+                inactiveClasses="bg-card text-foreground border-border hover:bg-muted"
+                count={orders.length}
               >
-                Todos
+                📋 Todos
               </FilterButton>
-              {(Object.keys(statusConfig) as OrderStatus[]).map(status => (
-                <FilterButton
-                  key={status}
-                  active={selectedStatus === status}
-                  onClick={() => setSelectedStatus(status)}
-                >
-                  {statusConfig[status].label}
-                </FilterButton>
-              ))}
+              {(Object.keys(statusConfig) as OrderStatus[]).map(status => {
+                const Icon = statusConfig[status].icon;
+                const count = orders.filter(o => o.status === status).length;
+                const colorMap: Record<OrderStatus, { active: string; inactive: string }> = {
+                  pending:   { active: 'bg-yellow-500 text-white border-yellow-500',  inactive: 'bg-yellow-50 text-yellow-700 border-yellow-300 hover:bg-yellow-100 dark:bg-yellow-950 dark:text-yellow-300 dark:border-yellow-800' },
+                  confirmed: { active: 'bg-blue-500 text-white border-blue-500',      inactive: 'bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800' },
+                  preparing: { active: 'bg-orange-500 text-white border-orange-500',  inactive: 'bg-orange-50 text-orange-700 border-orange-300 hover:bg-orange-100 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-800' },
+                  ready:     { active: 'bg-green-500 text-white border-green-500',    inactive: 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100 dark:bg-green-950 dark:text-green-300 dark:border-green-800' },
+                  delivered: { active: 'bg-gray-500 text-white border-gray-500',      inactive: 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700' },
+                  cancelled: { active: 'bg-red-500 text-white border-red-500',        inactive: 'bg-red-50 text-red-700 border-red-300 hover:bg-red-100 dark:bg-red-950 dark:text-red-300 dark:border-red-800' },
+                };
+                return (
+                  <FilterButton
+                    key={status}
+                    active={selectedStatus === status}
+                    onClick={() => setSelectedStatus(status)}
+                    activeClasses={colorMap[status].active}
+                    inactiveClasses={colorMap[status].inactive}
+                    count={count}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {statusConfig[status].label}
+                  </FilterButton>
+                );
+              })}
             </div>
 
             {/* Orders List */}
@@ -457,24 +476,35 @@ const StatCard = ({
   </div>
 );
 
-const FilterButton = ({ 
-  children, 
-  active, 
-  onClick 
-}: { 
-  children: React.ReactNode; 
-  active: boolean; 
+const FilterButton = ({
+  children,
+  active,
+  onClick,
+  activeClasses = 'bg-primary text-primary-foreground border-primary',
+  inactiveClasses = 'bg-card text-foreground border-border hover:bg-muted',
+  count,
+}: {
+  children: React.ReactNode;
+  active: boolean;
   onClick: () => void;
+  activeClasses?: string;
+  inactiveClasses?: string;
+  count?: number;
 }) => (
   <button
     onClick={onClick}
-    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-      active 
-        ? 'bg-primary text-primary-foreground' 
-        : 'bg-card text-foreground border border-border hover:bg-muted'
+    className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all border-2 inline-flex items-center gap-1.5 shadow-sm ${
+      active ? `${activeClasses} scale-105 shadow-md` : inactiveClasses
     }`}
   >
     {children}
+    {typeof count === 'number' && (
+      <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold ${
+        active ? 'bg-white/25' : 'bg-black/10 dark:bg-white/10'
+      }`}>
+        {count}
+      </span>
+    )}
   </button>
 );
 
