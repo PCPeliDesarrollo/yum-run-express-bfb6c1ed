@@ -43,11 +43,13 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAllProducts } from '@/hooks/useProducts';
 
-const CATEGORIES = [
+const DEFAULT_CATEGORIES = [
   "Hamburguesas", "Bocadillos Caseros", "Más Bocadillos", "Para Compartir",
   "Pizzas", "Perritos", "Sandwiches", "Durum", "Paninis",
   "Menú Niños", "Complementos", "Combinados", "Raciones", "Exquisitos",
+  "Sin Gluten",
 ];
+const CUSTOM_CATS_KEY = 'tryb_custom_categories';
 
 const ALLERGENS = [
   { key: 'has_pork', label: '🐷 Cerdo', color: 'bg-pink-500' },
@@ -80,7 +82,7 @@ interface ProductForm {
 }
 
 const emptyForm: ProductForm = {
-  name: '', description: '', price: '', price_media: '', category: CATEGORIES[0],
+  name: '', description: '', price: '', price_media: '', category: DEFAULT_CATEGORIES[0],
   is_gluten_free: false, has_egg: false, has_pork: false, has_dairy: false,
   has_nuts: false, has_fish: false, has_shellfish: false, has_soy: false,
   available: true, sort_order: '0', options: '[]',
@@ -101,6 +103,28 @@ const AdminMenuManager = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const categoryFileInputRef = useRef<HTMLInputElement>(null);
+  const [customCategories, setCustomCategories] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem(CUSTOM_CATS_KEY) || '[]'); } catch { return []; }
+  });
+  const CATEGORIES = Array.from(new Set([
+    ...DEFAULT_CATEGORIES,
+    ...customCategories,
+    ...products.map((p: any) => p.category).filter(Boolean),
+  ]));
+
+  const addCategory = () => {
+    const name = window.prompt('Nombre de la nueva categoría:')?.trim();
+    if (!name) return;
+    if (CATEGORIES.includes(name)) {
+      toast({ title: 'Esa categoría ya existe' });
+      return;
+    }
+    const next = [...customCategories, name];
+    setCustomCategories(next);
+    localStorage.setItem(CUSTOM_CATS_KEY, JSON.stringify(next));
+    setSelectedCategory(name);
+    toast({ title: `✅ Categoría "${name}" creada` });
+  };
   const [pendingCategory, setPendingCategory] = useState<string | null>(null);
 
   const handleCategoryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -359,7 +383,8 @@ const AdminMenuManager = () => {
         </button>
         {CATEGORIES.map(cat => {
           const count = products.filter(p => p.category === cat).length;
-          if (count === 0) return null;
+          const isCustom = customCategories.includes(cat) || cat === 'Sin Gluten';
+          if (count === 0 && !isCustom) return null;
           return (
             <button
               key={cat}
@@ -372,6 +397,12 @@ const AdminMenuManager = () => {
             </button>
           );
         })}
+        <button
+          onClick={addCategory}
+          className="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20"
+        >
+          + Nueva categoría
+        </button>
       </div>
 
       {/* Search Bar */}
