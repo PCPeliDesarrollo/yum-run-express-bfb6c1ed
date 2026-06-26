@@ -396,17 +396,19 @@ const Admin = () => {
             {/* Legend */}
             <div className="flex flex-wrap items-center gap-3 mb-3 text-xs text-muted-foreground">
               <span className="font-semibold text-foreground">Leyenda:</span>
-              {(Object.keys(statusConfig) as OrderStatus[]).map(status => {
+              {(['preparing', 'ready'] as OrderStatus[]).map(status => {
                 const Icon = statusConfig[status].icon;
+                const label = status === 'preparing' ? 'Recibido en cocina' : 'En reparto';
                 return (
                   <span key={status} className="inline-flex items-center gap-1.5">
                     <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full ${statusConfig[status].color}`}>
                       <Icon className="w-3 h-3 text-white" />
                     </span>
-                    <span>{statusConfig[status].label}</span>
+                    <span>{label}</span>
                   </span>
                 );
               })}
+              <span className="text-muted-foreground/80">· Se cierra automáticamente 20 min después de pasar a reparto.</span>
             </div>
 
             {/* Filters */}
