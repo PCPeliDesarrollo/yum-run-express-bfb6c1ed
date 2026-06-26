@@ -22,6 +22,7 @@ const categoryEmojis: Record<string, string> = {
   "Combinados": "🎁",
   "Raciones": "🍖",
   "Exquisitos": "⭐",
+  "Sin Gluten": "🌾",
 };
 
 const Category = () => {
