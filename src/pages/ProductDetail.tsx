@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Minus, Check } from "lucide-react";
+import { ArrowLeft, Plus, Minus, Check, X, ZoomIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ProductOption } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
