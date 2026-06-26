@@ -170,10 +170,56 @@ const AdminMenuManager = () => {
   ).filter(p => searchQuery === '' || p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const openNewForm = () => {
-    setForm(emptyForm);
+    const preselected = selectedCategory !== 'all' ? selectedCategory : DEFAULT_CATEGORIES[0];
+    setForm({ ...emptyForm, category: preselected });
     setEditingId(null);
     setImagePreview(null);
     setShowForm(true);
+  };
+
+  const renameCategory = async (oldName: string) => {
+    const newName = window.prompt(`Renombrar "${oldName}" a:`, oldName)?.trim();
+    if (!newName || newName === oldName) return;
+    const affected = products.filter(p => p.category === oldName);
+    if (affected.length > 0) {
+      const { error } = await supabase
+        .from('products')
+        .update({ category: newName })
+        .eq('category', oldName);
+      if (error) {
+        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+        return;
+      }
+    }
+    const next = customCategories.map(c => (c === oldName ? newName : c));
+    if (!next.includes(newName)) next.push(newName);
+    const dedup = next.filter((c, i) => next.indexOf(c) === i);
+    setCustomCategories(dedup);
+    localStorage.setItem(CUSTOM_CATS_KEY, JSON.stringify(dedup));
+    setSelectedCategory(newName);
+    toast({ title: `✅ Categoría renombrada a "${newName}"` });
+    refetch();
+  };
+
+  const deleteCategory = async (name: string) => {
+    const affected = products.filter(p => p.category === name);
+    const msg = affected.length > 0
+      ? `La categoría "${name}" tiene ${affected.length} producto(s). ¿Eliminar categoría Y todos sus productos?`
+      : `¿Eliminar la categoría "${name}"?`;
+    if (!confirm(msg)) return;
+    if (affected.length > 0) {
+      const { error } = await supabase.from('products').delete().eq('category', name);
+      if (error) {
+        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+        return;
+      }
+    }
+    const next = customCategories.filter(c => c !== name);
+    setCustomCategories(next);
+    localStorage.setItem(CUSTOM_CATS_KEY, JSON.stringify(next));
+    setSelectedCategory('all');
+    toast({ title: `🗑️ Categoría "${name}" eliminada` });
+    refetch();
   };
 
   const openEditForm = (product: any) => {
