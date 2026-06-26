@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Capacitor } from "@capacitor/core";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -9,6 +9,23 @@ export const useNativeApp = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isOpen: cartOpen, setIsOpen: setCartOpen } = useCart();
+
+  // Keep latest values in refs so a single back-button listener always reads fresh state.
+  const cartOpenRef = useRef(cartOpen);
+  const pathRef = useRef(location.pathname);
+  const setCartOpenRef = useRef(setCartOpen);
+  const navigateRef = useRef(navigate);
+
+  useEffect(() => {
+    cartOpenRef.current = cartOpen;
+  }, [cartOpen]);
+  useEffect(() => {
+    pathRef.current = location.pathname;
+  }, [location.pathname]);
+  useEffect(() => {
+    setCartOpenRef.current = setCartOpen;
+    navigateRef.current = navigate;
+  }, [setCartOpen, navigate]);
 
   // Status bar config
   useEffect(() => {
@@ -38,39 +55,42 @@ export const useNativeApp = () => {
         console.warn("[Notifications] Permission request failed:", e);
       }
     };
-    // Slight delay so the app UI is ready
     const t = setTimeout(requestPerms, 800);
     return () => clearTimeout(t);
   }, []);
 
-  // Android hardware back button
+  // Hardware back button (Android) — registered ONCE so it never misses an event
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
 
     let cleanup: (() => void) | undefined;
+    let cancelled = false;
 
     import("@capacitor/app").then(({ App }) => {
-      const promise = App.addListener("backButton", () => {
+      if (cancelled) return;
+      App.addListener("backButton", () => {
         // 1. If cart drawer is open, close it
-        if (cartOpen) {
-          setCartOpen(false);
+        if (cartOpenRef.current) {
+          setCartOpenRef.current(false);
           return;
         }
-        // 2. If on home or auth, minimize app
-        const path = location.pathname;
+        const path = pathRef.current;
+        // 2. On root/login, minimize app instead of exiting
         if (path === "/" || path === "/auth") {
           App.minimizeApp();
           return;
         }
-        // 3. If we have history, go back; otherwise go home
+        // 3. Otherwise navigate back within the SPA
         if (window.history.length > 1) {
           window.history.back();
         } else {
-          navigate("/");
+          navigateRef.current("/");
         }
-      });
-
-      promise.then((handle) => {
+      }).then((handle) => {
+        if (cancelled) {
+          handle.remove();
+          return;
+        }
         cleanup = () => handle.remove();
       });
     }).catch((err) => {
@@ -78,7 +98,15 @@ export const useNativeApp = () => {
     });
 
     return () => {
+      cancelled = true;
       cleanup?.();
     };
-  }, [cartOpen, setCartOpen, location.pathname, navigate]);
+  }, []);
+
+  // iOS swipe-back gesture support inside WKWebView
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== "ios") return;
+    // The WebView gesture only triggers real history navigation; ensure our SPA history is used.
+    document.documentElement.style.setProperty("-webkit-overflow-scrolling", "touch");
+  }, []);
 };
