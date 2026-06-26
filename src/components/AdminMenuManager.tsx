@@ -43,11 +43,13 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAllProducts } from '@/hooks/useProducts';
 
-const CATEGORIES = [
+const DEFAULT_CATEGORIES = [
   "Hamburguesas", "Bocadillos Caseros", "Más Bocadillos", "Para Compartir",
   "Pizzas", "Perritos", "Sandwiches", "Durum", "Paninis",
   "Menú Niños", "Complementos", "Combinados", "Raciones", "Exquisitos",
+  "Sin Gluten",
 ];
+const CUSTOM_CATS_KEY = 'tryb_custom_categories';
 
 const ALLERGENS = [
   { key: 'has_pork', label: '🐷 Cerdo', color: 'bg-pink-500' },
