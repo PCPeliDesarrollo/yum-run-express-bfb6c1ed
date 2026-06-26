@@ -39,19 +39,6 @@ Deno.serve(async (req) => {
     const isOverride = overrideRes.data?.value === true;
     const currentKitchenOpen = kitchenRes.data?.value === true;
 
-    // If manual override is active, ALWAYS respect admin's decision.
-    // The override only clears when the admin manually toggles the kitchen again
-    // (handled in the frontend hook by re-setting the override flag).
-    if (isOverride) {
-      return new Response(
-        JSON.stringify({
-          message: "Manual override active — admin decision prevails",
-          kitchen_open: currentKitchenOpen,
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     if (!schedule || !schedule.slots) {
       return new Response(JSON.stringify({ message: "No schedule configured" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -73,6 +60,32 @@ Deno.serve(async (req) => {
       const closeMinutes = closeH * 60 + closeM;
       return currentMinutes >= openMinutes && currentMinutes < closeMinutes;
     });
+
+    // If manual override is active, keep admin's decision UNTIL the schedule
+    // naturally catches up (i.e. the scheduled state matches the current state).
+    // Then auto-clear the override so the schedule takes over again.
+    if (isOverride) {
+      if (shouldBeOpen === currentKitchenOpen) {
+        await supabase
+          .from("app_settings")
+          .update({ value: false, updated_at: new Date().toISOString() })
+          .eq("key", "kitchen_manual_override");
+        return new Response(
+          JSON.stringify({
+            message: "Override cleared — schedule caught up",
+            kitchen_open: currentKitchenOpen,
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      return new Response(
+        JSON.stringify({
+          message: "Manual override active — admin decision prevails",
+          kitchen_open: currentKitchenOpen,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     // No override — apply schedule if different from current state
     if (shouldBeOpen !== currentKitchenOpen) {
