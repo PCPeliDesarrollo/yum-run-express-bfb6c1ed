@@ -103,6 +103,28 @@ const AdminMenuManager = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const categoryFileInputRef = useRef<HTMLInputElement>(null);
+  const [customCategories, setCustomCategories] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem(CUSTOM_CATS_KEY) || '[]'); } catch { return []; }
+  });
+  const CATEGORIES = Array.from(new Set([
+    ...DEFAULT_CATEGORIES,
+    ...customCategories,
+    ...products.map((p: any) => p.category).filter(Boolean),
+  ]));
+
+  const addCategory = () => {
+    const name = window.prompt('Nombre de la nueva categoría:')?.trim();
+    if (!name) return;
+    if (CATEGORIES.includes(name)) {
+      toast({ title: 'Esa categoría ya existe' });
+      return;
+    }
+    const next = [...customCategories, name];
+    setCustomCategories(next);
+    localStorage.setItem(CUSTOM_CATS_KEY, JSON.stringify(next));
+    setSelectedCategory(name);
+    toast({ title: `✅ Categoría "${name}" creada` });
+  };
   const [pendingCategory, setPendingCategory] = useState<string | null>(null);
 
   const handleCategoryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
