@@ -16,6 +16,20 @@ export const useProfileComplete = () => {
     }
 
     const check = async () => {
+      // Admins are exempt from profile completion
+      const { data: roleRow } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+
+      if (roleRow) {
+        setIsComplete(true);
+        setLoading(false);
+        return;
+      }
+
       const { data } = await supabase
         .from('profiles')
         .select('full_name, phone, address, city, postal_code')
