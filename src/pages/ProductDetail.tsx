@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Minus, Check } from "lucide-react";
+import { ArrowLeft, Plus, Minus, Check, X, ZoomIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ProductOption } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
@@ -17,6 +17,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
+  const [fullscreen, setFullscreen] = useState(false);
   
 
   if (loading) {
@@ -78,7 +79,12 @@ const ProductDetail = () => {
       </div>
 
       {/* Product Image */}
-      <div className="relative h-64 md:h-80">
+      <button
+        type="button"
+        onClick={() => setFullscreen(true)}
+        className="relative h-64 md:h-80 w-full block group"
+        aria-label="Ver imagen completa"
+      >
         <OptimizedImage
           src={product.image}
           alt={product.name}
@@ -89,7 +95,33 @@ const ProductDetail = () => {
           className="w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-      </div>
+        <span className="absolute top-3 right-3 bg-black/60 text-white rounded-full p-2 backdrop-blur-sm">
+          <ZoomIn className="w-4 h-4" />
+        </span>
+      </button>
+
+      {/* Fullscreen image viewer */}
+      {fullscreen && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center safe-top safe-x"
+          onClick={() => setFullscreen(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setFullscreen(false)}
+            className="absolute top-4 right-4 z-10 bg-white/10 hover:bg-white/20 text-white rounded-full p-3 backdrop-blur-sm"
+            aria-label="Cerrar"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <img
+            src={product.image}
+            alt={product.name}
+            className="max-w-full max-h-full object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
 
       {/* Product Info */}
       <div className="container mx-auto px-4 py-6">
