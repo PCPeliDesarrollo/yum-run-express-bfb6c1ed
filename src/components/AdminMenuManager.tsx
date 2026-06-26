@@ -383,7 +383,8 @@ const AdminMenuManager = () => {
         </button>
         {CATEGORIES.map(cat => {
           const count = products.filter(p => p.category === cat).length;
-          if (count === 0) return null;
+          const isCustom = customCategories.includes(cat) || cat === 'Sin Gluten';
+          if (count === 0 && !isCustom) return null;
           return (
             <button
               key={cat}
@@ -396,6 +397,12 @@ const AdminMenuManager = () => {
             </button>
           );
         })}
+        <button
+          onClick={addCategory}
+          className="px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20"
+        >
+          + Nueva categoría
+        </button>
       </div>
 
       {/* Search Bar */}
