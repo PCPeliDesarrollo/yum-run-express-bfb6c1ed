@@ -422,7 +422,7 @@ const Admin = () => {
               >
                 📋 Todos
               </FilterButton>
-              {(Object.keys(statusConfig) as OrderStatus[]).map(status => {
+              {(['preparing', 'ready', 'cancelled'] as OrderStatus[]).map(status => {
                 const Icon = statusConfig[status].icon;
                 const count = orders.filter(o => o.status === status).length;
                 const colorMap: Record<OrderStatus, { active: string; inactive: string }> = {
