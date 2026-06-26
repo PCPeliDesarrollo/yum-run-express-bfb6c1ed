@@ -483,11 +483,12 @@ const Checkout = () => {
         </section>
       </div>
 
-      {/* Fixed Bottom CTA */}
+      {/* Fixed Bottom CTA — sits above the mobile bottom nav (h~64px) */}
       <div
-        className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4"
+        className="fixed left-0 right-0 bottom-16 sm:bottom-0 z-40 bg-background border-t border-border p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 16px)" }}
       >
+
         <div className="container mx-auto max-w-2xl">
           <Button
             variant="destructive"
