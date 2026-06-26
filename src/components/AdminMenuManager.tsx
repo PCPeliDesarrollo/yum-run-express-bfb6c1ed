@@ -82,7 +82,7 @@ interface ProductForm {
 }
 
 const emptyForm: ProductForm = {
-  name: '', description: '', price: '', price_media: '', category: CATEGORIES[0],
+  name: '', description: '', price: '', price_media: '', category: DEFAULT_CATEGORIES[0],
   is_gluten_free: false, has_egg: false, has_pork: false, has_dairy: false,
   has_nuts: false, has_fish: false, has_shellfish: false, has_soy: false,
   available: true, sort_order: '0', options: '[]',
