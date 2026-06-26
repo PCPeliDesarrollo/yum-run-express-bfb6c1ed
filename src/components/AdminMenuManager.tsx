@@ -651,8 +651,25 @@ const AdminMenuManager = () => {
       </div>
 
       {filteredProducts.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">
-          No hay productos en esta categoría
+        <div className="text-center py-8 space-y-3">
+          <p className="text-muted-foreground">No hay productos en esta categoría</p>
+          {selectedCategory !== 'all' && (
+            <Button onClick={openNewForm} className="gap-2">
+              <Plus className="w-4 h-4" /> Añadir producto a "{selectedCategory}"
+            </Button>
+          )}
+        </div>
+      )}
+
+      {/* Category management toolbar */}
+      {selectedCategory !== 'all' && (
+        <div className="flex items-center justify-center gap-2 pt-2">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => renameCategory(selectedCategory)}>
+            <Pencil className="w-3.5 h-3.5" /> Renombrar categoría
+          </Button>
+          <Button variant="outline" size="sm" className="gap-1.5 text-red-500 hover:text-red-500" onClick={() => deleteCategory(selectedCategory)}>
+            <Trash2 className="w-3.5 h-3.5" /> Eliminar categoría
+          </Button>
         </div>
       )}
     </div>
