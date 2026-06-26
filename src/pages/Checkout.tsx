@@ -150,6 +150,8 @@ const Checkout = () => {
         productName: item.product.name,
         quantity: item.quantity,
         unitPrice: item.product.price,
+        category: item.product.category,
+        isGlutenFree: item.product.isGlutenFree,
         options: item.selectedOptions.map((o) => ({ name: o.name, price: o.price })),
         notes: item.notes,
         totalPrice: item.totalPrice,

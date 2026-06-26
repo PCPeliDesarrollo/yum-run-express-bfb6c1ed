@@ -24,6 +24,7 @@ const fallbackImages: Record<string, string> = {
   "Bocadillos Caseros": bocadillosImg,
   "Más Bocadillos": bocadillosImg,
   "Para Compartir": paraCompartirImg,
+  "Sin Gluten": exquisitosImg,
   "Pizzas": pizzasImg,
   "Perritos": perritosImg,
   "Sandwiches": sandwichesImg,
