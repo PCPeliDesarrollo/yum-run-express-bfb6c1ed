@@ -115,15 +115,22 @@ const AdminMenuManager = () => {
   const addCategory = () => {
     const name = window.prompt('Nombre de la nueva categoría:')?.trim();
     if (!name) return;
-    if (CATEGORIES.includes(name)) {
-      toast({ title: 'Esa categoría ya existe' });
-      return;
+    const exists = CATEGORIES.includes(name);
+    if (!exists) {
+      const next = [...customCategories, name];
+      setCustomCategories(next);
+      localStorage.setItem(CUSTOM_CATS_KEY, JSON.stringify(next));
     }
-    const next = [...customCategories, name];
-    setCustomCategories(next);
-    localStorage.setItem(CUSTOM_CATS_KEY, JSON.stringify(next));
     setSelectedCategory(name);
-    toast({ title: `✅ Categoría "${name}" creada` });
+    // Abrir directamente el formulario con esa categoría preseleccionada
+    setForm({ ...emptyForm, category: name });
+    setEditingId(null);
+    setImagePreview(null);
+    setShowForm(true);
+    toast({
+      title: exists ? `📂 "${name}" ya existe` : `✅ Categoría "${name}" creada`,
+      description: 'Añade un producto para que aparezca en la carta.',
+    });
   };
   const [pendingCategory, setPendingCategory] = useState<string | null>(null);
 
