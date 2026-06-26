@@ -817,14 +817,29 @@ const buildTicketHtml = (order: Order): string => {
     return name;
   };
 
-  const itemsHtml = order.items.map((item: any) => 
-    `<tr>
-      <td style="padding:4px 0;border-bottom:1px dashed #ddd;">${item.quantity}x ${item.productName || item.name}</td>
-      <td style="padding:4px 0;border-bottom:1px dashed #ddd;text-align:right;">€${((item.unitPrice || item.price || 0) * item.quantity).toFixed(2)}</td>
-    </tr>
-    ${item.options?.length ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:13px;color:#000;font-weight:bold;">▸ ${item.options.map((o: any) => formatOption(o.name)).join(', ')}</td></tr>` : ''}
-    ${item.notes ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:12px;color:#000;font-weight:bold;">📝 ${item.notes}</td></tr>` : ''}`
-  ).join('');
+  const itemsHtml = order.items.map((item: any) => {
+    const qty = item.quantity || 1;
+    const unit = item.unitPrice || item.price || 0;
+    const isGF = item.isGlutenFree === true || (typeof item.category === 'string' && item.category.toLowerCase().includes('sin gluten'));
+    const nameCell = isGF
+      ? `<span style="text-transform:uppercase;font-weight:900;font-size:20px;background:#000;color:#fff;padding:2px 6px;">🌾 SIN GLUTEN · ${item.productName || item.name}</span>`
+      : `${item.productName || item.name}`;
+    const optsRow = item.options?.length
+      ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:13px;color:#000;font-weight:bold;">▸ ${item.options.map((o: any) => formatOption(o.name)).join(', ')}</td></tr>`
+      : '';
+    const notesRow = item.notes
+      ? `<tr><td colspan="2" style="padding:2px 0 4px 16px;font-size:12px;color:#000;font-weight:bold;">📝 ${item.notes}</td></tr>`
+      : '';
+    // Desglose: una línea por unidad
+    return Array.from({ length: qty }).map((_, i) => `
+      <tr>
+        <td style="padding:4px 0;border-bottom:1px dashed #ddd;">1x ${nameCell}${qty > 1 ? ` <span style="font-size:11px;color:#000;">(${i + 1}/${qty})</span>` : ''}</td>
+        <td style="padding:4px 0;border-bottom:1px dashed #ddd;text-align:right;">€${unit.toFixed(2)}</td>
+      </tr>
+      ${optsRow}
+      ${notesRow}
+    `).join('');
+  }).join('');
 
   return `<!DOCTYPE html><html><head><title>Pedido #${order.order_number}</title>
     <style>
