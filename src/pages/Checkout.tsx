@@ -77,7 +77,7 @@ const Checkout = () => {
     loadProfile();
   }, [user]);
 
-  const orderNotes = "";
+  const [orderNotes, setOrderNotes] = useState("");
 
   const deliveryFee = orderType === "delivery" ? 1.80 : 0;
   const finalTotal = totalPrice + deliveryFee;
