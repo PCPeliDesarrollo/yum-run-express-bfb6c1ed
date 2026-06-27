@@ -443,6 +443,24 @@ const Checkout = () => {
 
         <Separator className="my-6" />
 
+        {/* Comments */}
+        <section className="mb-6">
+          <Label htmlFor="orderNotes" className="text-base font-bold mb-2 block">
+            💬 Comentarios para el pedido (opcional)
+          </Label>
+          <textarea
+            id="orderNotes"
+            value={orderNotes}
+            onChange={(e) => setOrderNotes(e.target.value.slice(0, 300))}
+            placeholder="Ej: llamar al llegar, dejar en portería, sin cebolla en todo, etc."
+            rows={3}
+            maxLength={300}
+            className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+          />
+          <p className="text-xs text-muted-foreground mt-1 text-right">{orderNotes.length}/300</p>
+        </section>
+
+
         {/* Order Summary */}
         <section className="mb-8">
           <h2 className="text-xl font-bold mb-4">Resumen del pedido</h2>
