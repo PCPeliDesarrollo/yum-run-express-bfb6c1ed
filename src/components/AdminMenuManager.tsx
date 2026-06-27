@@ -664,7 +664,7 @@ const AdminMenuManager = () => {
       {/* Category management toolbar */}
       {selectedCategory !== 'all' && (
         <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-          <Button size="sm" className="gap-1.5" onClick={openNewForm}>
+          <Button size="sm" className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md" onClick={openNewForm}>
             <Plus className="w-3.5 h-3.5" /> Añadir producto a "{selectedCategory}"
           </Button>
           <Button variant="outline" size="sm" className="gap-1.5" onClick={() => renameCategory(selectedCategory)}>
