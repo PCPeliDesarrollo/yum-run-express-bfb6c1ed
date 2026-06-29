@@ -855,7 +855,7 @@ const buildTicketHtml = (order: Order): string => {
     <p class="subtitle">Pedido #${order.order_number}</p>
     <div class="divider"></div>
     <p><strong>Fecha:</strong> ${formattedDate} ${formattedTime}</p>
-    <p><strong>Tipo:</strong> ${orderTypeLabels[order.order_type]}</p>
+    <p style="font-size:22px;font-weight:900;margin:8px 0;border:2px solid #000;padding:10px;text-align:center;text-transform:uppercase;">${orderTypeLabels[order.order_type]}</p>
     ${order.customer_name ? `<p style="font-size:18px;font-weight:900;margin:6px 0;">👤 ${order.customer_name}</p>` : ''}
     ${order.customer_phone ? `<p style="font-size:22px;font-weight:900;margin:6px 0;border:2px solid #000;padding:6px 8px;text-align:center;">📞 ${order.customer_phone}</p>` : ''}
     ${order.order_type === 'delivery' && order.delivery_address ? `<p style="font-size:20px;font-weight:900;margin:6px 0;border:2px solid #000;padding:8px;text-align:center;line-height:1.3;">📍 ${order.delivery_address}<br/>${order.delivery_city || ''}</p>` : ''}
