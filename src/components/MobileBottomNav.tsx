@@ -1,13 +1,15 @@
-import { Home, ShoppingCart, Package, User, Settings } from "lucide-react";
+import { Home, ShoppingCart, Package, User, Settings, Bell } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useCart } from "@/contexts/CartContext";
+import { useNotificationsInbox } from "@/hooks/useNotificationsInbox";
 
 const MobileBottomNav = () => {
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
   const { totalItems, setIsOpen } = useCart();
+  const { unreadCount } = useNotificationsInbox();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -48,6 +50,23 @@ const MobileBottomNav = () => {
           >
             <Package className="w-5 h-5" />
             <span className="text-[10px] font-semibold">Pedidos</span>
+          </button>
+        )}
+
+        {user && !isAdmin && (
+          <button
+            onClick={() => navigate("/notificaciones")}
+            className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors relative ${
+              isActive("/notificaciones") ? "text-primary" : "text-muted-foreground"
+            }`}
+          >
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 right-0 min-w-4 h-4 px-1 bg-primary rounded-full text-[9px] text-primary-foreground flex items-center justify-center font-bold">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </span>
+            )}
+            <span className="text-[10px] font-semibold">Avisos</span>
           </button>
         )}
 

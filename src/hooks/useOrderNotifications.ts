@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { showNativeNotification, playBeep, playKitchenBell, ensureNotificationPermission } from "@/lib/notifications";
+import { addNotification } from "@/lib/notificationsStore";
 import { toast } from "sonner";
 
 const statusLabels: Record<string, string> = {
@@ -124,7 +125,7 @@ export const useOrderNotifications = () => {
           playBeep();
           showNativeNotification(title, body, o.order_number);
           toast(title, { description: body });
-
+          addNotification(user.id, { title, body, orderNumber: o.order_number });
         }
       )
       .subscribe();
