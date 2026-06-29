@@ -15,6 +15,7 @@ import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
 import Category from "./pages/Category";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Onboarding from "./pages/Onboarding";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
@@ -41,6 +42,7 @@ const InsideRouter = () => {
       <MobileBottomNav />
       <Routes>
         <Route path="/auth" element={<Auth />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/onboarding" element={<ProtectedRoute skipProfileCheck><Onboarding /></ProtectedRoute>} />
         <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
         <Route path="/categoria/:slug" element={<ProtectedRoute><Category /></ProtectedRoute>} />
