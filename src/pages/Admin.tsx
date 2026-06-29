@@ -873,8 +873,51 @@ const buildTicketHtml = (order: Order): string => {
   </body></html>`;
 };
 
-// Auto-print using a hidden iframe — works without popup blocker / user gesture
-const printOrder = (order: Order) => {
+// ====== Sequential print queue ======
+// Ensures every incoming order is printed one by one, no overlap, no skips.
+const PRINTED_KEY = 'tryb_printed_orders_v1';
+const getPrintedSet = (): Set<string> => {
+  try {
+    const raw = localStorage.getItem(PRINTED_KEY);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw) as string[];
+    // Keep last 500 to avoid unbounded growth
+    return new Set(arr.slice(-500));
+  } catch { return new Set(); }
+};
+const markPrinted = (id: string) => {
+  const set = getPrintedSet();
+  set.add(id);
+  try { localStorage.setItem(PRINTED_KEY, JSON.stringify(Array.from(set))); } catch {}
+};
+
+const printQueue: Order[] = [];
+let isPrinting = false;
+
+const printOrder = (order: Order, opts: { force?: boolean } = {}) => {
+  if (!opts.force && getPrintedSet().has(order.id)) {
+    return; // already printed before — don't duplicate
+  }
+  // Avoid enqueueing the same order twice while waiting
+  if (printQueue.some(o => o.id === order.id)) return;
+  printQueue.push(order);
+  processPrintQueue();
+};
+
+const processPrintQueue = () => {
+  if (isPrinting) return;
+  const next = printQueue.shift();
+  if (!next) return;
+  isPrinting = true;
+  printOneNow(next, () => {
+    markPrinted(next.id);
+    isPrinting = false;
+    // small gap between prints so the browser dialog/spooler can settle
+    setTimeout(processPrintQueue, 1500);
+  });
+};
+
+const printOneNow = (order: Order, done: () => void) => {
   const html = buildTicketHtml(order);
   const iframe = document.createElement('iframe');
   iframe.style.position = 'fixed';
@@ -888,22 +931,33 @@ const printOrder = (order: Order) => {
   const doc = iframe.contentDocument || iframe.contentWindow?.document;
   if (!doc) {
     document.body.removeChild(iframe);
+    done();
     return;
   }
   doc.open();
   doc.write(html);
   doc.close();
 
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    setTimeout(() => {
+      try { document.body.removeChild(iframe); } catch {}
+    }, 60000);
+    done();
+  };
+
   const triggerPrint = () => {
     try {
       iframe.contentWindow?.focus();
+      iframe.contentWindow?.addEventListener('afterprint', finish);
       iframe.contentWindow?.print();
     } catch (e) {
       console.warn('[Print] failed:', e);
     }
-    setTimeout(() => {
-      try { document.body.removeChild(iframe); } catch {}
-    }, 60000);
+    // Safety net: if afterprint never fires (some browsers), move on after 8s
+    setTimeout(finish, 8000);
   };
 
   if (iframe.contentWindow?.document.readyState === 'complete') {
@@ -912,6 +966,7 @@ const printOrder = (order: Order) => {
     iframe.onload = () => setTimeout(triggerPrint, 200);
   }
 };
+
 
 const OrdersByDay = ({ 
   orders, 
