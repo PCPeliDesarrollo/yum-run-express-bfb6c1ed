@@ -105,14 +105,26 @@ export const useOrderNotifications = () => {
           const prev = lastStatusRef.current[o.id] ?? old?.status;
           if (prev === o.status) return;
           lastStatusRef.current[o.id] = o.status;
-          const label = o.order_type === 'delivery' && o.status === 'ready'
-            ? 'en reparto'
-            : (statusLabels[o.status] ?? o.status);
-          const title = `📦 Pedido #${o.order_number}`;
-          const body = `Tu pedido está ${label}`;
+          const isPickupReady = (o.order_type === 'pickup' || o.order_type === 'dine_in') && o.status === 'ready';
+          const isDeliveryReady = o.order_type === 'delivery' && o.status === 'ready';
+
+          let title = `📦 Pedido #${o.order_number}`;
+          let body: string;
+
+          if (isPickupReady) {
+            title = `🎉 ¡Pedido #${o.order_number} listo!`;
+            body = '¡Ya puedes venir a recogerlo! 🍔🔥 Te esperamos con una sonrisa 😊';
+          } else if (isDeliveryReady) {
+            body = '¡Tu pedido va de camino! 🛵💨';
+          } else {
+            const label = statusLabels[o.status] ?? o.status;
+            body = `Tu pedido está ${label}`;
+          }
+
           playBeep();
           showNativeNotification(title, body, o.order_number);
           toast(title, { description: body });
+
         }
       )
       .subscribe();
