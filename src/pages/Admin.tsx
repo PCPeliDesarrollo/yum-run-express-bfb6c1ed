@@ -1321,7 +1321,7 @@ const OrderCard = ({
                 className="border-2 border-border text-foreground"
                 onClick={(e) => {
                   e.stopPropagation();
-                  printOrder(order);
+                  printOrder(order, { force: true });
                 }}
                 title="Imprimir pedido"
               >
