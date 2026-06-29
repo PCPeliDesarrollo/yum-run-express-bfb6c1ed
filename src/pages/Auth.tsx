@@ -255,6 +255,40 @@ const Auth = () => {
             </Button>
           </form>
 
+          {isLogin && (
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={async () => {
+                  const emailResult = emailSchema.safeParse(email);
+                  if (!emailResult.success) {
+                    toast({
+                      title: 'Email requerido',
+                      description: 'Escribe tu email arriba y vuelve a pulsar "¿Olvidaste tu contraseña?"',
+                      variant: 'destructive',
+                    });
+                    return;
+                  }
+                  const { supabase } = await import('@/integrations/supabase/client');
+                  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: `${window.location.origin}/reset-password`,
+                  });
+                  if (error) {
+                    toast({ title: 'Error', description: error.message, variant: 'destructive' });
+                  } else {
+                    toast({
+                      title: 'Email enviado',
+                      description: 'Revisa tu correo para restablecer tu contraseña',
+                    });
+                  }
+                }}
+                className="text-sm text-muted-foreground hover:text-primary hover:underline"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
+          )}
+
           <div className="mt-6 text-center">
             <button
               type="button"
@@ -270,6 +304,7 @@ const Auth = () => {
               }
             </button>
           </div>
+
         </div>
       </div>
     </div>
