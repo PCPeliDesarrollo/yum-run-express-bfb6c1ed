@@ -1,38 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
 export const useIsAdmin = () => {
   const { user } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkAdmin = async () => {
-      if (!user) {
-        setIsAdmin(false);
-        setLoading(false);
-        return;
-      }
-
+  const { data, isLoading } = useQuery({
+    queryKey: ['is-admin', user?.id],
+    enabled: !!user,
+    // Roles rarely change: cache aggressively so every mounted component
+    // shares one request instead of hammering the DB under load.
+    staleTime: 1000 * 60 * 10,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
+    retry: 1,
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', user.id)
+        .eq('user_id', user!.id)
         .eq('role', 'admin')
         .maybeSingle();
 
-      if (error) {
-        console.error('Error checking admin role:', error);
-        setIsAdmin(false);
-      } else {
-        setIsAdmin(!!data);
-      }
-      setLoading(false);
-    };
+      if (error) throw error;
+      return !!data;
+    },
+  });
 
-    checkAdmin();
-  }, [user]);
-
-  return { isAdmin, loading };
+  return { isAdmin: !!data, loading: !!user && isLoading };
 };

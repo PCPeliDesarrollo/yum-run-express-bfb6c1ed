@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import type { Product } from "@/data/products";
@@ -9,7 +10,7 @@ interface ProductCardProps {
   compact?: boolean;
 }
 
-const ProductCard = ({ product, compact = false }: ProductCardProps) => {
+const ProductCard = memo(({ product, compact = false }: ProductCardProps) => {
   const { addItem } = useCart();
   const navigate = useNavigate();
 
@@ -93,6 +94,8 @@ const ProductCard = ({ product, compact = false }: ProductCardProps) => {
       </div>
     </Link>
   );
-};
+});
+
+ProductCard.displayName = "ProductCard";
 
 export default ProductCard;
