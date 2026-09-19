@@ -77,9 +77,27 @@ const OrderCard = ({ order }: { order: Order }) => {
 const MisPedidos = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [pastOpen, setPastOpen] = useState(false);
+
+  const { data: orders = [], isLoading } = useQuery({
+    queryKey: ['my-orders', user?.id],
+    enabled: !!user,
+    staleTime: 1000 * 30,
+    gcTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: false,
+    retry: 1,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('id, order_number, status, items, total, created_at')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false })
+        .limit(30);
+
+      if (error) throw error;
+      return (data || []) as unknown as Order[];
+    },
+  });
 
   const activeOrders = orders.filter(o => !['delivered', 'cancelled'].includes(o.status));
   const pastOrders = orders.filter(o => ['delivered', 'cancelled'].includes(o.status));
@@ -90,26 +108,7 @@ const MisPedidos = () => {
     }
   }, [user, loading, navigate]);
 
-  useEffect(() => {
-    if (!user) return;
-
-    const fetchOrders = async () => {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (!error && data) {
-        setOrders(data);
-      }
-      setIsLoading(false);
-    };
-
-    fetchOrders();
-  }, [user]);
-
-  if (loading || isLoading) {
+  if (loading || (!!user && isLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-muted-foreground">Cargando...</p>
